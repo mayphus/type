@@ -33,15 +33,19 @@
            "127.0.0.1"))
 
 (module+ test
-  (test-case "home page has one platform chooser"
+  (test-case "home page defaults to mobile configurator"
     (define html (render-page (req "/") schemas skins #:route 'home))
-    (check-false (regexp-match? #rx"rime-platform-tabs" html))
-    (check-true (regexp-match? #rx"rime-entry-grid" html))
+    (check-true (regexp-match? #rx"rime-platform-tabs" html))
+    (check-false (regexp-match? #rx"rime-entry-grid" html))
+    (check-true (regexp-match? #rx"rime-schema-catalog" html))
+    (check-true (regexp-match? #rx"value=\"flypy\" checked=\"checked\"" html))
     (check-true (regexp-match? #rx"href=\"/desktop\"" html))
-    (check-true (regexp-match? #rx"href=\"/mobile\"" html)))
+    (check-true (regexp-match? #rx"href=\"/\"" html))
+    (check-true (regexp-match? #rx"href=\"/\"[^>]*>Mobile</a><a class=\"rime-platform-tab\" href=\"/desktop\""
+                               html)))
 
   (test-case "mobile page defaults to the standard flypy schema"
-    (define html (render-page (req "/mobile") schemas skins #:route 'mobile))
+    (define html (render-page (req "/") schemas skins #:route 'mobile))
     (check-true (regexp-match? #rx"小鶴雙拼" html))
     (check-true (regexp-match? #rx"/skins/flypy/preview.svg" html))
     (check-true (regexp-match? #rx"/skins/flypy/preview-dark.svg" html))
@@ -69,7 +73,7 @@
   (test-case "locale is remembered from cookie"
     (define html
       (render-page
-       (req "/mobile"
+       (req "/"
             #:headers (list (header #"Cookie" #"rime-locale=zh-Hant")))
        schemas
        skins

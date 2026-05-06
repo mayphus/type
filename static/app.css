@@ -147,14 +147,8 @@ input {
   gap: 1rem;
 }
 
-.rime-landing-shell {
-  min-height: calc(100vh - 4.8rem);
-  justify-content: center;
-}
-
 .rime-back-link,
-.rime-platform-tab,
-.rime-entry-card {
+.rime-platform-tab {
   color: var(--ink);
   text-decoration: none;
 }
@@ -191,28 +185,6 @@ input {
   border-color: var(--selected-line);
   background: var(--accent-soft);
   color: var(--ink);
-}
-
-.rime-entry-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem;
-}
-
-.rime-entry-card {
-  display: flex;
-  min-height: 9rem;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 1.2rem;
-  padding: 1rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-}
-
-.rime-entry-card:hover {
-  border-color: var(--selected-line);
-  background: var(--accent-soft);
 }
 
 .rime-language-toggle {
@@ -500,11 +472,6 @@ input {
     padding: 1.25rem 0.9rem 2.6rem;
   }
 
-  .rime-landing-shell {
-    min-height: calc(100vh - 3.85rem);
-  }
-
-  .rime-entry-grid,
   .rime-platform-grid {
     grid-template-columns: 1fr;
   }

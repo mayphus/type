@@ -187,10 +187,9 @@
 
 (define-values (dispatch url)
   (dispatch-rules
-   [("") (lambda (req) (handle-page req 'home))]
+   [("") (lambda (req) (handle-page req 'mobile))]
    [("metadata") handle-metadata]
    [("desktop") (lambda (req) (handle-page req 'desktop))]
-   [("mobile") (lambda (req) (handle-page req 'mobile))]
    [("app.css") handle-app-css]
    [("support-8f6d2b.svg") handle-support-svg]
    [("skins" (string-arg) "preview.svg") handle-skin-preview-svg]

@@ -118,7 +118,7 @@
 (define (route-path route)
   (case route
     [(desktop) "/desktop"]
-    [(mobile) "/mobile"]
+    [(mobile) "/"]
     [else "/"]))
 
 (define (binding-value binding)
@@ -365,8 +365,10 @@
                                 ,(t locale 'build)))))))
 
 (define (page-shell req schemas skins route)
-  (define state (parse-state req route))
+  (define route* (if (eq? route 'home) 'mobile route))
+  (define state (parse-state req route*))
   (define locale (ui-state-locale state))
+  (define current-route (ui-state-route state))
   `(html ((lang ,(if (eq? locale 'zh-Hant) "zh-Hant" "en")))
          (head
           (meta ((charset "utf-8")))
@@ -377,40 +379,27 @@
                    (defer "defer")) ""))
          (body
           (main ((id "app"))
-                (div ((class ,(classes "rime-config-shell"
-                                       (and (eq? route 'home) "rime-landing-shell"))))
+                (div ((class "rime-config-shell"))
                      (section ((class "rime-hero-card"))
                               (div ((class "rime-hero-head"))
                                    (div
-                                    ,@(if (eq? route 'home)
-                                          '()
-                                          `((a ((class "rime-back-link")
-                                               (href "/")) ,(t locale 'home))))
+                                    (a ((class "rime-back-link")
+                                        (href "/")) ,(t locale 'home))
                                    (h1 ((class "page-title")) ,(t locale 'title))
                                    (p ((class "rime-section-copy"))
-                                      ,(case route
+                                      ,(case current-route
                                          [(desktop) (t locale 'desktop-copy)]
                                          [(mobile) (t locale 'mobile-copy)]
                                          [else (t locale 'landing-copy)]))))
-                              ,@(if (eq? route 'home)
-                                    '()
-                                    `((nav ((class "rime-platform-tabs"))
-                                           (a ((class ,(classes "rime-platform-tab"
-                                                                (and (eq? route 'desktop) "is-active")))
-                                               (href "/desktop")) ,(t locale 'desktop))
-                                           (a ((class ,(classes "rime-platform-tab"
-                                                                (and (eq? route 'mobile) "is-active")))
-                                               (href "/mobile")) ,(t locale 'mobile))))))
-                     ,@(if (eq? route 'home)
-                           `((div ((class "rime-entry-grid"))
-                                  (a ((class "rime-entry-card") (href "/desktop"))
-                                     (span ((class "rime-option-title")) ,(t locale 'desktop))
-                                     (span ((class "rime-section-copy")) ,(t locale 'desktop-copy)))
-                                  (a ((class "rime-entry-card") (href "/mobile"))
-                                     (span ((class "rime-option-title")) ,(t locale 'mobile))
-                                     (span ((class "rime-section-copy")) ,(t locale 'mobile-copy)))))
-                           `((div ((id "configurator"))
-                                  ,(configurator-xexpr req schemas skins #:route route))))
+                              (nav ((class "rime-platform-tabs"))
+                                   (a ((class ,(classes "rime-platform-tab"
+                                                        (and (eq? current-route 'mobile) "is-active")))
+                                       (href "/")) ,(t locale 'mobile))
+                                   (a ((class ,(classes "rime-platform-tab"
+                                                        (and (eq? current-route 'desktop) "is-active")))
+                                       (href "/desktop")) ,(t locale 'desktop))))
+                     (div ((id "configurator"))
+                          ,(configurator-xexpr req schemas skins #:route current-route))
                      (footer ((class "rime-footer"))
                              (span ((class "rime-footer-credit")) ,(t locale 'footer-credit))
                              (div ((class "rime-footer-support"))
@@ -424,7 +413,7 @@
                                                 (symbol->string (next-locale locale)))))
                                 ,(t locale 'language))))))))
 
-(define (render-page req schemas skins #:route [route 'home])
+(define (render-page req schemas skins #:route [route 'mobile])
   (xexpr->string (page-shell req schemas skins route)))
 
 (define (form-profile req)
