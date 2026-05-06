@@ -341,25 +341,29 @@
           (class "rime-config-grid")
           (method "post")
           (action "/build"))
-         ,(input-hidden "configured" "1")
-         ,(input-hidden "route" (symbol->string route))
-         ,(input-hidden "locale" (symbol->string locale))
-         ,(input-hidden "desktop?" (if (eq? route 'desktop) "true" "false"))
-         (div ((class "rime-primary-column"))
-              (section ((class "rime-section"))
-                       (div ((class "rime-section-header"))
-                            (h2 ((class "rime-section-title")) ,(t locale 'schemas))
-                            (p ((class "rime-section-copy")) ,(t locale 'schemas-copy)))
-                       (div ((class "rime-schema-catalogs"))
-                            ,@(for/list ([catalog (in-list (cataloged-schemas
-                                                            (visible-schemas schemas route)))])
-                                (schema-catalog-section locale
-                                                        route
-                                                        skins
-                                                        selected-ids
-                                                        active-ids
-                                                        auto-ids
-                                                        catalog)))))))
+     ,(input-hidden "configured" "1")
+     ,(input-hidden "route" (symbol->string route))
+     ,(input-hidden "locale" (symbol->string locale))
+     ,(input-hidden "desktop?" (if (eq? route 'desktop) "true" "false"))
+     (div ((class "rime-primary-column"))
+          (section ((class "rime-section"))
+                   (div ((class "rime-section-header"))
+                        (h2 ((class "rime-section-title")) ,(t locale 'schemas))
+                        (p ((class "rime-section-copy")) ,(t locale 'schemas-copy)))
+                   (div ((class "rime-schema-catalogs"))
+                        ,@(for/list ([catalog (in-list (cataloged-schemas
+                                                        (visible-schemas schemas route)))])
+                            (schema-catalog-section locale
+                                                    route
+                                                    skins
+                                                    selected-ids
+                                                    active-ids
+                                                    auto-ids
+                                                    catalog)))
+                   (div ((class "rime-form-actions"))
+                        (button ((class "rime-build-button rime-flow-build-button")
+                                 (type "submit"))
+                                ,(t locale 'build)))))))
 
 (define (page-shell req schemas skins route)
   (define state (parse-state req route))
@@ -383,19 +387,12 @@
                                           '()
                                           `((a ((class "rime-back-link")
                                                (href "/")) ,(t locale 'home))))
-                                    (h1 ((class "page-title")) ,(t locale 'title))
-                                    (p ((class "rime-section-copy"))
-                                       ,(case route
-                                          [(desktop) (t locale 'desktop-copy)]
-                                          [(mobile) (t locale 'mobile-copy)]
-                                          [else (t locale 'landing-copy)])))
-                                   ,@(if (eq? route 'home)
-                                         '()
-                                         `((div ((class "rime-hero-actions"))
-                                                (button ((class "rime-build-button rime-hero-build-button")
-                                                         (type "submit")
-                                                         (form "configurator-form"))
-                                                        ,(t locale 'build))))))
+                                   (h1 ((class "page-title")) ,(t locale 'title))
+                                   (p ((class "rime-section-copy"))
+                                      ,(case route
+                                         [(desktop) (t locale 'desktop-copy)]
+                                         [(mobile) (t locale 'mobile-copy)]
+                                         [else (t locale 'landing-copy)]))))
                               ,@(if (eq? route 'home)
                                     '()
                                     `((nav ((class "rime-platform-tabs"))
