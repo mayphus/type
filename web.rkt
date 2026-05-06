@@ -76,9 +76,9 @@
    400 #"Bad Request" (current-seconds) #"application/json" '()
    (list (jsexpr->bytes (hash 'error msg)))))
 
-(define (html-response html)
+(define (html-response html [headers '()])
   (response/full
-   200 #"OK" (current-seconds) #"text/html; charset=utf-8" '()
+   200 #"OK" (current-seconds) #"text/html; charset=utf-8" headers
    (list (string->bytes/utf-8 html))))
 
 (define (svg-response svg)
@@ -88,16 +88,18 @@
    (list (string->bytes/utf-8 svg))))
 
 (define (handle-page req route)
-  (html-response (render-page req schema-items skin-items #:route route)))
+  (html-response (render-page req schema-items skin-items #:route route)
+                 (remember-locale-headers req)))
 
 (define (handle-configurator req)
-  (html-response (render-configurator req schema-items skin-items)))
+  (html-response (render-configurator req schema-items skin-items)
+                 (remember-locale-headers req)))
 
 (define (handle-app-css req)
   (if (file-exists? app-css-path)
       (response/full
        200 #"OK" (current-seconds) #"text/css; charset=utf-8"
-       (list (make-header #"Cache-Control" #"public, max-age=300"))
+       (list (make-header #"Cache-Control" #"no-store"))
        (list (file->bytes app-css-path)))
       (response/full
        404 #"Not Found" (current-seconds) #"text/plain; charset=utf-8" '()

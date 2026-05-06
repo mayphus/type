@@ -43,10 +43,26 @@
     (check-true (regexp-match? #rx"小鶴十四鍵" html))
     (check-true (regexp-match? #rx"/skins/flypy_14/preview.svg" html))
     (check-true (regexp-match? #rx"rime-schema-previews" html))
+    (check-true (regexp-match? #rx"rime-schema-catalog" html))
+    (check-true (regexp-match? #rx"Double Pinyin" html))
     (check-false (regexp-match? #rx"rime-skin-layout" html))
+    (check-false (regexp-match? #rx"rime-option-toggle" html))
+    (check-true (regexp-match? #rx"rime-option-input" html))
     (check-true (regexp-match? #rx"<ol class=\"rime-help-list\">" html))
     (check-true (regexp-match? #rx"src=\"/support.svg\"" html))
     (check-true (regexp-match? #rx"htmx.org" html)))
+
+  (test-case "locale is remembered from cookie"
+    (define html
+      (render-page
+       (req "/mobile"
+            #:headers (list (header #"Cookie" #"rime-locale=zh-Hant")))
+       schemas
+       skins
+       #:route 'mobile))
+    (check-true (regexp-match? #rx"<html lang=\"zh-Hant\"" html))
+    (check-true (regexp-match? #rx"Rime 配置" html))
+    (check-true (regexp-match? #rx">EN</a>" html)))
 
   (test-case "form posts become build profiles"
     (define request

@@ -8,6 +8,7 @@
 
 (provide render-page
          render-configurator
+         remember-locale-headers
          form-profile
          form-request?)
 
@@ -16,6 +17,8 @@
 
 (define htmx-script
   "https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js")
+
+(define app-css-href "/app.css?v=20260506")
 
 (define copy
   (hash
@@ -31,8 +34,6 @@
     'schemas "Schemas"
     'schemas-copy "Dependent schemas are added automatically."
     'skins "Skins"
-    'include "Include"
-    'selected "Selected"
     'auto "Auto"
     'summary "Summary"
     'platform "Platform"
@@ -59,8 +60,6 @@
     'schemas "方案"
     'schemas-copy "依賴方案會自動補上。"
     'skins "皮膚"
-    'include "加入"
-    'selected "已選"
     'auto "自動"
     'summary "摘要"
     'platform "平台"
@@ -87,6 +86,26 @@
 
 (define (locale-param value)
   (if (equal? value "zh-Hant") 'zh-Hant 'en))
+
+(define locale-cookie-name "rime-locale")
+
+(define (locale-value? value)
+  (or (equal? value "en")
+      (equal? value "zh-Hant")))
+
+(define (request-cookie-value req name)
+  (for/first ([cookie (in-list (request-cookies req))]
+              #:when (equal? (client-cookie-name cookie) name))
+    (client-cookie-value cookie)))
+
+(define (remember-locale-headers req)
+  (define locale (request-value req "locale" #f))
+  (if (locale-value? locale)
+      (list (cookie->header
+             (make-cookie locale-cookie-name locale
+                          #:path "/"
+                          #:max-age (* 60 60 24 365))))
+      '()))
 
 (define (route-param value fallback)
   (match value
@@ -175,6 +194,38 @@
                 (not (schema-mobile-only? schema))))
           schemas))
 
+(define schema-catalog-order
+  '("double-pinyin" "full-pinyin" "shape" "cantonese" "phonetic" "other"))
+
+(define (schema-catalog-id schema)
+  (match (schema-id schema)
+    [(or "flypy" "flypy_ice" "flypy_14" "flypy_18" "shuffle_17") "double-pinyin"]
+    [(or "luna_pinyin" "terra_pinyin" "pinyin_14") "full-pinyin"]
+    ["cangjie6" "shape"]
+    ["jyut6ping3" "cantonese"]
+    ["bopomofo" "phonetic"]
+    [_ "other"]))
+
+(define (schema-catalog-label catalog-id)
+  (hash-ref (hash "double-pinyin" "Double Pinyin"
+                  "full-pinyin" "Full Pinyin"
+                  "shape" "Shape"
+                  "cantonese" "Cantonese"
+                  "phonetic" "Phonetic"
+                  "other" "Other")
+            catalog-id
+            catalog-id))
+
+(define (cataloged-schemas schemas)
+  (filter-map
+   (lambda (catalog-id)
+     (define items
+       (filter (lambda (schema)
+                 (equal? (schema-catalog-id schema) catalog-id))
+               schemas))
+     (and (pair? items) (cons catalog-id items)))
+   schema-catalog-order))
+
 (define (skin-id skin)
   (list-ref skin 0))
 
@@ -203,7 +254,11 @@
     [else '("flypy")]))
 
 (define (parse-state req route)
-  (define locale (locale-param (request-value req "locale" "en")))
+  (define locale
+    (locale-param
+     (or (request-value req "locale" #f)
+         (request-cookie-value req locale-cookie-name)
+         "en")))
   (define actual-route (route-param (request-value req "route" #f) route))
   (define configured? (present? req "configured"))
   (ui-state actual-route
@@ -240,9 +295,17 @@
               (alt ,(skin-name skin))))))
 
 (define (schema-card locale schema checked? auto? preview-skins)
-  `(div ((class ,(classes "rime-option-card"
-                          (and checked? "is-selected")
-                          (and auto? "is-auto"))))
+  `(label ((class ,(classes "rime-option-card"
+                            (and checked? "is-selected")
+                            (and auto? "is-auto"))))
+          (input ,(append
+                   (attrs `(class "rime-option-input")
+                          `(type "checkbox")
+                          `(name "schemas")
+                          `(value ,(schema-id schema))
+                          (and checked? `(checked "checked"))
+                          (and auto? `(disabled "disabled")))
+                   (if auto? '() (hx-refresh-attrs))))
         (div ((class "rime-option-head"))
              (div ((class "rime-option-copy"))
                   (div ((class "rime-option-title-row"))
@@ -250,22 +313,36 @@
                        (span ((class "rime-option-id")) ,(schema-id schema))
                        ,@(if auto?
                              `((span ((class "rime-inline-note")) ,(t locale 'auto)))
-                             '())))
-             (label ((class "rime-option-toggle"))
-                    (input ,(append
-                             (attrs `(type "checkbox")
-                                    `(name "schemas")
-                                    `(value ,(schema-id schema))
-                                    (and checked? `(checked "checked"))
-                                    (and auto? `(disabled "disabled")))
-                             (if auto? '() (hx-refresh-attrs))))
-                    (span ((class "rime-option-toggle-label"))
-                          ,(if checked? (t locale 'selected) (t locale 'include)))))
+                             '()))))
         ,@(if (pair? preview-skins)
               `((div ((class "rime-schema-previews"))
                      ,@(for/list ([skin (in-list preview-skins)])
                          (schema-preview skin))))
               '())))
+
+(define (schema-card-for locale route skins selected-ids active-ids auto-ids schema)
+  (define id (schema-id schema))
+  (define preview-skins
+    (if (eq? route 'mobile)
+        (filter values
+                (map (lambda (skin-id)
+                       (skin-by-id skins skin-id))
+                     (schema-mobile-skins schema)))
+        '()))
+  (schema-card locale
+               schema
+               (member id active-ids)
+               (member id auto-ids)
+               preview-skins))
+
+(define (schema-catalog-section locale route skins selected-ids active-ids auto-ids catalog)
+  (define catalog-id (car catalog))
+  (define schemas (cdr catalog))
+  `(section ((class "rime-schema-catalog"))
+            (h3 ((class "rime-schema-catalog-title")) ,(schema-catalog-label catalog-id))
+            (div ((class "rime-option-grid"))
+                 ,@(for/list ([schema (in-list schemas)])
+                     (schema-card-for locale route skins selected-ids active-ids auto-ids schema)))))
 
 (define (summary-pill text)
   `(span ((class "rime-summary-pill")) ,text))
@@ -317,21 +394,16 @@
                        (div ((class "rime-section-header"))
                             (h2 ((class "rime-section-title")) ,(t locale 'schemas))
                             (p ((class "rime-section-copy")) ,(t locale 'schemas-copy)))
-                       (div ((class "rime-option-grid"))
-                            ,@(for/list ([schema (in-list (visible-schemas schemas route))])
-                                (define id (schema-id schema))
-                                (define preview-skins
-                                  (if (eq? route 'mobile)
-                                      (filter values
-                                              (map (lambda (skin-id)
-                                                     (skin-by-id skins skin-id))
-                                                   (schema-mobile-skins schema)))
-                                      '()))
-                                (schema-card locale
-                                             schema
-                                             (member id active-ids)
-                                             (member id auto-ids)
-                                             preview-skins)))))
+                       (div ((class "rime-schema-catalogs"))
+                            ,@(for/list ([catalog (in-list (cataloged-schemas
+                                                            (visible-schemas schemas route)))])
+                                (schema-catalog-section locale
+                                                        route
+                                                        skins
+                                                        selected-ids
+                                                        active-ids
+                                                        auto-ids
+                                                        catalog)))))
          (aside ((class "rime-summary-column"))
                 (div ((class "rime-summary-card"))
                      (div ((class "rime-summary-intro"))
@@ -377,7 +449,7 @@
           (meta ((charset "utf-8")))
           (meta ((name "viewport") (content "width=device-width, initial-scale=1")))
           (title ,(t locale 'title))
-          (link ((rel "stylesheet") (href "/app.css")))
+          (link ((rel "stylesheet") (href ,app-css-href)))
           (script ((src ,htmx-script)
                    (defer "defer")) ""))
          (body

@@ -75,9 +75,9 @@ input {
 }
 
 #app {
-  width: min(100%, 72rem);
+  width: 100%;
   margin: 0 auto;
-  padding: 1.8rem 1rem 3rem;
+  padding: 1.8rem clamp(1rem, 4vw, 2.5rem) 3rem;
 }
 
 .page-title,
@@ -254,8 +254,8 @@ input {
 
 .rime-config-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(18rem, 0.95fr);
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
+  gap: 1.4rem;
   align-items: start;
 }
 
@@ -278,11 +278,38 @@ input {
   gap: 0.5rem;
 }
 
-.rime-platform-grid,
-.rime-option-grid {
+.rime-platform-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
+}
+
+.rime-schema-catalogs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rime-schema-catalog {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.rime-schema-catalog-title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.rime-option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+  gap: 0.6rem;
+  justify-content: start;
 }
 
 .rime-option-card,
@@ -303,13 +330,18 @@ input {
 }
 
 .rime-option-card {
-  gap: 0.7rem;
-  padding: 0.8rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.65rem;
   background: transparent;
+  cursor: pointer;
   min-width: 0;
 }
 
 .rime-option-card.is-auto {
+  cursor: default;
   border-style: dashed;
 }
 
@@ -330,20 +362,15 @@ input {
   font-weight: 700;
 }
 
-.rime-option-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0 0.1rem;
-  color: var(--muted);
-  flex-shrink: 0;
-}
-
-.rime-option-toggle input {
+.rime-option-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
   margin: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
-.rime-option-toggle-label,
 .rime-platform-hint,
 .rime-option-id,
 .rime-inline-note {
@@ -460,20 +487,21 @@ input {
 
 .rime-schema-previews {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.3rem;
+  margin-top: 0.1rem;
+  width: 100%;
 }
 
 .rime-schema-preview {
   overflow: hidden;
-  aspect-ratio: 375 / 216;
+  width: 100%;
 }
 
 .keyboard-preview-svg {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: auto;
 }
 
 .keyboard-preview-svg-wrap {
@@ -509,8 +537,7 @@ input {
   }
 
   .rime-entry-grid,
-  .rime-platform-grid,
-  .rime-option-grid {
+  .rime-platform-grid {
     grid-template-columns: 1fr;
   }
 
