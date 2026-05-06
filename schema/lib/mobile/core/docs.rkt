@@ -1,7 +1,6 @@
 #lang racket/base
 
 (require racket/string
-         "preview-png.rkt"
          "preview-svg.rkt")
 
 (provide (struct-out skin-meta)
@@ -10,6 +9,9 @@
          make-skin-doc-files)
 
 (struct skin-meta (slug english-name chinese-name summary features) #:transparent)
+
+(define (demo-preview-png-bytes title preview-spec)
+  ((dynamic-require "preview-png.rkt" 'demo-preview-png-bytes) title preview-spec))
 
 (define (make-skin-meta #:slug slug
                         #:english-name english-name
