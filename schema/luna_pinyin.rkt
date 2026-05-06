@@ -38,5 +38,5 @@
     (phone-layout
       (layers abc)
       (centers [abc 0.5 0.5])
-      (fonts [abc 14 #:weight bold]))
+      (fonts [abc 25 #:weight bold]))
     (ipad-layout standard-18)))

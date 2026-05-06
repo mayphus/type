@@ -195,9 +195,9 @@
    (string-append (bopomofo-spec-name spec) "ForegroundStyle")
    (text-foreground-style dark?
                           (bopomofo-spec-label spec)
-                          #:font-size 25
+                          #:font-size 18
                           #:center bopomofo-button-center
-                          #:font-weight "bold")))
+                          #:font-weight "normal")))
 
 (define enter-background-style
   (array
