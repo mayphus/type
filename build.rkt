@@ -41,8 +41,7 @@
 (define output-dir   (build-path root-dir "output" "rime"))
 (define-runtime-path mobile-lang-path "schema/lib/mobile/lang.rkt")
 
-(define zip-exe    (find-executable-path "zip"))
-(define python-exe (find-executable-path "python3"))
+(define zip-exe (find-executable-path "zip"))
 
 ;; ---- Known generated IDs ---------------------------------------------------
 

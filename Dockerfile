@@ -4,8 +4,6 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     ca-certificates \
     fonts-noto-cjk \
-    python3 \
-    python3-pil \
     racket \
     zip \
  && rm -rf /var/lib/apt/lists/*

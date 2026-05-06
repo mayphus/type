@@ -1,7 +1,6 @@
 #lang racket/base
 
 (require racket/format
-         racket/list
          racket/match
          racket/string)
 
@@ -60,6 +59,23 @@
                  ""))]
     [_ (format "fill=\"~a\"" (attr-escape fallback))]))
 
+(define (color-bright? color)
+  (match (color-components color)
+    [(list _ rgb _alpha)
+     (define r (hex-byte rgb 0))
+     (define g (hex-byte rgb 2))
+     (define b (hex-byte rgb 4))
+     (> (+ (* 0.2126 r) (* 0.7152 g) (* 0.0722 b)) 155)]
+    [_ #t]))
+
+(define (key-stroke-color background)
+  (if (color-bright? background) "#00000016" "#ffffff22"))
+
+(define (stroke-attrs color width)
+  (format "stroke=\"~a\" stroke-width=\"~a\""
+          (attr-escape color)
+          (real->decimal-string width 2)))
+
 (define (hex-byte color start)
   (string->number (substring color start (+ start 2)) 16))
 
@@ -90,7 +106,9 @@
 (define (font-weight layer)
   (define weight (hash-get layer 'font-weight "400"))
   (cond
-    [(or (equal? weight "bold") (equal? weight "semibold") (equal? weight "medium")) "700"]
+    [(equal? weight "bold") "700"]
+    [(equal? weight "semibold") "600"]
+    [(equal? weight "medium") "500"]
     [(and (string? weight) (not (string=? weight ""))) weight]
     [else "400"]))
 
@@ -134,8 +152,8 @@
   (define cx (+ x (/ width 2)))
   (define cy (+ y (/ height 2)))
   (match kind
-    ["space" (space-icon-svg x y width height color)]
-    ["shift"
+    [(or "space" "space.fill") (space-icon-svg x y width height color)]
+    [(or "shift" "shift.fill" "capslock.fill")
      (stroke-icon-path
       (format "M ~a ~a L ~a ~a L ~a ~a M ~a ~a V ~a"
               (real->decimal-string (- cx 10) 2)
@@ -148,7 +166,7 @@
               (real->decimal-string (- cy 10) 2)
               (real->decimal-string (+ cy 12) 2))
       color)]
-    ["backspace"
+    [(or "backspace" "delete.left" "delete.left.fill")
      (stroke-icon-path
       (format "M ~a ~a L ~a ~a H ~a V ~a H ~a L ~a ~a M ~a ~a L ~a ~a M ~a ~a L ~a ~a"
               (real->decimal-string (- cx 14) 2)
@@ -183,12 +201,36 @@
               (real->decimal-string (- cx 4) 2)
               (real->decimal-string (+ cy 11) 2))
       color)]
+    [(or "face.smiling" "emojis")
+     (string-append
+      (format "<circle cx=\"~a\" cy=\"~a\" r=\"~a\" fill=\"none\" stroke=\"~a\" stroke-width=\"1.9\"/>"
+              (real->decimal-string cx 2)
+              (real->decimal-string cy 2)
+              (real->decimal-string (min 12 (* width 0.2)) 2)
+              (attr-escape color))
+      (format "<circle cx=\"~a\" cy=\"~a\" r=\"1.35\" fill=\"~a\"/>"
+              (real->decimal-string (- cx 4.2) 2)
+              (real->decimal-string (- cy 3.2) 2)
+              (attr-escape color))
+      (format "<circle cx=\"~a\" cy=\"~a\" r=\"1.35\" fill=\"~a\"/>"
+              (real->decimal-string (+ cx 4.2) 2)
+              (real->decimal-string (- cy 3.2) 2)
+              (attr-escape color))
+      (format "<path d=\"M ~a ~a Q ~a ~a ~a ~a\" fill=\"none\" stroke=\"~a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>"
+              (real->decimal-string (- cx 5.5) 2)
+              (real->decimal-string (+ cy 3.2) 2)
+              (real->decimal-string cx 2)
+              (real->decimal-string (+ cy 7.2) 2)
+              (real->decimal-string (+ cx 5.5) 2)
+              (real->decimal-string (+ cy 3.2) 2)
+              (attr-escape color)))]
     [_ #f]))
 
 (define (fallback-label-svg key x y width height)
   (define color (fallback-color (hash-get key 'background "#ffffff")))
   (define kind (hash-get key 'kind ""))
-  (define icon (special-icon-svg kind x y width height color))
+  (define icon (or (special-icon-svg kind x y width height color)
+                   (special-icon-svg (hash-get key 'icon "") x y width height color)))
   (if icon
       icon
       (let ([label (special-label key)])
@@ -205,12 +247,13 @@
   (define background (hash-get key 'background "#ffffff"))
   (define layers (hash-get key 'layers '()))
   (string-append
-   (format "<rect x=\"~a\" y=\"~a\" width=\"~a\" height=\"~a\" rx=\"8\" ~a/>"
+   (format "<rect x=\"~a\" y=\"~a\" width=\"~a\" height=\"~a\" rx=\"8\" ~a ~a/>"
            (real->decimal-string x 2)
            (real->decimal-string y 2)
            (real->decimal-string width 2)
            (real->decimal-string height 2)
-           (fill-attrs background "#ffffff"))
+           (fill-attrs background "#ffffff")
+           (stroke-attrs (key-stroke-color background) 0.75))
    (if (and (list? layers) (pair? layers))
        (apply string-append
               (for/list ([layer (in-list layers)])
@@ -229,7 +272,9 @@
    (for/list ([row (in-list rows)]
               [row-index (in-naturals)])
      (define y (+ row-gap (* row-index (+ key-height row-gap))))
-     (define total-units (max 1 (apply + (map (lambda (key) (numberish (hash-get key 'width 1) 1)) row))))
+     (define total-units
+       (let ([sum (apply + (map (lambda (key) (numberish (hash-get key 'width 1) 1)) row))])
+         (if (positive? sum) sum 1)))
      (define available-width (- width (* 2 keyboard-pad) (* (max 0 (sub1 (length row))) key-gap)))
      (let loop ([keys row] [x keyboard-pad] [pieces '()])
        (match keys

@@ -1,14 +1,7 @@
 #lang racket/base
 
-(require racket/file
-         racket/format
-         racket/list
-         racket/path
-         racket/port
-         racket/runtime-path
-         racket/string
-         racket/system
-         json
+(require racket/string
+         "preview-png.rkt"
          "preview-svg.rkt")
 
 (provide (struct-out skin-meta)
@@ -17,12 +10,6 @@
          make-skin-doc-files)
 
 (struct skin-meta (slug english-name chinese-name summary features) #:transparent)
-
-(define-runtime-path render-skin-demo-script "../../../../tools/render_skin_demo.py")
-
-(define (require-executable name who)
-  (or (find-executable-path name)
-      (error who "~a not found in PATH" name)))
 
 (define (make-skin-meta #:slug slug
                         #:english-name english-name
@@ -52,46 +39,6 @@
         "\n\n"))
    "This README and `demo.png` are generated from the skin metadata.\n"))
 
-(define (render-demo-png meta demo-svg)
-  (define python-exe
-    (require-executable "python3" 'make-skin-doc-files))
-  (define tmp-path
-    (make-temporary-file
-     (~a (path->string (find-system-path 'temp-dir))
-         "/yuanshu-skin-demo-"
-         (skin-meta-slug meta)
-         "-~a.png")))
-  (define svg-path
-    (make-temporary-file
-     (~a (path->string (find-system-path 'temp-dir))
-         "/yuanshu-skin-demo-"
-         (skin-meta-slug meta)
-         "-~a.svg")))
-  (dynamic-wind
-    void
-    (lambda ()
-      (call-with-output-file svg-path
-        #:exists 'truncate/replace
-        (lambda (out)
-          (display demo-svg out)))
-      (define status
-        (system* python-exe
-                 render-skin-demo-script
-                 "--svg"
-                 (path->string svg-path)
-                 "--output"
-                 (path->string tmp-path)))
-      (unless status
-        (error 'make-skin-doc-files
-               "failed to render demo image for ~a"
-               (skin-meta-slug meta)))
-      (file->bytes tmp-path))
-    (lambda ()
-      (when (file-exists? svg-path)
-        (delete-file svg-path))
-      (when (file-exists? tmp-path)
-        (delete-file tmp-path)))))
-
 (define (demo-svg meta preview-spec)
   (define light-preview
     (if (and (hash? preview-spec) (hash-has-key? preview-spec 'dark))
@@ -107,7 +54,7 @@
                          (hash))])
         (define svg (demo-svg meta preview-spec))
         (hash "demo.svg" svg
-              "demo.png" (render-demo-png meta svg)))
+              "demo.png" (demo-preview-png-bytes (skin-meta-chinese-name meta) preview-spec)))
       (hash)))
 
 (define (make-skin-doc-files meta preview-spec)
@@ -120,5 +67,5 @@
         (define svg (demo-svg meta preview-spec))
         (hash "README.md" readme
               "demo.svg" svg
-              "demo.png" (render-demo-png meta svg)))
+              "demo.png" (demo-preview-png-bytes (skin-meta-chinese-name meta) preview-spec)))
       (hash "README.md" readme)))
