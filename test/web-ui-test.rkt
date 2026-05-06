@@ -45,6 +45,7 @@
     (check-true (regexp-match? #rx"rime-schema-previews" html))
     (check-true (regexp-match? #rx"rime-schema-catalog" html))
     (check-true (regexp-match? #rx"Double Pinyin" html))
+    (check-false (regexp-match? #rx"Dependent schemas are added automatically" html))
     (check-false (regexp-match? #rx"rime-skin-layout" html))
     (check-false (regexp-match? #rx"rime-option-toggle" html))
     (check-true (regexp-match? #rx"rime-option-input" html))

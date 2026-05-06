@@ -347,9 +347,6 @@
      ,(input-hidden "desktop?" (if (eq? route 'desktop) "true" "false"))
      (div ((class "rime-primary-column"))
           (section ((class "rime-section"))
-                   (div ((class "rime-section-header"))
-                        (h2 ((class "rime-section-title")) ,(t locale 'schemas))
-                        (p ((class "rime-section-copy")) ,(t locale 'schemas-copy)))
                    (div ((class "rime-schema-catalogs"))
                         ,@(for/list ([catalog (in-list (cataloged-schemas
                                                         (visible-schemas schemas route)))])
