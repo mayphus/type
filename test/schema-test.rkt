@@ -18,7 +18,7 @@
     (check-not-false (string-contains? yaml "name: \"小鶴雙拼\""))
     (check-not-false (string-contains? yaml "dictionary: luna_pinyin"))
     (check-not-false (string-contains? yaml "prism: flypy"))
-    (check-equal? flypy:mobile-skins '("flypy" "hybrid")))
+    (check-equal? flypy:mobile-skins '("flypy")))
 
   (test-case "flypy ice is a dictionary variant in flypy config"
     (define ice-files (hash-ref flypy:schema-config-files "flypy_ice"))

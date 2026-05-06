@@ -2,7 +2,7 @@
 
 (rime-schema cangjie6
   (name "蒼頡六代")
-  (mobile-skins cangjie6 hybrid)
+  (mobile-skins cangjie6)
   (deps flypy)
   (static-files "cangjie6.dict.yaml")
   (custom "cangjie6.custom.yaml"

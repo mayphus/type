@@ -4,11 +4,12 @@
 
 (flypy-family
   (dictionary luna_pinyin)
+  (mobile-skins flypy)
 
   (variant flypy_ice
     (dictionary ice)
     (mobile-only)
-    (mobile-skins flypy hybrid))
+    (mobile-skins flypy))
 
   (mobile-skin flypy
     (meta
