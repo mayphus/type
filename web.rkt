@@ -112,7 +112,7 @@
   (if (file-exists? support-svg-path)
       (response/full
        200 #"OK" (current-seconds) #"image/svg+xml"
-       (list (make-header #"Cache-Control" #"public, max-age=86400"))
+       (list (make-header #"Cache-Control" #"no-store"))
        (list (file->bytes support-svg-path)))
       (response/full
        404 #"Not Found" (current-seconds) #"text/plain; charset=utf-8" '()

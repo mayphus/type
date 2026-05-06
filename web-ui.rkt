@@ -18,6 +18,7 @@
   "https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js")
 
 (define app-css-href "/app.css?v=20260506")
+(define support-svg-href "/support.svg?v=20260506b")
 
 (define copy
   (hash
@@ -414,7 +415,7 @@
                              (div ((class "rime-footer-support"))
                                   (span ((class "rime-footer-support-label")) ,(t locale 'support))
                                   (img ((class "rime-footer-support-image")
-                                        (src "/support.svg")
+                                        (src ,support-svg-href)
                                         (alt ,(t locale 'support)))))
                              (a ((class "rime-language-toggle rime-footer-language")
                                  (href ,(format "~a?locale=~a"
