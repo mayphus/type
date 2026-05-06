@@ -53,7 +53,7 @@
     (check-false (regexp-match? #rx"form=\"configurator-form\"" html))
     (check-true (regexp-match? #rx"Powered by" html))
     (check-true (regexp-match? #rx"rime-footer-support-image" html))
-    (check-true (regexp-match? #rx"src=\"/support.svg\\?v=20260506b\"" html))
+    (check-true (regexp-match? #rx"src=\"/support.svg\"" html))
     (check-true (regexp-match? #rx"rime-footer-language" html))
     (check-false (regexp-match? #rx"rime-summary-column" html))
     (check-true (regexp-match? #rx"htmx.org" html))
