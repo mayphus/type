@@ -103,8 +103,7 @@ input {
 .rime-help-text,
 .rime-help-list,
 .rime-empty-state,
-.rime-option-id,
-.rime-preview-hint {
+.rime-option-id {
   margin: 0;
   color: var(--muted);
 }
@@ -130,8 +129,7 @@ input {
 .rime-hero-card,
 .rime-section,
 .rime-summary-card,
-.rime-notes-card,
-.rime-preview-panel {
+.rime-notes-card {
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -145,8 +143,7 @@ input {
 
 .rime-section,
 .rime-summary-card,
-.rime-notes-card,
-.rime-preview-panel {
+.rime-notes-card {
   padding: 0.95rem 0 0;
 }
 
@@ -300,8 +297,7 @@ input {
   background: transparent;
 }
 
-.rime-option-card.is-selected,
-.rime-option-card.is-previewing {
+.rime-option-card.is-selected {
   border-color: var(--selected-line);
   background: var(--accent-soft);
 }
@@ -313,6 +309,7 @@ input {
 }
 
 .rime-skin-card {
+  gap: 0.85rem;
   padding: 0.9rem 1rem;
 }
 
@@ -324,34 +321,14 @@ input {
   gap: 0.3rem;
 }
 
-.rime-skin-row,
-.rime-skin-actions,
-.rime-preview-head {
+.rime-skin-row {
   display: flex;
   align-items: center;
 }
 
-.rime-skin-row,
-.rime-preview-head {
+.rime-skin-row {
   justify-content: space-between;
   gap: 1rem;
-}
-
-.rime-skin-actions {
-  gap: 0.65rem;
-  flex-shrink: 0;
-}
-
-.rime-skin-preview-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.2rem;
-  padding: 0.45rem 0.78rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: transparent;
-  cursor: pointer;
 }
 
 .rime-skin-toggle {
@@ -380,8 +357,7 @@ input {
 .rime-option-toggle-label,
 .rime-platform-hint,
 .rime-option-id,
-.rime-inline-note,
-.rime-preview-hint {
+.rime-inline-note {
   font-size: 0.82rem;
 }
 
@@ -501,18 +477,8 @@ input {
   gap: 0.75rem;
 }
 
-.rime-preview-panel {
-  gap: 0.9rem;
-  justify-content: flex-start;
-  min-height: 0;
-  padding: 1rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-}
-
 .keyboard-preview {
-  width: min(100%, 32rem);
+  width: 100%;
   margin: 0;
 }
 
@@ -523,7 +489,7 @@ input {
 }
 
 .keyboard-preview-svg-wrap {
-  width: min(100%, 32rem);
+  width: 100%;
 }
 
 .rime-error-text {
@@ -561,9 +527,6 @@ input {
     grid-template-columns: 1fr;
   }
 
-  .rime-preview-panel {
-    min-height: 0;
-  }
 }
 
 @media (max-width: 720px) {
@@ -581,8 +544,7 @@ input {
   .rime-hero-card,
   .rime-section,
   .rime-summary-card,
-  .rime-notes-card,
-  .rime-preview-panel {
+  .rime-notes-card {
     padding-left: 0;
     padding-right: 0;
   }
@@ -597,19 +559,11 @@ input {
     max-width: none;
   }
 
-  .rime-skin-row,
-  .rime-skin-actions,
-  .rime-preview-head {
+  .rime-skin-row {
     align-items: flex-start;
   }
 
-  .rime-skin-row,
-  .rime-preview-head {
+  .rime-skin-row {
     flex-direction: column;
-  }
-
-  .rime-skin-actions {
-    width: 100%;
-    justify-content: space-between;
   }
 }

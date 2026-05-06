@@ -35,7 +35,6 @@
     'include "Include"
     'selected "Selected"
     'auto "Auto"
-    'preview "Preview"
     'summary "Summary"
     'platform "Platform"
     'summary-copy "Review the package contents, then generate the archive."
@@ -65,7 +64,6 @@
     'include "加入"
     'selected "已選"
     'auto "自動"
-    'preview "預覽"
     'summary "摘要"
     'platform "平台"
     'summary-copy "確認打包內容後即可生成壓縮檔。"
@@ -80,7 +78,7 @@
     'support "支持"
     'language "EN")))
 
-(struct ui-state (route locale selected-schemas preview-skin configured?)
+(struct ui-state (route locale selected-schemas configured?)
   #:transparent)
 
 (define (t locale key)
@@ -213,7 +211,6 @@
   (ui-state actual-route
             locale
             (selected-or-default req actual-route)
-            (request-value req "preview_skin" #f)
             configured?))
 
 (define (attrs . pairs)
@@ -254,27 +251,16 @@
                (span ((class "rime-option-toggle-label"))
                      ,(if checked? (t locale 'selected) (t locale 'include))))))
 
-(define (skin-card locale skin previewing?)
-  (define card
-    `(div ((class ,(classes "rime-option-card rime-skin-card"
-                            "is-selected"
-                            (and previewing? "is-previewing"))))
-          (div ((class "rime-skin-row"))
-               (div ((class "rime-option-copy"))
-                    (span ((class "rime-option-title")) ,(skin-name skin))
-                    (span ((class "rime-option-id")) ,(skin-id skin)))
-               (div ((class "rime-skin-actions"))
-                    (button ((class "rime-skin-preview-button")
-                             (type "button")
-                             (hx-get "/ui/configurator")
-                             (hx-target "#configurator")
-                             (hx-include "#configurator-form")
-                             (hx-swap "innerHTML")
-                             (hx-vals ,(format "{\"preview_skin\":\"~a\"}" (skin-id skin))))
-                            (span ((class "rime-option-action")) ,(t locale 'preview)))))))
-  (if previewing?
-      (append card `((span ((class "rime-preview-hint")) ,(t locale 'preview))))
-      card))
+(define (skin-card skin)
+  `(div ((class "rime-option-card rime-skin-card is-selected"))
+        (div ((class "rime-skin-row"))
+             (div ((class "rime-option-copy"))
+                  (span ((class "rime-option-title")) ,(skin-name skin))
+                  (span ((class "rime-option-id")) ,(skin-id skin))))
+        (div ((class "keyboard-preview keyboard-preview-svg-wrap"))
+             (img ((class "keyboard-preview-svg")
+                   (src ,(format "/skins/~a/preview.svg" (skin-id skin)))
+                   (alt ,(skin-name skin)))))))
 
 (define (summary-pill text)
   `(span ((class "rime-summary-pill")) ,text))
@@ -318,14 +304,6 @@
   (define active-ids (active-schema-ids schemas selected-ids))
   (define shown-skins (visible-skins schemas skins route selected-ids))
   (define selected-skin-ids (map skin-id shown-skins))
-  (define preview-id
-    (or (and (skin-by-id shown-skins (ui-state-preview-skin state))
-             (ui-state-preview-skin state))
-        (for/first ([id (in-list selected-ids)]
-                    #:when (skin-by-id shown-skins id))
-          id)
-        (and (pair? shown-skins) (skin-id (car shown-skins)))))
-  (define preview-skin (and preview-id (skin-by-id shown-skins preview-id)))
   `(form ((id "configurator-form")
           (class "rime-config-grid")
           (method "post")
@@ -354,21 +332,7 @@
                                (div ((class "rime-skin-layout"))
                                     (div ((class "rime-skin-picker"))
                                          ,@(for/list ([skin (in-list shown-skins)])
-                                             (skin-card locale
-                                                        skin
-                                                        (equal? (skin-id skin) preview-id))))
-                                    (div ((class "rime-preview-panel"))
-                                         ,@(if preview-skin
-                                               `((div ((class "rime-preview-head"))
-                                                      (div ((class "rime-option-copy"))
-                                                           (span ((class "rime-option-title")) ,(skin-name preview-skin))
-                                                           (span ((class "rime-option-id")) ,(skin-id preview-skin)))
-                                                      (span ((class "rime-preview-hint")) ,(t locale 'preview)))
-                                                 (div ((class "keyboard-preview keyboard-preview-svg-wrap"))
-                                                      (img ((class "keyboard-preview-svg")
-                                                            (src ,(format "/skins/~a/preview.svg" preview-id))
-                                                            (alt ,(skin-name preview-skin))))))
-                                               '())))))
+                                             (skin-card skin))))))
                     '()))
          (aside ((class "rime-summary-column"))
                 (div ((class "rime-summary-card"))
