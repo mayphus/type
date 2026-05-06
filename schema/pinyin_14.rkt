@@ -1,7 +1,7 @@
 #lang s-exp "lib/lang.rkt"
 
 (rime-schema pinyin_14
-  (name "全拼14鍵")
+  (name "全拼-14鍵")
   (mobile-only)
   (deps cangjie6)
   (static-files "rime_ice.dict.yaml")
@@ -50,7 +50,7 @@
      "朙月拼音全拼 14 鍵方案。\n使用 rime-ice 詞庫，適合 Yuanshu iPhone 14 鍵圖示皮膚。"))
   (mobile-skin pinyin_14
     (meta
-      (name "Pinyin 14" "全拼十四鍵")
+      (name "Pinyin-14 Key" "全拼-14鍵")
       (summary "A compact Yuanshu skin for the full-pinyin 14-key layout.")
       (features
         "14-key full-pinyin phone layout"

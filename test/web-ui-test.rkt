@@ -10,6 +10,7 @@
   (list (hash 'id "flypy"
               'name "小鶴雙拼"
               'deps '()
+              'mobile-skins '("flypy")
               'mobile-only? #f)
         (hash 'id "flypy_14"
               'name "小鶴十四鍵"
@@ -18,7 +19,8 @@
               'mobile-skins '("flypy_14"))))
 
 (define skins
-  (list (list "flypy_14" '("flypy_14") "小鶴十四鍵" #f (hash 'light "<svg/>"))))
+  (list (list "flypy" '("flypy") "小鶴雙拼" #f (hash 'light "<svg/>"))
+        (list "flypy_14" '("flypy_14") "小鶴十四鍵" #f (hash 'light "<svg/>"))))
 
 (define (req path #:method [method #"GET"] #:headers [headers '()] #:bindings [bindings '()])
   (request method
@@ -38,11 +40,14 @@
     (check-true (regexp-match? #rx"href=\"/desktop\"" html))
     (check-true (regexp-match? #rx"href=\"/mobile\"" html)))
 
-  (test-case "mobile page defaults to the 14-key schema"
+  (test-case "mobile page defaults to the standard flypy schema"
     (define html (render-page (req "/mobile") schemas skins #:route 'mobile))
-    (check-true (regexp-match? #rx"小鶴十四鍵" html))
-    (check-true (regexp-match? #rx"/skins/flypy_14/preview.svg" html))
-    (check-true (regexp-match? #rx"/skins/flypy_14/preview-dark.svg" html))
+    (check-true (regexp-match? #rx"小鶴雙拼" html))
+    (check-true (regexp-match? #rx"/skins/flypy/preview.svg" html))
+    (check-true (regexp-match? #rx"/skins/flypy/preview-dark.svg" html))
+    (check-true (regexp-match? #rx"value=\"flypy\" checked=\"checked\"" html))
+    (check-false (regexp-match? #rx"value=\"flypy_14\" checked=\"checked\"" html))
+    (check-false (regexp-match? #rx"disabled=\"disabled\"" html))
     (check-true (regexp-match? #rx"prefers-color-scheme: dark" html))
     (check-true (regexp-match? #rx"rime-schema-previews" html))
     (check-true (regexp-match? #rx"rime-schema-catalog" html))

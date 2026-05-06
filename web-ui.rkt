@@ -245,7 +245,7 @@
   (define selected (request-values req "schemas"))
   (cond
     [configured? selected]
-    [(eq? route 'mobile) '("flypy_14")]
+    [(eq? route 'mobile) '("flypy")]
     [else '("flypy")]))
 
 (define (parse-state req route)
@@ -293,8 +293,7 @@
                          `(type "checkbox")
                          `(name "schemas")
                          `(value ,(schema-id schema))
-                         (and checked? `(checked "checked"))
-                         (and auto? `(disabled "disabled"))))
+                         (and checked? `(checked "checked"))))
         (div ((class "rime-option-head"))
              (div ((class "rime-option-copy"))
                   (div ((class "rime-option-title-row"))
@@ -320,7 +319,7 @@
         '()))
   (schema-card locale
                schema
-               (member id active-ids)
+               (member id selected-ids)
                (member id auto-ids)
                preview-skins))
 

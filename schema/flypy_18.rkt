@@ -1,7 +1,7 @@
 #lang s-exp "lib/lang.rkt"
 
 (rime-schema flypy_18
-  (name "18鍵")
+  (name "小鶴雙拼-18鍵")
   (mobile-only)
   (deps cangjie6)
   (static-files "rime_ice.dict.yaml")
@@ -79,7 +79,7 @@
      "朙月拼音＋小鶴雙拼 18 鍵方案。\n使用 rime-ice 詞庫，適合 Yuanshu iPhone 18 鍵圖示皮膚。"))
   (mobile-skin flypy_18
     (meta
-      (name "Flypy 18" "小鶴十八鍵")
+      (name "Flypy-18 Key" "小鶴雙拼-18鍵")
       (summary "A compact Yuanshu skin for the Flypy 18-key layout.")
       (features
         "18-key phone layout"

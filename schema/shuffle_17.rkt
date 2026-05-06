@@ -1,7 +1,7 @@
 #lang s-exp "lib/lang.rkt"
 
 (rime-schema shuffle_17
-  (name "亂序17")
+  (name "小鶴雙拼-亂序17鍵")
   (mobile-only)
   (static-files "rime_ice.dict.yaml")
   (static-dirs "rime_ice_dicts")
@@ -75,7 +75,7 @@
      "朙月拼音＋亂序17方案。\n使用 rime-ice 詞庫，精簡版，適合移動端匯入"))
   (mobile-skin shuffle_17
     (meta
-      (name "Shuffle 17" "亂序十七鍵")
+      (name "Flypy-Shuffle 17 Key" "小鶴雙拼-亂序17鍵")
       (summary "An experimental 17-key Yuanshu skin for the shuffle_17 schema family.")
       (features
         "17-key shuffled phone layout"

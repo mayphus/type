@@ -7,6 +7,7 @@
   (mobile-skins flypy)
 
   (variant flypy_ice
+    (name "小鶴雙拼-霧凇")
     (dictionary ice)
     (mobile-only)
     (mobile-skins flypy))

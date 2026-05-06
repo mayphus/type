@@ -24,7 +24,7 @@
     (define ice-files (hash-ref flypy:schema-config-files "flypy_ice"))
     (define yaml (generated-file ice-files "flypy_ice.schema.yaml"))
     (check-not-false (string-contains? yaml "schema_id: flypy_ice"))
-    (check-not-false (string-contains? yaml "name: \"霧凇\""))
+    (check-not-false (string-contains? yaml "name: \"小鶴雙拼-霧凇\""))
     (check-not-false (string-contains? yaml "dictionary: rime_ice"))
     (check-not-false (string-contains? yaml "prism: flypy_ice")))
 
@@ -47,7 +47,7 @@
   (test-case "flypy_14 schema DSL emits stable schema YAML"
     (define yaml (generated-file flypy_14:config-files "flypy_14.schema.yaml"))
     (check-not-false (string-contains? yaml "schema_id: flypy_14"))
-    (check-not-false (string-contains? yaml "name: \"14鍵\""))
+    (check-not-false (string-contains? yaml "name: \"小鶴雙拼-14鍵\""))
     (check-not-false (string-contains? yaml "dependencies:\n    - cangjie6"))
     (check-not-false (string-contains? yaml "alphabet: qetuoadgjlzcbm"))
     (check-not-false (string-contains? yaml "dictionary: rime_ice"))
