@@ -162,25 +162,20 @@
            ["normalColor" (theme-color dark? "#ffffff03" "#00000003")])
    "alphabeticButtonBackgroundStyle"
    (object ["buttonStyleType" "geometry"]
-           ["normalColor" (theme-color dark? "#FFFFFF" "#2B313B")]
-           ["highlightColor" (theme-color dark? "#E8EBF1" "#363D48")]
-           ["normalShadowColor" (theme-color dark? "#9EA4AF" "#000000")]
-           ["highlightShadowColor" (theme-color dark? "#9EA4AF" "#000000")]
-           ["shadowRadius" 2]
-           ["shadowOpacity" 0.18]
-           ["shadowOffset" (object ["x" 0] ["y" 1])]
+           ["normalColor" (theme-color dark? "#FFFFFF" "#707070")]
+           ["highlightColor" (theme-color dark? "#E6E6E6" "#4C4C4C")]
            ["cornerRadius" 10]
            ["insets" insets])
    "alphabeticHintBackgroundStyle"
    (object ["buttonStyleType" "geometry"]
-           ["normalColor" (theme-color dark? "#FFFFFF" "#2B313B")]
-           ["normalBorderColor" (theme-color dark? "#D8DDE6" "#39424E")]
+           ["normalColor" (theme-color dark? "#FFFFFF" "#707070")]
+           ["normalBorderColor" (theme-color dark? "#C6C6C8" "#69686A")]
            ["borderSize" (json-number "0.5")]
            ["cornerRadius" 10])
    "systemButtonBackgroundStyle"
    (object ["buttonStyleType" "geometry"]
-           ["normalColor" (theme-color dark? "#B9BEC8" "#252B35")]
-           ["highlightColor" (theme-color dark? "#A7ADB8" "#313844")]
+           ["normalColor" (theme-color dark? "#E6E6E6" "#4C4C4C")]
+           ["highlightColor" (theme-color dark? "#FFFFFF" "#707070")]
            ["cornerRadius" 10]
            ["insets" insets])
    "blueButtonBackgroundStyle"
