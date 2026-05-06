@@ -133,12 +133,13 @@
           404 #"Not Found" (current-seconds) #"text/plain; charset=utf-8" '()
          (list #"Preview image not found")))]))
 
-(define (handle-skin-preview-svg req skin-id)
+(define (handle-skin-preview-svg req skin-id [theme 'light])
   (cond
     [(not (valid-id? skin-id))
      (json-error "Invalid skin id")]
     [else
-     (define svg (skin-preview-svg skin-id))
+     (define svg (or (skin-preview-svg skin-id theme)
+                     (skin-preview-svg skin-id 'light)))
      (if svg
          (svg-response svg)
          (response/full
@@ -193,6 +194,8 @@
    [("app.css") handle-app-css]
    [("support-8f6d2b.svg") handle-support-svg]
    [("skins" (string-arg) "preview.svg") handle-skin-preview-svg]
+   [("skins" (string-arg) "preview-dark.svg") (lambda (req skin-id)
+                                                (handle-skin-preview-svg req skin-id 'dark))]
    [("skins" (string-arg) "demo.png") handle-skin-demo]
    [("build") #:method "post" handle-build]))
 

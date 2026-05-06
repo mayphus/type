@@ -277,10 +277,13 @@
 
 (define (schema-preview skin)
   `(div ((class "rime-schema-preview keyboard-preview keyboard-preview-svg-wrap"))
-        (img ((class "keyboard-preview-svg")
-              (loading "lazy")
-              (src ,(format "/skins/~a/preview.svg" (skin-id skin)))
-              (alt ,(skin-name skin))))))
+        (picture
+         (source ((media "(prefers-color-scheme: dark)")
+                  (srcset ,(format "/skins/~a/preview-dark.svg" (skin-id skin)))))
+         (img ((class "keyboard-preview-svg")
+               (loading "lazy")
+               (src ,(format "/skins/~a/preview.svg" (skin-id skin)))
+               (alt ,(skin-name skin)))))))
 
 (define (schema-card locale schema checked? auto? preview-skins)
   `(label ((class ,(classes "rime-option-card"
