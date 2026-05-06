@@ -91,10 +91,6 @@
   (html-response (render-page req schema-items skin-items #:route route)
                  (remember-locale-headers req)))
 
-(define (handle-configurator req)
-  (html-response (render-configurator req schema-items skin-items)
-                 (remember-locale-headers req)))
-
 (define (handle-app-css req)
   (if (file-exists? app-css-path)
       (response/full
@@ -186,7 +182,6 @@
    [("") (lambda (req) (handle-page req 'home))]
    [("desktop") (lambda (req) (handle-page req 'desktop))]
    [("mobile") (lambda (req) (handle-page req 'mobile))]
-   [("ui" "configurator") handle-configurator]
    [("app.css") handle-app-css]
    [("support.svg") handle-support-svg]
    [("skins" (string-arg) "preview.svg") handle-skin-preview-svg]

@@ -101,7 +101,6 @@ input {
 
 .rime-section-copy,
 .rime-help-text,
-.rime-help-list,
 .rime-empty-state,
 .rime-option-id {
   margin: 0;
@@ -110,14 +109,10 @@ input {
 
 .rime-config-shell,
 .rime-primary-column,
-.rime-summary-column,
 .rime-section-header,
 .rime-option-copy,
-.rime-summary-card,
-.rime-summary-block,
-.rime-summary-intro,
 .keyboard-preview,
-.rime-support-block {
+.rime-footer {
   display: flex;
   flex-direction: column;
 }
@@ -128,7 +123,6 @@ input {
 
 .rime-hero-card,
 .rime-section,
-.rime-summary-card,
 .rime-notes-card {
   border: 0;
   border-radius: 0;
@@ -142,7 +136,6 @@ input {
 }
 
 .rime-section,
-.rime-summary-card,
 .rime-notes-card {
   padding: 0.95rem 0 0;
 }
@@ -154,18 +147,17 @@ input {
   gap: 1rem;
 }
 
+.rime-hero-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 .rime-landing-shell {
   min-height: calc(100vh - 4.8rem);
   justify-content: center;
-}
-
-.rime-summary-kicker,
-.rime-summary-label {
-  margin: 0;
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: uppercase;
 }
 
 .rime-back-link,
@@ -253,28 +245,15 @@ input {
 }
 
 .rime-config-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
-  gap: 1.2rem;
-  align-items: start;
+  display: block;
 }
 
-.rime-primary-column,
-.rime-summary-column {
+.rime-primary-column {
   gap: 1.1rem;
 }
 
-.rime-summary-column {
-  position: sticky;
-  top: 0.75rem;
-  align-self: start;
-}
-
 .rime-section-header,
-.rime-summary-block,
-.rime-summary-intro,
-.keyboard-preview,
-.rime-support-block {
+.keyboard-preview {
   gap: 0.5rem;
 }
 
@@ -324,7 +303,8 @@ input {
   background: transparent;
 }
 
-.rime-option-card.is-selected {
+.rime-option-card.is-selected,
+.rime-option-card:has(.rime-option-input:checked) {
   border-color: var(--selected-line);
   background: var(--accent-soft);
 }
@@ -391,40 +371,14 @@ input {
 }
 
 .rime-inline-note {
+  display: none;
   padding: 0.1rem 0.45rem;
   border-radius: 999px;
   background: var(--inline-note-bg);
 }
 
-.rime-summary-card {
-  gap: 0.9rem;
-  background: transparent;
-}
-
-.rime-summary-kicker {
-  color: var(--accent);
-}
-
-.rime-summary-label {
-  color: var(--muted);
-}
-
-.rime-summary-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.rime-summary-pill {
+.rime-option-card.is-auto .rime-inline-note {
   display: inline-flex;
-  align-items: center;
-  padding: 0.3rem 0.62rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--ink);
-  font-size: 0.78rem;
-  line-height: 1.2;
 }
 
 .rime-build-button {
@@ -436,48 +390,32 @@ input {
   font-weight: 800;
 }
 
+.rime-hero-build-button {
+  width: auto;
+  min-height: 2.3rem;
+  padding: 0.46rem 0.95rem;
+  border-radius: 999px;
+  line-height: 1.2;
+}
+
 .rime-build-button.is-disabled,
 .rime-build-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-.rime-help-block {
-  display: flex;
-  flex-direction: column;
+.rime-footer {
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.45rem;
+  padding-top: 1.2rem;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
-.rime-help-list {
-  padding-left: 1.1rem;
-  font-size: 0.86rem;
-  line-height: 1.45;
-}
-
-.rime-help-list li + li {
-  margin-top: 0.25rem;
-}
-
-.rime-support-block {
-  padding-top: 0.4rem;
-}
-
-.rime-support-image-frame {
-  overflow: hidden;
-  width: min(100%, 11.5rem);
-  aspect-ratio: 1 / 1;
-  border: 1px solid var(--line);
-  border-radius: 0.9rem;
-  background: var(--qr-frame-bg);
-  align-self: flex-start;
-}
-
-.rime-support-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center top;
-  display: block;
+.rime-footer a {
+  color: var(--accent);
+  text-decoration: none;
 }
 
 .keyboard-preview {
@@ -517,16 +455,6 @@ input {
   font-size: 0.92rem;
 }
 
-@media (max-width: 1120px) {
-  .rime-config-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .rime-summary-column {
-    position: static;
-  }
-}
-
 @media (max-width: 860px) {
   #app {
     padding: 1.25rem 0.9rem 2.6rem;
@@ -557,7 +485,6 @@ input {
 @media (max-width: 640px) {
   .rime-hero-card,
   .rime-section,
-  .rime-summary-card,
   .rime-notes-card {
     padding-left: 0;
     padding-right: 0;

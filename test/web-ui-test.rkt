@@ -48,9 +48,13 @@
     (check-false (regexp-match? #rx"rime-skin-layout" html))
     (check-false (regexp-match? #rx"rime-option-toggle" html))
     (check-true (regexp-match? #rx"rime-option-input" html))
-    (check-true (regexp-match? #rx"<ol class=\"rime-help-list\">" html))
-    (check-true (regexp-match? #rx"src=\"/support.svg\"" html))
-    (check-true (regexp-match? #rx"htmx.org" html)))
+    (check-true (regexp-match? #rx"rime-hero-build-button" html))
+    (check-true (regexp-match? #rx"form=\"configurator-form\"" html))
+    (check-true (regexp-match? #rx"Powered by" html))
+    (check-true (regexp-match? #rx"href=\"/support.svg\"" html))
+    (check-false (regexp-match? #rx"rime-summary-column" html))
+    (check-true (regexp-match? #rx"htmx.org" html))
+    (check-false (regexp-match? #rx"/app.js" html)))
 
   (test-case "locale is remembered from cookie"
     (define html

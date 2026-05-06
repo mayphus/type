@@ -7,13 +7,12 @@
          xml)
 
 (provide render-page
-         render-configurator
          remember-locale-headers
          form-profile
          form-request?)
 
-;; The Racket UI is deliberately boring HTML. HTMX gives us small partial
-;; refreshes, while the complete form still posts to the same ZIP build path.
+;; The Racket UI is deliberately boring HTML. The form posts directly to the
+;; ZIP build path; CSS handles the immediate selected-card state.
 
 (define htmx-script
   "https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js")
@@ -47,6 +46,7 @@
       "Open the ZIP in Yuanshu, or use Input Schemas -> ... -> Import."
       "Remove any old skin with the same name before importing.")
     'support "Support"
+    'footer-credit "Powered by 🎾 Racket · 🖥 pb62"
     'language "繁")
    'zh-Hant
    (hash
@@ -73,6 +73,7 @@
       "用元書打開這個 ZIP，或在「輸入方案」->「...」->「導入方案」中導入。"
       "導入前請先刪除同名舊皮膚。")
     'support "支持"
+    'footer-credit "Powered by 🎾 Racket · 🖥 pb62"
     'language "EN")))
 
 (struct ui-state (route locale selected-schemas configured?)
@@ -119,12 +120,6 @@
     [(desktop) "/desktop"]
     [(mobile) "/mobile"]
     [else "/"]))
-
-(define (route-label locale route)
-  (case route
-    [(desktop) (t locale 'desktop)]
-    [(mobile) (t locale 'mobile)]
-    [else (t locale 'home)]))
 
 (define (binding-value binding)
   (and (binding:form? binding)
@@ -275,13 +270,6 @@
 (define (classes . values)
   (string-join (filter (lambda (value) value) values) " "))
 
-(define (hx-refresh-attrs)
-  '((hx-get "/ui/configurator")
-    (hx-target "#configurator")
-    (hx-include "#configurator-form")
-    (hx-swap "innerHTML")
-    (hx-trigger "change")))
-
 (define (skin-by-id skins id)
   (for/first ([skin (in-list skins)]
               #:when (equal? (skin-id skin) id))
@@ -298,14 +286,12 @@
   `(label ((class ,(classes "rime-option-card"
                             (and checked? "is-selected")
                             (and auto? "is-auto"))))
-          (input ,(append
-                   (attrs `(class "rime-option-input")
-                          `(type "checkbox")
-                          `(name "schemas")
-                          `(value ,(schema-id schema))
-                          (and checked? `(checked "checked"))
-                          (and auto? `(disabled "disabled")))
-                   (if auto? '() (hx-refresh-attrs))))
+          (input ,(attrs `(class "rime-option-input")
+                         `(type "checkbox")
+                         `(name "schemas")
+                         `(value ,(schema-id schema))
+                         (and checked? `(checked "checked"))
+                         (and auto? `(disabled "disabled"))))
         (div ((class "rime-option-head"))
              (div ((class "rime-option-copy"))
                   (div ((class "rime-option-title-row"))
@@ -344,34 +330,6 @@
                  ,@(for/list ([schema (in-list schemas)])
                      (schema-card-for locale route skins selected-ids active-ids auto-ids schema)))))
 
-(define (summary-pill text)
-  `(span ((class "rime-summary-pill")) ,text))
-
-(define (schema-summary locale schemas active-ids auto-ids)
-  (if (null? active-ids)
-      `((p ((class "rime-empty-state")) ,(t locale 'empty)))
-      (list
-       `(div ((class "rime-summary-pills"))
-             ,@(for/list ([id (in-list active-ids)])
-                 (define schema (schema-by-id schemas id))
-                 (summary-pill
-                  (string-append
-                   (if schema (schema-name schema) id)
-                   (if (member id auto-ids)
-                       (string-append " · " (t locale 'auto))
-                       ""))))))))
-
-(define (skin-summary locale skins selected-skin-ids)
-  (if (null? selected-skin-ids)
-      '()
-      `((div ((class "rime-summary-block"))
-             (p ((class "rime-summary-label"))
-                ,(format "~a (~a)" (t locale 'skins) (length selected-skin-ids)))
-             (div ((class "rime-summary-pills"))
-                  ,@(for/list ([id (in-list selected-skin-ids)])
-                      (define skin (skin-by-id skins id))
-                      (summary-pill (if skin (skin-name skin) id))))))))
-
 (define (configurator-xexpr req schemas skins #:route [fallback-route 'desktop])
   (define state (parse-state req fallback-route))
   (define route (ui-state-route state))
@@ -379,8 +337,6 @@
   (define selected-ids (ui-state-selected-schemas state))
   (define auto-ids (auto-deps schemas selected-ids))
   (define active-ids (active-schema-ids schemas selected-ids))
-  (define shown-skins (visible-skins schemas skins route selected-ids))
-  (define selected-skin-ids (map skin-id shown-skins))
   `(form ((id "configurator-form")
           (class "rime-config-grid")
           (method "post")
@@ -403,43 +359,7 @@
                                                         selected-ids
                                                         active-ids
                                                         auto-ids
-                                                        catalog)))))
-         (aside ((class "rime-summary-column"))
-                (div ((class "rime-summary-card"))
-                     (div ((class "rime-summary-intro"))
-                          (h2 ((class "rime-section-title")) ,(t locale 'summary))
-                          (p ((class "rime-section-copy")) ,(t locale 'summary-copy)))
-                     (div ((class "rime-summary-block"))
-                          (p ((class "rime-summary-label")) ,(t locale 'platform))
-                          ,(summary-pill (route-label locale route)))
-                     (div ((class "rime-summary-block"))
-                          (p ((class "rime-summary-label"))
-                             ,(format "~a (~a)" (t locale 'schemas) (length active-ids)))
-                          ,@(schema-summary locale schemas active-ids auto-ids))
-                     ,@(skin-summary locale shown-skins selected-skin-ids)
-                     (button ((class "rime-build-button")
-                              (type "submit"))
-                             ,(t locale 'build))
-                     (p ((class "rime-help-text")) ,(t locale 'zip-help))
-                     ,@(if (eq? route 'mobile)
-                           `((div ((class "rime-help-block"))
-                                  (p ((class "rime-summary-label")) ,(t locale 'yuanshu-help))
-                                  (ol ((class "rime-help-list"))
-                                      ,@(for/list ([step (in-list (t locale 'yuanshu-steps))])
-                                          `(li ,step)))))
-                           '())
-                     (div ((class "rime-support-block"))
-                          (p ((class "rime-summary-label")) ,(t locale 'support))
-                          (a ((class "rime-support-image-frame")
-                              (href "/support.svg")
-                              (target "_blank")
-                              (rel "noopener noreferrer"))
-                             (img ((class "rime-support-image")
-                                   (src "/support.svg")
-                                   (alt ,(t locale 'support))))))))))
-
-(define (render-configurator req schemas skins #:route [fallback-route 'desktop])
-  (xexpr->string (configurator-xexpr req schemas skins #:route fallback-route)))
+                                                        catalog)))))))
 
 (define (page-shell req schemas skins route)
   (define state (parse-state req route))
@@ -469,11 +389,18 @@
                                           [(desktop) (t locale 'desktop-copy)]
                                           [(mobile) (t locale 'mobile-copy)]
                                           [else (t locale 'landing-copy)])))
-                                   (a ((class "rime-language-toggle")
-                                       (href ,(format "~a?locale=~a"
-                                                      (route-path route)
-                                                      (symbol->string (next-locale locale)))))
-                                      ,(t locale 'language)))
+                                   (div ((class "rime-hero-actions"))
+                                        (a ((class "rime-language-toggle")
+                                            (href ,(format "~a?locale=~a"
+                                                           (route-path route)
+                                                           (symbol->string (next-locale locale)))))
+                                           ,(t locale 'language))
+                                        ,@(if (eq? route 'home)
+                                              '()
+                                              `((button ((class "rime-build-button rime-hero-build-button")
+                                                        (type "submit")
+                                                        (form "configurator-form"))
+                                                        ,(t locale 'build))))))
                               ,@(if (eq? route 'home)
                                     '()
                                     `((nav ((class "rime-platform-tabs"))
@@ -492,7 +419,13 @@
                                      (span ((class "rime-option-title")) ,(t locale 'mobile))
                                      (span ((class "rime-section-copy")) ,(t locale 'mobile-copy)))))
                            `((div ((id "configurator"))
-                                  ,(configurator-xexpr req schemas skins #:route route)))))))))
+                                  ,(configurator-xexpr req schemas skins #:route route))))
+                     (footer ((class "rime-footer"))
+                             (span ,(t locale 'footer-credit))
+                             (a ((href "/support.svg")
+                                 (target "_blank")
+                                 (rel "noopener noreferrer"))
+                                ,(t locale 'support))))))))
 
 (define (render-page req schemas skins #:route [route 'home])
   (xexpr->string (page-shell req schemas skins route)))
