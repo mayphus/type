@@ -19,18 +19,22 @@
 
 (provide sync-yuanshu-bundle!
          discover-base-urls
-         normalize-remote-root)
+         normalize-remote-root
+         current-yuanshu-sync-log)
 
 (define default-remote-root "/RimeUserData/rime/")
 (define manifest-basename "yuanshu-sync-manifest")
 (define default-preserve-exact '("default.custom.yaml" "installation.yaml" "user.yaml"))
 (define default-preserve-dirs '("build" "sync"))
 (define default-discovery-candidates '("192.168.36.157" "192.168.36.240" "172.20.10.2"))
+(define current-yuanshu-sync-log (make-parameter (lambda (_line) (void))))
 
 (struct remote-item (rel-path dir? size) #:transparent)
 
 (define (info fmt . args)
-  (apply eprintf (string-append fmt "\n") args))
+  (define line (apply format fmt args))
+  (eprintf "~a\n" line)
+  ((current-yuanshu-sync-log) line))
 
 (define (sync-error fmt . args)
   (apply error 'yuanshu-sync fmt args))
@@ -261,7 +265,10 @@
 (define (bytes->hex bytes)
   (apply string-append
          (for/list ([byte (in-bytes bytes)])
-           (format "~02x" byte))))
+           (define hex (number->string byte 16))
+           (if (= (string-length hex) 1)
+               (string-append "0" hex)
+               hex))))
 
 (define (hash-file path)
   (call-with-input-file path

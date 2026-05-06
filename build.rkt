@@ -522,15 +522,17 @@
                     #:base-url        [base-url #f]
                     #:allow-delete    [allow-delete #f]
                     #:include-big-dicts [include-big-dicts #t]
-                    #:dry-run         [dry-run #f])
+                    #:dry-run         [dry-run #f]
+                    #:progress        [progress (lambda (_line) (void))])
   (define exclude-dirs
     (if include-big-dicts '() '("jyut6ping3_dicts" "rime_ice_dicts")))
-  (sync-yuanshu-bundle! src-dir
-                        #:remote-root remote-root
-                        #:base-url base-url
-                        #:allow-delete? allow-delete
-                        #:dry-run? dry-run
-                        #:exclude-dirs exclude-dirs))
+  (parameterize ([current-yuanshu-sync-log progress])
+    (sync-yuanshu-bundle! src-dir
+                          #:remote-root remote-root
+                          #:base-url base-url
+                          #:allow-delete? allow-delete
+                          #:dry-run? dry-run
+                          #:exclude-dirs exclude-dirs)))
 
 ;; ---- Deploy desktop config -------------------------------------------------
 ;; Builds the desktop profile then syncs to the live Rime directory.
