@@ -11,6 +11,15 @@
 (define five-column-size
   (object ["width" "225/1125"]))
 
+(define third-row-spacer-size
+  (object ["width" "82.5/1125"]))
+
+(define third-row-spacer-entries
+  (hash "thirdRowLeftSpacer"
+        (object ["size" third-row-spacer-size])
+        "thirdRowRightSpacer"
+        (object ["size" third-row-spacer-size])))
+
 (define keyboard-layout
   (array
    (object ["HStack"
@@ -29,12 +38,14 @@
                             (object ["Cell" "l14Button"]))])])
    (object ["HStack"
             (object ["subviews"
-                     (array (object ["Cell" "shiftButton"])
+                     (array (object ["Cell" "thirdRowLeftSpacer"])
+                            (object ["Cell" "shiftButton"])
                             (object ["Cell" "zx14Button"])
                             (object ["Cell" "cv14Button"])
                             (object ["Cell" "bn14Button"])
                             (object ["Cell" "m14Button"])
-                            (object ["Cell" "backspaceButton"]))])])
+                            (object ["Cell" "backspaceButton"])
+                            (object ["Cell" "thirdRowRightSpacer"]))])])
    (object ["HStack"
             (object ["subviews"
                      (array (object ["Cell" "numericButton"])
@@ -69,15 +80,18 @@
         pair)))
 
 (define (with-14-key-system-sizes page)
-  (hash-set* page
-             "shiftButton"
-             (set-entry (hash-ref page "shiftButton")
-                        "size"
-                        third-row-system-size)
-             "backspaceButton"
-             (set-entry (hash-ref page "backspaceButton")
-                        "size"
-                        third-row-system-size)))
+  (hash-union
+   (hash-set* page
+              "shiftButton"
+              (set-entry (hash-ref page "shiftButton")
+                         "size"
+                         third-row-system-size)
+              "backspaceButton"
+              (set-entry (hash-ref page "backspaceButton")
+                         "size"
+                         third-row-system-size))
+   third-row-spacer-entries
+   #:combine/key (lambda (_ _left right) right)))
 
 (define (base-page dark? portrait?)
   (with-14-key-system-sizes

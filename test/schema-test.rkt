@@ -11,6 +11,8 @@
          (prefix-in jyut6ping3: "../schema/jyut6ping3.rkt")
          "../schema/lib/mobile/core/preview.rkt"
          "../schema/lib/mobile/layouts/bopomofo-page.rkt"
+         (prefix-in flypy14-layout: "../schema/lib/mobile/layouts/flypy-14-page.rkt")
+         (prefix-in pinyin14-layout: "../schema/lib/mobile/layouts/pinyin-14-page.rkt")
          "../schema/lib/mobile/layouts/shuffle-17-pages.rkt"
          "../schema/lib/mobile/layouts/standard-phone-pinyin-page.rkt")
 
@@ -117,6 +119,25 @@
     (check-not-false (string-contains? yaml "alphabet: qetuoadgjlzcbm"))
     (check-not-false (string-contains? yaml "dictionary: rime_ice"))
     (check-not-false (string-contains? yaml "prism: flypy_14")))
+
+  (test-case "14-key third row keeps backspace same width as shift"
+    (for ([files (in-list (list flypy14-layout:flypy-14-iphone-pinyin-files
+                                pinyin14-layout:pinyin-14-iphone-pinyin-files))])
+      (define page (generated-json files "light/pinyinPortrait.yaml"))
+      (check-equal? (layout-row-cell-ids page 2)
+                    '("thirdRowLeftSpacer"
+                      "shiftButton" "zx14Button" "cv14Button" "bn14Button" "m14Button"
+                      "backspaceButton"
+                      "thirdRowRightSpacer"))
+      (check-equal? (button-width page "shiftButton") "160/1125")
+      (check-equal? (button-width page "backspaceButton") "160/1125")
+      (check-equal? (button-width page "thirdRowLeftSpacer") "82.5/1125")
+      (check-equal? (button-width page "thirdRowRightSpacer") "82.5/1125")
+      (define preview (preview-spec-from-files files))
+      (define third-row (third (hash-ref preview 'rows)))
+      (check-equal? (map (lambda (key) (hash-ref key 'id)) third-row)
+                    '("shiftButton" "zx14Button" "cv14Button" "bn14Button" "m14Button"
+                      "backspaceButton"))))
 
   (test-case "standard phone middle row keeps real key widths"
     (define files (make-flypy-phone-files standard-phone-base-for-test))
