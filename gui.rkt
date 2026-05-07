@@ -4,6 +4,7 @@
          racket/gui/base
          racket/list
          racket/string
+         "schema/registry.rkt"
          "build.rkt")
 
 (provide start-gui)
@@ -16,34 +17,12 @@
 (define gui-schema-ids
   (remove-duplicates (append generated-config-ids '("bopomofo"))))
 
-(define schema-catalog-order
-  '("double-pinyin" "full-pinyin" "shape" "cantonese" "phonetic" "other"))
-
-(define (schema-catalog-id id)
-  (cond
-    [(member id '("flypy" "flypy_ice" "flypy_14" "flypy_18" "shuffle_17")) "double-pinyin"]
-    [(member id '("luna_pinyin" "terra_pinyin" "pinyin_14")) "full-pinyin"]
-    [(equal? id "cangjie6") "shape"]
-    [(equal? id "jyut6ping3") "cantonese"]
-    [(equal? id "bopomofo") "phonetic"]
-    [else "other"]))
-
-(define (schema-catalog-label catalog-id)
-  (hash-ref (hash "double-pinyin" "Double Pinyin"
-                  "full-pinyin" "Full Pinyin"
-                  "shape" "Shape"
-                  "cantonese" "Cantonese"
-                  "phonetic" "Phonetic"
-                  "other" "Other")
-            catalog-id
-            catalog-id))
-
 (define (schema-options)
   (for/list ([id (in-list gui-schema-ids)])
     (define name (or (schema-module-ref id 'chinese-name #f)
                      (read-schema-name-from-yaml id)
                      id))
-    (option id name (schema-catalog-id id))))
+    (option id name (schema-id->catalog-id id))))
 
 (define (cataloged-options options)
   (filter-map

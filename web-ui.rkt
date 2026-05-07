@@ -5,7 +5,8 @@
          racket/string
          net/url
          web-server/http
-         xml)
+         xml
+         "schema/registry.rkt")
 
 (provide render-page
          remember-locale-headers
@@ -219,34 +220,12 @@
                 (not (schema-mobile-only? schema))))
           schemas))
 
-(define schema-catalog-order
-  '("double-pinyin" "full-pinyin" "shape" "cantonese" "phonetic" "other"))
-
-(define (schema-catalog-id schema)
-  (match (schema-id schema)
-    [(or "flypy" "flypy_ice" "flypy_14" "flypy_18" "shuffle_17") "double-pinyin"]
-    [(or "luna_pinyin" "terra_pinyin" "pinyin_14") "full-pinyin"]
-    ["cangjie6" "shape"]
-    ["jyut6ping3" "cantonese"]
-    ["bopomofo" "phonetic"]
-    [_ "other"]))
-
-(define (schema-catalog-label catalog-id)
-  (hash-ref (hash "double-pinyin" "Double Pinyin"
-                  "full-pinyin" "Full Pinyin"
-                  "shape" "Shape"
-                  "cantonese" "Cantonese"
-                  "phonetic" "Phonetic"
-                  "other" "Other")
-            catalog-id
-            catalog-id))
-
 (define (cataloged-schemas schemas)
   (filter-map
    (lambda (catalog-id)
      (define items
        (filter (lambda (schema)
-                 (equal? (schema-catalog-id schema) catalog-id))
+                 (equal? (schema-id->catalog-id (schema-id schema)) catalog-id))
                schemas))
      (and (pair? items) (cons catalog-id items)))
    schema-catalog-order))
