@@ -423,9 +423,13 @@
      (define ipad-expr  (if ipad-cl  (expand-ipad  ipad-cl)  #'(hash)))
      (define preview-bundle-expr
        #`(bundle (make-standard-skin-files -phone- -ipad-)))
-     (define bundle-expr
+     (define (bundle-expr render-docs?-expr)
        #`(bundle #,preview-bundle-expr
-                 (if -meta- (make-skin-doc-files -meta- skin-preview-spec) (hash))))
+                 (if -meta-
+                     (make-skin-doc-files -meta-
+                                          skin-preview-spec
+                                          #:render-demo? #,render-docs?-expr)
+                     (hash))))
      (define skin-preview-files-expr
        (if theme-cl
            #`(let ([-phone- #,phone-expr]
@@ -437,15 +441,15 @@
                #,preview-bundle-expr)))
      (define skin-preview-spec-expr
        #`(preview-spec-from-files skin-preview-files))
-     (define skin-files-expr
+     (define make-skin-files-expr
        (if theme-cl
            #`(let ([-phone- #,phone-expr]
                    [-ipad-  #,ipad-expr])
                (parameterize (#,@(expand-theme-bindings theme-cl))
-                 #,bundle-expr))
+                 #,(bundle-expr #'render-docs?)))
            #`(let ([-phone- #,phone-expr]
                    [-ipad-  #,ipad-expr])
-               #,bundle-expr)))
+               #,(bundle-expr #'render-docs?))))
      #`(begin
          (define trigger-schemas #,trigger-expr)
          (define -meta-
@@ -455,5 +459,15 @@
          (define skin-preview-files #,skin-preview-files-expr)
          (define skin-preview-spec #,skin-preview-spec-expr)
          (define skin-preview-svgs (preview-spec->svgs skin-preview-spec))
-         (define skin-files #,skin-files-expr)
-         (provide skin-preview-files skin-preview-spec skin-preview-svgs skin-files trigger-schemas chinese-name english-name))]))
+         (define (make-skin-files render-docs?)
+           #,make-skin-files-expr)
+         (define skin-files (make-skin-files #f))
+         (define skin-files-with-docs (lambda () (make-skin-files #t)))
+         (provide skin-preview-files
+                  skin-preview-spec
+                  skin-preview-svgs
+                  skin-files
+                  skin-files-with-docs
+                  trigger-schemas
+                  chinese-name
+                  english-name))]))

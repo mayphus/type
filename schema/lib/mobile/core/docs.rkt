@@ -42,10 +42,10 @@
         "\n\n"))
    "This README and `demo.png` are generated from the skin metadata.\n"))
 
-(define (make-skin-doc-files meta preview-spec)
+(define (make-skin-doc-files meta preview-spec #:render-demo? [render-demo? #f])
   (define readme (render-readme meta))
   (if (and preview-spec
-           (string=? (or (getenv "RIME_RENDER_SKIN_DOCS") "") "1"))
+           render-demo?)
       (with-handlers ([exn:fail?
                        (lambda (exn)
                          (define out (current-error-port))

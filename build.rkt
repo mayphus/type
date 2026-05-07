@@ -321,9 +321,10 @@
   (define files
     (let ([v (module-export-ref rkt-path export-sym #:fresh? fresh?)])
       (unless (hash? v)
-        (error 'write-module-files!
-               "~a: expected ~a to be a hash, got ~v" rkt-path export-sym v))
-      v))
+        (unless (procedure? v)
+          (error 'write-module-files!
+                 "~a: expected ~a to be a hash or thunk, got ~v" rkt-path export-sym v)))
+      (if (procedure? v) (v) v)))
   (for ([(rel-path content) (in-hash files)])
     (define target (build-path out-dir (string->path rel-path)))
     (make-directory* (path-only target))
@@ -335,18 +336,6 @@
           [else (error 'write-module-files!
                        "~a: expected string or bytes for ~a, got ~v"
                        rkt-path rel-path content)])))))
-
-(define (with-skin-doc-rendering enabled? thunk)
-  (define previous (getenv "RIME_RENDER_SKIN_DOCS"))
-  (dynamic-wind
-    (lambda ()
-      (when enabled?
-        (putenv "RIME_RENDER_SKIN_DOCS" "1")))
-    thunk
-    (lambda ()
-      (if previous
-          (putenv "RIME_RENDER_SKIN_DOCS" previous)
-          (putenv "RIME_RENDER_SKIN_DOCS" "")))))
 
 ;; ---- Build schemas ---------------------------------------------------------
 
@@ -400,13 +389,10 @@
 
 (define (write-unpacked-skin! skin-rkt out-dir #:with-docs? [with-docs? #f])
   (make-directory* out-dir)
-  (with-skin-doc-rendering
-   with-docs?
-   (lambda ()
-     (write-module-files! skin-rkt
-                          out-dir
-                          'skin-files
-                          #:fresh? #t))))
+  (write-module-files! skin-rkt
+                       out-dir
+                       (if with-docs? 'skin-files-with-docs 'skin-files)
+                       #:fresh? with-docs?))
 
 (define (build-one-skin! skin schemas profile-out skin-root)
   (define skin-rkt (skin-module-path! skin schemas))
@@ -642,9 +628,7 @@
     (printf "Building preview skin: ~a~a\n" skin (if render-docs? " (with docs)" ""))
     (delete-directory/files out #:must-exist? #f)
     (make-directory* out)
-    (with-skin-doc-rendering
-     render-docs?
-     (lambda ()
-       (write-module-files! skin-file
-                            out
-                            'skin-files)))))
+    (write-module-files! skin-file
+                         out
+                         (if render-docs? 'skin-files-with-docs 'skin-files)
+                         #:fresh? render-docs?)))
