@@ -75,6 +75,12 @@ same LAN, then paste the URL shown by Yuanshu into the GUI and press
 `Push to iPhone`. Leaving the URL blank lets the sync tool scan its known LAN
 candidates.
 
+GUI upload syncs schemas to `RimeUserData/rime/`, then refreshes Yuanshu
+`Skins/` with only the selected generated skin folders. The Rime delete checkbox
+only applies to `RimeUserData/rime/`; each selected skin folder is removed and
+uploaded fresh so stale `.keyboard` caches do not survive. All other skins are
+left untouched.
+
 Regenerate Kubernetes manifests after changing deploy settings:
 
 ```sh

@@ -26,6 +26,7 @@
          read-schema-name-from-yaml
          build-profile!
          build-profile-from-hash!
+         build-profile-skin-directories!
          zip-profile-path!
          zip-profile!
          do-upload!
@@ -420,10 +421,22 @@
 
 ;; ---- Build skins -----------------------------------------------------------
 
-(define (build-one-skin! skin schemas profile-name profile-out)
+(define (skin-module-path! skin schemas)
   (define skin-rkt
     (or (schema-mobile-skin-module-path skin schemas)
         (error 'build-one-skin! "No mobile skin definition for ~a" skin)))
+  skin-rkt)
+
+(define (write-unpacked-skin! skin-rkt out-dir)
+  (make-directory* out-dir)
+  ;; Runtime uploads only need skin files; preview docs are built separately.
+  (write-module-files! skin-rkt
+                       out-dir
+                       'skin-preview-files
+                       #:fresh? #t))
+
+(define (build-one-skin! skin schemas profile-name profile-out)
+  (define skin-rkt (skin-module-path! skin schemas))
   (define safe-profile-name
     (regexp-replace* #rx"[^a-zA-Z0-9._-]+" profile-name "_"))
   (define tmp-dir  (build-path (path-only profile-out) (string-append "tmp-" safe-profile-name)))
@@ -431,12 +444,7 @@
   (define cskin    (build-path profile-out "skins" (string-append skin ".cskin")))
   (printf "Building skin: ~a\n" skin)
   (delete-directory/files tmp-dir #:must-exist? #f)
-  (make-directory* tmp-skin)
-  ;; Profile bundles only need runtime skin files; preview docs are prebuilt separately.
-  (write-module-files! skin-rkt
-                       tmp-skin
-                       'skin-preview-files
-                       #:fresh? #t)
+  (write-unpacked-skin! skin-rkt tmp-skin)
   (delete-file* cskin)
   (parameterize ([current-directory tmp-dir])
     (run! zip-exe "-qr" (path->string cskin) skin))
@@ -447,6 +455,21 @@
     (make-directory* (build-path profile-out "skins"))
     (for ([skin skins])
       (build-one-skin! skin schemas profile-name profile-out))))
+
+(define (build-unpacked-skins! skins schemas out-dir)
+  (delete-directory/files out-dir #:must-exist? #f)
+  (make-directory* out-dir)
+  (for ([skin (in-list skins)])
+    (printf "Building skin folder: ~a\n" skin)
+    (write-unpacked-skin! (skin-module-path! skin schemas)
+                          (build-path out-dir skin))))
+
+(define (build-profile-skin-directories! profile profile-name out-dir)
+  (define schemas (resolve-schemas profile))
+  (define-values (_gen-yaml _rime-yaml _rime-dirs skins)
+    (compute-assets schemas profile))
+  (build-unpacked-skins! skins schemas out-dir)
+  skins)
 
 ;; ---- Build one profile -----------------------------------------------------
 
@@ -520,6 +543,7 @@
 (define (do-upload! src-dir
                     #:remote-root     [remote-root "/RimeUserData/rime/"]
                     #:base-url        [base-url #f]
+                    #:skin-source-dir [skin-source-dir #f]
                     #:allow-delete    [allow-delete #f]
                     #:include-big-dicts [include-big-dicts #t]
                     #:dry-run         [dry-run #f]
@@ -532,7 +556,13 @@
                           #:base-url base-url
                           #:allow-delete? allow-delete
                           #:dry-run? dry-run
-                          #:exclude-dirs exclude-dirs)))
+                          #:exclude-dirs exclude-dirs)
+    (when skin-source-dir
+      (progress "Refreshing selected Yuanshu /Skins/ folders...")
+      (sync-yuanshu-skins! skin-source-dir
+                           #:remote-root "/Skins/"
+                           #:base-url base-url
+                           #:dry-run? dry-run))))
 
 ;; ---- Deploy desktop config -------------------------------------------------
 ;; Builds the desktop profile then syncs to the live Rime directory.

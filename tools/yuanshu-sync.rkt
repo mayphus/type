@@ -18,6 +18,7 @@
          racket/string)
 
 (provide sync-yuanshu-bundle!
+         sync-yuanshu-skins!
          discover-base-urls
          normalize-remote-root
          current-yuanshu-sync-log)
@@ -497,6 +498,7 @@
                               #:base-url [base-url #f]
                               #:dry-run? [dry-run? #f]
                               #:allow-delete? [allow-delete? #f]
+                              #:use-manifest? [use-manifest? #t]
                               #:exclude-dirs [excluded-dirs '()])
   (define source (simplify-path (path->complete-path source-dir)))
   (unless (directory-exists? source)
@@ -508,15 +510,62 @@
             (map normalize-rel-path excluded-dirs)))
   (for ([url (in-list roots)])
     (info "--- Syncing to ~a ---" url)
-    (sync-one-bundle! source url root dry-run? allow-delete? excludes)))
+    (sync-one-bundle! source url root dry-run? allow-delete? use-manifest? excludes)))
 
-(define (sync-one-bundle! source-dir base-url remote-root dry-run? allow-delete? excluded-dirs)
+(define (local-skin-dirs source)
+  (sort
+   (for/list ([entry (in-list (directory-list source))]
+              #:when (directory-exists? (build-path source entry)))
+     (path->string entry))
+   string<?))
+
+(define (sync-yuanshu-skins! source-dir
+                             #:remote-root [remote-root "/Skins/"]
+                             #:base-url [base-url #f]
+                             #:dry-run? [dry-run? #f])
+  (define source (simplify-path (path->complete-path source-dir)))
+  (unless (directory-exists? source)
+    (sync-error "Skin source directory does not exist: ~a" source))
+  (define selected-skins (local-skin-dirs source))
+  (define roots (discover-base-urls #:base-url base-url))
+  (define root (normalize-remote-root remote-root))
+  (for ([url (in-list roots)])
+    (info "--- Syncing selected skins to ~a ---" url)
+    (info "Using Yuanshu host: ~a" url)
+    (info "Sync source: ~a" source)
+    (info "Sync destination: ~a" root)
+    (define remote-root-items (list-remote-dir url root))
+    (define remote-skin-set
+      (list->set
+       (for/list ([item (in-list remote-root-items)]
+                  #:when (remote-item-dir? item))
+         (remote-item-rel-path item))))
+    (info "Skin plan: ~a selected skin refresh(es); all other skins preserved"
+          (length selected-skins))
+    (for ([skin (in-list selected-skins)])
+      (define remote-dir (join-remote root skin #:dir? #t))
+      (when (set-member? remote-skin-set skin)
+        (info "DELETE selected skin ~a" skin)
+        (unless dry-run?
+          (delete-remote-path url remote-dir #t)))
+      (unless dry-run?
+        (create-remote-dir url remote-dir))
+      (info "SYNC selected skin ~a" skin)
+      (sync-one-bundle! (build-path source skin)
+                        url
+                        remote-dir
+                        dry-run?
+                        #t
+                        #f
+                        '()))))
+
+(define (sync-one-bundle! source-dir base-url remote-root dry-run? allow-delete? use-manifest? excluded-dirs)
   (define-values (local-dirs local-files) (build-local-tree source-dir excluded-dirs))
   (define local-dir-set (list->set local-dirs))
   (define local-file-set (list->set local-files))
-  (define manifest (build-manifest source-dir local-files))
-  (define manifest-bytes (encode-manifest manifest))
-  (define current-manifest-file (manifest-filename manifest-bytes))
+  (define manifest (and use-manifest? (build-manifest source-dir local-files)))
+  (define manifest-bytes (and manifest (encode-manifest manifest)))
+  (define current-manifest-file (and manifest-bytes (manifest-filename manifest-bytes)))
   (info "Using Yuanshu host: ~a" base-url)
   (info "Sync source: ~a" source-dir)
   (info "Sync destination: ~a" remote-root)
@@ -527,13 +576,15 @@
   (define remote-manifest-files
     (sort (filter manifest-marker? (hash-keys remote-files)) string<?))
   (define stale-manifest-files
-    (filter (lambda (rel) (not (string=? rel current-manifest-file))) remote-manifest-files))
+    (if use-manifest?
+        (filter (lambda (rel) (not (string=? rel current-manifest-file))) remote-manifest-files)
+        '()))
 
   (define deletions
     (sort
      (append
       (for/list ([(rel _item) (in-hash remote-files)]
-                 #:unless (or (manifest-marker? rel)
+                 #:unless (or (and use-manifest? (manifest-marker? rel))
                               (preserved? rel)
                               (path-matches-dir-prefix? rel excluded-dirs)
                               (set-member? local-file-set rel)))
@@ -549,16 +600,19 @@
   (define creates
     (sort (filter (lambda (rel) (not (hash-has-key? remote-dirs rel))) local-dirs) string<?))
   (define manifest-map
-    (for/hash ([entry (in-list manifest)])
-      (match-define (list rel size _sha256) entry)
-      (values rel size)))
+    (if use-manifest?
+        (for/hash ([entry (in-list manifest)])
+          (match-define (list rel size _sha256) entry)
+          (values rel size))
+        (hash)))
   (define bundle-in-sync?
-    (and (member current-manifest-file remote-manifest-files)
+    (and use-manifest?
+         (member current-manifest-file remote-manifest-files)
          (for/and ([rel (in-list local-files)])
            (define item (hash-ref remote-files rel #f))
            (and item (= (remote-item-size item) (hash-ref manifest-map rel))))))
   (define uploads (if bundle-in-sync? '() (sort local-files string<?)))
-  (define manifest-changed? (not bundle-in-sync?))
+  (define manifest-changed? (and use-manifest? (not bundle-in-sync?)))
 
   (info "Plan: ~a delete(s), ~a dir create(s), ~a file upload(s), ~a marker cleanup(s)"
         (if allow-delete? (length deletions) 0)

@@ -12,6 +12,7 @@
 
 (define app-profile-name "rime-config")
 (define mobile-output-name "gui-mobile")
+(define mobile-skins-output-name "gui-mobile-skins")
 (define default-schema-ids '("flypy"))
 (define gui-schema-ids
   (remove-duplicates (append generated-config-ids '("bopomofo"))))
@@ -107,10 +108,24 @@
     (hash 'schemas schemas
           'desktop? #f))
   (define profile-out (build-path output-dir mobile-output-name))
+  (define skin-source-dir (build-path output-dir mobile-skins-output-name))
   (define zip-path (build-path output-dir (string-append app-profile-name "-mobile.zip")))
   (build-profile-from-hash! profile app-profile-name profile-out)
   (zip-profile-path! app-profile-name profile-out zip-path)
+  (build-profile-skin-directories! profile app-profile-name skin-source-dir)
   (values profile-out zip-path))
+
+(define (selected-skin-dir)
+  (build-path output-dir mobile-skins-output-name))
+
+(define (built-skin-ids skin-dir)
+  (if (directory-exists? skin-dir)
+      (sort
+       (for/list ([entry (in-list (directory-list skin-dir))]
+                  #:when (directory-exists? (build-path skin-dir entry)))
+         (path->string entry))
+       string<?)
+      '()))
 
 (define (run-build! schema-rows status log-field buttons)
   (thread
@@ -133,9 +148,14 @@
              (set-status! status "Building mobile bundle...")
              (append-log! log-field "Building mobile bundle...")
              (define-values (_profile-out zip-path) (build-mobile-bundle! schemas))
+             (define skins (built-skin-ids (selected-skin-dir)))
              (define message (format "Built ZIP: ~a" (path->string zip-path)))
              (set-status! status message)
-             (append-log! log-field message)])))))))
+             (append-log! log-field message)
+             (append-log! log-field
+                          (if (pair? skins)
+                              (format "Built skins for /Skins/: ~a" (string-join skins ", "))
+                              "No skin folders built."))])))))))
 
 (define (run-push! schema-rows url-field allow-delete include-big-dicts status log-field buttons)
   (thread
@@ -160,7 +180,13 @@
              (set-status! status "Building mobile bundle...")
              (append-log! log-field "Building mobile bundle...")
              (define-values (profile-out zip-path) (build-mobile-bundle! schemas))
+             (define skin-source-dir (selected-skin-dir))
+             (define skins (built-skin-ids skin-source-dir))
              (append-log! log-field (format "Built ZIP: ~a" (path->string zip-path)))
+             (append-log! log-field
+                          (if (pair? skins)
+                              (format "Built skins for /Skins/: ~a" (string-join skins ", "))
+                              "No skin folders built."))
              (set-status! status "Uploading to Yuanshu WiFi transfer...")
              (append-log! log-field
                           (if base-url
@@ -168,10 +194,11 @@
                               "Scanning LAN for Yuanshu WiFi transfer..."))
              (do-upload! profile-out
                          #:base-url base-url
+                         #:skin-source-dir skin-source-dir
                          #:allow-delete (send allow-delete get-value)
                          #:include-big-dicts (send include-big-dicts get-value)
                          #:progress (lambda (line) (append-log! log-field line)))
-             (define done "Upload complete. Redeploy schemas inside Yuanshu on the iPhone.")
+             (define done "Upload complete. Redeploy schemas and reselect the skin inside Yuanshu.")
              (set-status! status done)
              (append-log! log-field done)])))))))
 
