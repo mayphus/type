@@ -20,6 +20,7 @@
          output-dir
          generated-config-ids
          schema-module-ref
+         skin-module-ref
          read-schema-deps
          read-schema-mobile-skins
          schema-mobile-skin-module-path
@@ -46,6 +47,36 @@
 
 (define zip-exe (find-executable-path "zip"))
 
+(struct skin-module (schema skin body) #:transparent)
+
+(define skin-module-namespace (make-base-namespace))
+
+(define (skin-runtime-module-name schema skin)
+  (string->symbol (format "rime-config-skin-~a-~a" schema skin)))
+
+(define (declare-skin-module! mod ns)
+  (with-handlers ([exn:fail:contract?
+                   (lambda (exn)
+                     (unless (regexp-match? #rx"module.*already" (exn-message exn))
+                       (raise exn)))])
+    (parameterize ([current-namespace ns])
+      (eval `(module ,(skin-runtime-module-name (skin-module-schema mod) (skin-module-skin mod))
+               (file ,(path->string mobile-lang-path))
+               (skin ,(string->symbol (skin-module-skin mod))
+                 (triggers ,(string->symbol (skin-module-schema mod)))
+                 ,@(skin-module-body mod)))))))
+
+(define (skin-module-ref mod export-sym [default-thunk #f] #:fresh? [fresh? #f])
+  (define ns (if fresh? (make-base-namespace) skin-module-namespace))
+  (declare-skin-module! mod ns)
+  (parameterize ([current-namespace ns])
+    (if default-thunk
+        (dynamic-require `',(skin-runtime-module-name (skin-module-schema mod) (skin-module-skin mod))
+                         export-sym
+                         default-thunk)
+        (dynamic-require `',(skin-runtime-module-name (skin-module-schema mod) (skin-module-skin mod))
+                         export-sym))))
+
 ;; ---- Schema module helpers -------------------------------------------------
 
 ;; Safely dynamic-require a binding from a generated schema module.
@@ -71,27 +102,15 @@
     [(assoc skin skin-defs) => cdr]
     [else #f]))
 
-(define (write-skin-module! schema skin body)
-  (define out-dir (build-path (find-system-path 'temp-dir) "rime-config-schema-skins"))
-  (make-directory* out-dir)
-  (define path (build-path out-dir (format "~a-~a.rkt" schema skin)))
-  (call-with-output-file path
-    #:exists 'truncate/replace
-    (lambda (out)
-      (fprintf out "#lang s-exp (file ~s)\n" (path->string mobile-lang-path))
-      (write `(skin ,(string->symbol skin)
-               (triggers ,(string->symbol schema))
-               ,@body)
-             out)
-      (newline out)))
-  path)
+(define (schema-mobile-skin-module schema skin body)
+  (skin-module schema skin body))
 
 (define (schema-mobile-skin-module-path skin schemas)
   (define search-schemas
     (remove-duplicates (append schemas generated-config-ids extra-schema-ids-with-mobile)))
   (for/or ([schema (in-list search-schemas)])
     (define body (schema-mobile-skin-body schema skin))
-    (and body (write-skin-module! schema skin body))))
+    (and body (schema-mobile-skin-module schema skin body))))
 
 (define (list-mobile-skin-items schemas)
   (define search-schemas
@@ -100,7 +119,7 @@
               [skin (in-list (read-schema-mobile-skins schema))]
               #:do [(define body (schema-mobile-skin-body schema skin))]
               #:when body)
-    (list schema skin (write-skin-module! schema skin body))))
+    (list schema skin (schema-mobile-skin-module schema skin body))))
 
 ;; ---- Utilities -------------------------------------------------------------
 
@@ -331,10 +350,12 @@
 ;; ---- Write files from a module's exported hash ----------------------------
 
 (define (module-export-ref rkt-path export-sym #:fresh? [fresh? #f])
-  (if fresh?
-      (parameterize ([current-namespace (make-base-namespace)])
-        (dynamic-require rkt-path export-sym))
-      (dynamic-require rkt-path export-sym)))
+  (if (skin-module? rkt-path)
+      (skin-module-ref rkt-path export-sym #:fresh? fresh?)
+      (if fresh?
+          (parameterize ([current-namespace (make-base-namespace)])
+            (dynamic-require rkt-path export-sym))
+          (dynamic-require rkt-path export-sym))))
 
 (define (write-module-files! rkt-path out-dir export-sym #:fresh? [fresh? #f])
   (define files

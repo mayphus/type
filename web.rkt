@@ -27,9 +27,9 @@
 (define (skin-demo-path skin-id)
   (build-path output-dir "compiled-skins" skin-id "demo.png"))
 
-(define (skin-preview-svgs skin-rkt)
+(define (skin-preview-svgs skin-module)
   (with-handlers ([exn:fail? (lambda (_) (hash))])
-    (dynamic-require `(file ,(path->string skin-rkt)) 'skin-preview-svgs)))
+    (skin-module-ref skin-module 'skin-preview-svgs)))
 
 (define (skin-preview-svg skin-id [theme 'light])
   (for/or ([item (in-list skin-items)]
@@ -80,11 +80,11 @@
   (for/list ([item (in-list (list-mobile-skin-items schema-ids))])
     (define schema-id (car item))
     (define skin-id (cadr item))
-    (define skin-rkt (caddr item))
+    (define skin-module (caddr item))
     (list skin-id
           (list schema-id)
-          (dynamic-require `(file ,(path->string skin-rkt)) 'chinese-name (lambda () ""))
-          (skin-preview-svgs skin-rkt))))
+          (skin-module-ref skin-module 'chinese-name (lambda () ""))
+          (skin-preview-svgs skin-module))))
 
 (define schema-items
   (for/list ([s (in-list schema-ids)])
