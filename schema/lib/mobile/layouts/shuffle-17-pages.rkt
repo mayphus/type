@@ -27,13 +27,13 @@
   (object ["width" "90/1125"]))
 
 (define short-space-size
-  (object ["width" "335/1125"]))
+  (object ["width" "267.5/1125"]))
 
 (define short-enter-size
   (object ["width" "200/1125"]))
 
 (define stroke-size
-  (object ["width" "100/1125"]))
+  (object ["width" "113.5/1125"]))
 
 (define legend-main-center
   (object ["x" (json-number "0.5")]
@@ -212,53 +212,57 @@
            ["conditionValue" (array 1 4 7 9 10)]
            ["styleName" "blueButtonForegroundStyle"])))
 
+(define (shuffle17-phone-extra dark?)
+  (bundle
+   (stroke-button dark? "strokeHButton" "-" (char-action "-") ";h" 3 0)
+   (stroke-button dark? "strokeSButton" ":" (char-action ":") ";s" 0 0)
+   (stroke-button dark? "strokePButton" "…" (symbol-action "…") ";p" 0 0)
+   (stroke-button dark? "strokeNButton" "。" (symbol-action "。") ";n" 0 0)
+   (stroke-button dark? "strokeZButton" "，" (symbol-action "，") ";z" 0 3)
+   (hash
+    "backspaceButton"
+    (object ["action" "backspace"]
+            ["backgroundStyle" "systemButtonBackgroundStyle"]
+            ["foregroundStyle" "backspaceButtonForegroundStyle"]
+            ["repeatAction" "backspace"]
+            ["size" six-column-size])
+    "backspaceButtonForegroundStyle"
+    (system-image-style dark? "delete.left" #:highlight-image "delete.left.fill")
+    "numericButton"
+    (object ["action" (keyboard-type-action "numeric")]
+            ["backgroundStyle" "systemButtonBackgroundStyle"]
+            ["foregroundStyle" "numericButtonForegroundStyle"]
+            ["size" numeric-small-size])
+    "numericButtonForegroundStyle"
+    (text-foreground-style dark? "123")
+    "spaceButton"
+    (object ["action" "space"]
+            ["backgroundStyle" "alphabeticButtonBackgroundStyle"]
+            ["foregroundStyle" "spaceButtonForegroundStyle"]
+            ["notification" (array "preeditChangedForSpaceButtonNotification")]
+            ["size" short-space-size]
+            ["swipeUpAction" (shortcut-action "#次选上屏")])
+    "spaceButtonForegroundStyle"
+    (system-image-style dark? "space")
+    "enterButton"
+    (object ["action" "enter"]
+            ["backgroundStyle" enter-background-style]
+            ["foregroundStyle" enter-foreground-style]
+            ["notification" (array "returnKeyTypeChangedNotification"
+                                   "preeditChangedForEnterButtonNotification")]
+            ["size" short-enter-size])
+    "enterButtonForegroundStyle"
+    (text-foreground-style dark? "$returnKeyType"))))
+
 (define (phone-page dark? portrait?)
   (make-grid-page dark? portrait?
-                  #:base-page-builder (lambda (d p) (make-phone-base-page d p #:keyboard-height (if p "216" "160")))
+                  #:base-page-builder (lambda (d p)
+                                        (make-phone-base-page d p
+                                                              #:keyboard-height (if p "216" "160")
+                                                              #:extra (shuffle17-phone-extra d)))
                   #:keyboard-layout phone-layout
                   #:button-specs shuffle17-button-specs
-                  #:button-renderer shuffle-button-entry
-                  #:extra-entries
-                  (bundle
-                   (stroke-button dark? "strokeHButton" "-" (char-action "-") ";h" 3 0)
-                   (stroke-button dark? "strokeSButton" ":" (char-action ":") ";s" 0 0)
-                   (stroke-button dark? "strokePButton" "…" (symbol-action "…") ";p" 0 0)
-                   (stroke-button dark? "strokeNButton" "。" (symbol-action "。") ";n" 0 0)
-                   (stroke-button dark? "strokeZButton" "，" (symbol-action "，") ";z" 0 3)
-                   (hash
-                    "backspaceButton"
-                    (object ["action" "backspace"]
-                            ["backgroundStyle" "systemButtonBackgroundStyle"]
-                            ["foregroundStyle" "backspaceButtonForegroundStyle"]
-                            ["repeatAction" "backspace"]
-                            ["size" six-column-size])
-                    "backspaceButtonForegroundStyle"
-                    (system-image-style dark? "delete.left" #:highlight-image "delete.left.fill")
-                    "numericButton"
-                    (object ["action" (keyboard-type-action "numeric")]
-                            ["backgroundStyle" "systemButtonBackgroundStyle"]
-                            ["foregroundStyle" "numericButtonForegroundStyle"]
-                            ["size" numeric-small-size])
-                    "numericButtonForegroundStyle"
-                    (text-foreground-style dark? "123")
-                    "spaceButton"
-                    (object ["action" "space"]
-                            ["backgroundStyle" "alphabeticButtonBackgroundStyle"]
-                            ["foregroundStyle" "spaceButtonForegroundStyle"]
-                            ["notification" (array "preeditChangedForSpaceButtonNotification")]
-                            ["size" short-space-size]
-                            ["swipeUpAction" (shortcut-action "#次选上屏")])
-                    "spaceButtonForegroundStyle"
-                    (system-image-style dark? "space")
-                    "enterButton"
-                    (object ["action" "enter"]
-                            ["backgroundStyle" enter-background-style]
-                            ["foregroundStyle" enter-foreground-style]
-                            ["notification" (array "returnKeyTypeChangedNotification"
-                                                   "preeditChangedForEnterButtonNotification")]
-                            ["size" short-enter-size])
-                    "enterButtonForegroundStyle"
-                    (text-foreground-style dark? "$returnKeyType")))))
+                  #:button-renderer shuffle-button-entry))
 
 (define normal-button-size
   (object ["width" "1.1/16"]))

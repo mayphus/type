@@ -258,7 +258,7 @@
            ["foregroundStyle" "emojiButtonForegroundStyle"]
            ["size" (object ["width" "150/1125"])])
    "emojiButtonForegroundStyle"
-   (system-image-style dark? "face.smiling" #:font-size 28)
+   (system-image-style dark? "face.smiling" #:font-size 22)
    "numericButton"
    (object ["action" (keyboard-type-action "numeric")]
            ["backgroundStyle" "systemButtonBackgroundStyle"]

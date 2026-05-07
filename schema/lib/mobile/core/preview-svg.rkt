@@ -151,7 +151,7 @@
 (define (special-icon-svg kind x y width height color [icon-size 20])
   (define cx (+ x (/ width 2)))
   (define cy (+ y (/ height 2)))
-  (define face-scale (/ (min (* icon-size 0.6) (* height 0.4)) 12))
+  (define face-scale (/ (min (* icon-size 0.5) (* width 0.32) (* height 0.34)) 12))
   (match kind
     [(or "space" "space.fill") (space-icon-svg x y width height color)]
     [(or "shift" "shift.fill" "capslock.fill")

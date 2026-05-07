@@ -11,6 +11,7 @@
          (prefix-in jyut6ping3: "../schema/jyut6ping3.rkt")
          "../schema/lib/mobile/core/preview.rkt"
          "../schema/lib/mobile/layouts/bopomofo-page.rkt"
+         "../schema/lib/mobile/layouts/shuffle-17-pages.rkt"
          "../schema/lib/mobile/layouts/standard-phone-pinyin-page.rkt")
 
 (define (generated-file files path)
@@ -95,12 +96,18 @@
     (define page (generated-json bopomofo-pinyin-files "light/pinyinPortrait.yaml"))
     (define preview (preview-spec-from-files bopomofo-pinyin-files))
     (check-equal? (button-width page "emojiButton") "150/1125")
-    (check-equal? (hash-ref (hash-ref page 'emojiButtonForegroundStyle) 'fontSize) 28)
-    (check-equal? (hash-ref (preview-key preview "emojiButton") 'icon-size) 28))
+    (check-equal? (hash-ref (hash-ref page 'emojiButtonForegroundStyle) 'fontSize) 22)
+    (check-equal? (hash-ref (preview-key preview "emojiButton") 'icon-size) 22))
 
   (test-case "bopomofo search key matches standard phone width"
     (define page (generated-json bopomofo-pinyin-files "light/pinyinPortrait.yaml"))
     (check-equal? (button-width page "enterButton") "280/1125"))
+
+  (test-case "shuffle_17 phone space gives width to symbol keys"
+    (define page (generated-json shuffle-17-pinyin-files "light/pinyinPortrait.yaml"))
+    (check-equal? (button-width page "strokeHButton") "113.5/1125")
+    (check-equal? (button-width page "strokeZButton") "113.5/1125")
+    (check-equal? (button-width page "spaceButton") "267.5/1125"))
 
   (test-case "flypy_14 schema DSL emits stable schema YAML"
     (define yaml (generated-file flypy_14:config-files "flypy_14.schema.yaml"))

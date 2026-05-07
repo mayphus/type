@@ -115,7 +115,7 @@
                    (cons (- cx 2) (+ cy 4)))))
 
 (define (draw-face dc cx cy width height icon-size color)
-  (define r (min (* icon-size 0.6) (* height 0.4)))
+  (define r (min (* icon-size 0.5) (* width 0.32) (* height 0.34)))
   (define scale (/ r 12))
   (send dc set-brush (new brush% [style 'transparent]))
   (send dc set-pen (new pen% [color (rgba color "#111111")] [width 1.9]))
