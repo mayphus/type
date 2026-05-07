@@ -28,6 +28,9 @@ jobs:
           variant: CS
           version: stable
 
+      - name: Install preview renderer
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends librsvg2-bin
+
       - name: Update dictionary files
         run: racket -e '(require "tools/update-dicts.rkt") (update-dicts!)'
 

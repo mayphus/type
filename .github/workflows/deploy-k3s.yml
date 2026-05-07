@@ -43,6 +43,9 @@ jobs:
           variant: CS
           version: stable
 
+      - name: Install preview renderer
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends librsvg2-bin
+
       - name: Generate k8s manifests
         run: racket k8s.rkt
 
