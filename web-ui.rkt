@@ -377,6 +377,10 @@
      ,(input-hidden "route" (symbol->string route))
      ,(input-hidden "locale" (symbol->string locale))
      ,(input-hidden "desktop?" (if (eq? route 'desktop) "true" "false"))
+     (div ((class "rime-sticky-actions"))
+          (button ((class "rime-build-button rime-sticky-build-button")
+                   (type "submit"))
+                  ,(t locale 'build)))
      (div ((class "rime-primary-column"))
           (section ((class "rime-section"))
                    (div ((class "rime-schema-catalogs"))
@@ -388,11 +392,7 @@
                                                     selected-ids
                                                     active-ids
                                                     auto-ids
-                                                    catalog)))
-                   (div ((class "rime-form-actions"))
-                        (button ((class "rime-build-button rime-flow-build-button")
-                                 (type "submit"))
-                                ,(t locale 'build)))))))
+                                                    catalog)))))))
 
 (define (instructions-section locale route)
   `(section ((class "rime-instructions"))

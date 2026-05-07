@@ -370,20 +370,30 @@ input {
   font-weight: 800;
 }
 
-.rime-form-actions {
+.rime-sticky-actions {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  z-index: 5;
   display: flex;
   justify-content: center;
-  padding-top: 1.05rem;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
-.rime-flow-build-button {
+.rime-sticky-build-button {
   width: auto;
-  min-width: 18rem;
-  min-height: 3.45rem;
-  padding: 0.95rem 1.8rem;
+  min-height: 2.65rem;
+  padding: 0.7rem 1.1rem;
   border-radius: 999px;
-  font-size: 1rem;
-  line-height: 1.2;
+  background: var(--bg-soft);
+  box-shadow: 0 0 0 4px var(--bg-soft);
+  pointer-events: auto;
+}
+
+.rime-sticky-build-button:hover {
+  border-color: var(--selected-line);
+  background: var(--accent-soft);
 }
 
 .rime-build-button.is-disabled,
@@ -526,6 +536,16 @@ input {
 
   .keyboard-preview {
     max-width: none;
+  }
+
+  .rime-sticky-actions {
+    left: 50%;
+    bottom: 0.9rem;
+  }
+
+  .rime-sticky-build-button {
+    min-height: 3rem;
+    padding: 0.78rem 1.15rem;
   }
 
 }
