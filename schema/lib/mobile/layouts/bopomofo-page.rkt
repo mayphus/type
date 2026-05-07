@@ -18,13 +18,13 @@
   (object ["x" (json-number "0.5")]
           ["y" (json-number "0.54000000000000004")]))
 
-(define bopomofo-shared-button-center
-  (object ["x" (json-number "0.5")]
-          ["y" (json-number "0.62")]))
+(define bopomofo-shared-primary-center
+  (object ["x" (json-number "0.30")]
+          ["y" (json-number "0.54")]))
 
-(define bopomofo-swipe-up-center
-  (object ["x" (json-number "0.5")]
-          ["y" (json-number "0.28")]))
+(define bopomofo-shared-secondary-center
+  (object ["x" (json-number "0.70")]
+          ["y" (json-number "0.60")]))
 
 (define row1
   (list
@@ -199,7 +199,7 @@
   (define swipe-up-label (bopomofo-spec-swipe-up-label spec))
   (define swipe-up-code (bopomofo-spec-swipe-up-code spec))
   (define primary-center
-    (if swipe-up-label bopomofo-shared-button-center bopomofo-button-center))
+    (if swipe-up-label bopomofo-shared-primary-center bopomofo-button-center))
   (define foreground-style
     (if swipe-up-label
         (array (string-append name "SwipeUpForegroundStyle")
@@ -227,8 +227,8 @@
         (string-append name "SwipeUpForegroundStyle")
         (text-foreground-style dark?
                                swipe-up-label
-                               #:font-size 13
-                               #:center bopomofo-swipe-up-center
+                               #:font-size 11
+                               #:center bopomofo-shared-secondary-center
                                #:font-weight "normal"))
        (hash))))
 
