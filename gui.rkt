@@ -12,7 +12,6 @@
 
 (define app-profile-name "rime-config")
 (define mobile-output-name "gui-mobile")
-(define mobile-skins-output-name "gui-mobile-skins")
 (define default-schema-ids '("flypy"))
 (define gui-schema-ids
   (remove-duplicates (append generated-config-ids '("bopomofo"))))
@@ -108,18 +107,13 @@
     (hash 'schemas schemas
           'desktop? #f))
   (define profile-out (build-path output-dir mobile-output-name))
-  (define skin-source-dir (build-path output-dir mobile-skins-output-name))
   (define zip-path (build-path output-dir (string-append app-profile-name "-mobile.zip")))
-  (define-values (built-out built-zip _skin-dir)
+  (define-values (built-out built-zip skin-dir)
     (build-bundle! profile
                    app-profile-name
                    profile-out
-                   zip-path
-                   #:skin-dir skin-source-dir))
-  (values built-out built-zip))
-
-(define (selected-skin-dir)
-  (build-path output-dir mobile-skins-output-name))
+                   zip-path))
+  (values built-out built-zip skin-dir))
 
 (define (built-skin-ids skin-dir)
   (if (directory-exists? skin-dir)
@@ -150,8 +144,8 @@
              (reset-log! log-field (format "Selected schemas: ~a" (string-join schemas ", ")))
              (set-status! status "Building mobile bundle...")
              (append-log! log-field "Building mobile bundle...")
-             (define-values (_profile-out zip-path) (build-mobile-bundle! schemas))
-             (define skins (built-skin-ids (selected-skin-dir)))
+             (define-values (_profile-out zip-path skin-source-dir) (build-mobile-bundle! schemas))
+             (define skins (built-skin-ids skin-source-dir))
              (define message (format "Built ZIP: ~a" (path->string zip-path)))
              (set-status! status message)
              (append-log! log-field message)
@@ -182,8 +176,7 @@
              (reset-log! log-field (format "Selected schemas: ~a" (string-join schemas ", ")))
              (set-status! status "Building mobile bundle...")
              (append-log! log-field "Building mobile bundle...")
-             (define-values (profile-out zip-path) (build-mobile-bundle! schemas))
-             (define skin-source-dir (selected-skin-dir))
+             (define-values (profile-out zip-path skin-source-dir) (build-mobile-bundle! schemas))
              (define skins (built-skin-ids skin-source-dir))
              (append-log! log-field (format "Built ZIP: ~a" (path->string zip-path)))
              (append-log! log-field

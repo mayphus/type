@@ -435,49 +435,49 @@
    (lambda ()
      (write-module-files! skin-rkt
                           out-dir
-                          (if with-docs? 'skin-files 'skin-preview-files)
+                          'skin-files
                           #:fresh? #t))))
 
-(define (build-one-skin! skin schemas profile-name profile-out)
+(define (build-one-skin! skin schemas profile-out skin-root)
   (define skin-rkt (skin-module-path! skin schemas))
-  (define safe-profile-name
-    (regexp-replace* #rx"[^a-zA-Z0-9._-]+" profile-name "_"))
-  (define tmp-dir  (build-path (path-only profile-out) (string-append "tmp-" safe-profile-name)))
-  (define tmp-skin (build-path tmp-dir skin))
+  (define skin-out  (build-path skin-root skin))
   (define cskin    (build-path profile-out "skins" (string-append skin ".cskin")))
   (printf "Building skin: ~a\n" skin)
-  (delete-directory/files tmp-dir #:must-exist? #f)
-  (write-unpacked-skin! skin-rkt tmp-skin)
+  (delete-directory/files skin-out #:must-exist? #f)
+  (write-unpacked-skin! skin-rkt skin-out #:with-docs? #t)
   (delete-file* cskin)
-  (parameterize ([current-directory tmp-dir])
+  (make-directory* (path-only cskin))
+  (parameterize ([current-directory skin-root])
     (run! zip-exe "-qr" (path->string cskin) skin))
-  (delete-directory/files tmp-dir))
+  skin-out)
 
-(define (build-skins! skins schemas profile-name profile-out)
+(define (build-skins! skins schemas profile-out skin-root)
   (unless (null? skins)
     (make-directory* (build-path profile-out "skins"))
+    (delete-directory/files skin-root #:must-exist? #f)
+    (make-directory* skin-root)
     (for ([skin skins])
-      (build-one-skin! skin schemas profile-name profile-out))))
-
-(define (build-unpacked-skins! skins schemas out-dir)
-  (delete-directory/files out-dir #:must-exist? #f)
-  (make-directory* out-dir)
-  (for ([skin (in-list skins)])
-    (printf "Building skin folder: ~a\n" skin)
-    (write-unpacked-skin! (skin-module-path! skin schemas)
-                          (build-path out-dir skin)
-                          #:with-docs? #t)))
+      (build-one-skin! skin schemas profile-out skin-root))))
 
 (define (build-profile-skin-directories! profile profile-name out-dir)
-  (define schemas (resolve-schemas profile))
+  (define tmp-dir (make-temporary-file "rime-skin-profile-~a" 'directory))
+  (dynamic-wind
+    void
+    (lambda ()
+      (build-profile-from-hash! profile
+                                profile-name
+                                (build-path tmp-dir profile-name)
+                                #:skin-dir out-dir))
+    (lambda ()
+      (delete-directory/files tmp-dir #:must-exist? #f)))
   (define-values (_gen-yaml _rime-yaml _rime-dirs skins)
-    (compute-assets schemas profile))
-  (build-unpacked-skins! skins schemas out-dir)
+    (compute-assets (resolve-schemas profile) profile))
   skins)
 
 ;; ---- Build one bundle ------------------------------------------------------
 
-(define (build-profile-from-hash! profile profile-name profile-out)
+(define (build-profile-from-hash! profile profile-name profile-out
+                                  #:skin-dir [skin-dir #f])
   (delete-directory/files profile-out #:must-exist? #f)
   (make-directory* profile-out)
 
@@ -518,18 +518,32 @@
               (fprintf out "    - schema: ~a\n" s)))))
       (delete-file* default-custom))
 
-  (build-skins! skins schemas profile-name profile-out))
+  (define tmp-skin-dir #f)
+  (define skin-root
+    (or skin-dir
+        (and (pair? skins)
+             (begin
+               (set! tmp-skin-dir (make-temporary-file "rime-skins-~a" 'directory))
+               tmp-skin-dir))))
+  (when skin-root
+    (build-skins! skins schemas profile-out skin-root))
+  (when tmp-skin-dir
+    (delete-directory/files tmp-skin-dir #:must-exist? #f)))
 
 (define (build-bundle! profile
                        profile-name
                        profile-out
                        zip-path
-                       #:skin-dir [skin-dir #f])
-  (build-profile-from-hash! profile profile-name profile-out)
+                       #:skin-dir [skin-dir 'auto])
+  (define final-skin-dir
+    (cond
+      [(eq? skin-dir 'auto)
+       (build-path (path-only profile-out)
+                   (string-append (path->string (file-name-from-path profile-out)) "-skins"))]
+      [else skin-dir]))
+  (build-profile-from-hash! profile profile-name profile-out #:skin-dir final-skin-dir)
   (zip-profile-path! profile-name profile-out zip-path)
-  (when skin-dir
-    (build-profile-skin-directories! profile profile-name skin-dir))
-  (values profile-out zip-path skin-dir))
+  (values profile-out zip-path final-skin-dir))
 
 (define (build-profile! profile-name)
   (define profile     (named-rime-profile profile-name))
@@ -659,8 +673,8 @@
     (delete-directory/files out #:must-exist? #f)
     (make-directory* out)
     (with-skin-doc-rendering
-     #t
+     render-docs?
      (lambda ()
        (write-module-files! skin-file
                             out
-                            (if render-docs? 'skin-files 'skin-preview-build-files))))))
+                            'skin-files)))))

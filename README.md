@@ -78,9 +78,8 @@ candidates.
 GUI upload syncs schemas to `RimeUserData/rime/`, then refreshes Yuanshu
 `Skins/` with only the selected generated skin folders. The Rime delete checkbox
 only applies to `RimeUserData/rime/`; each selected skin folder is rebuilt with
-runtime YAML plus `README.md`, `demo.svg`, and `demo.png`, then removed and
-uploaded fresh so stale `.keyboard` caches do not survive. All other skins are
-left untouched.
+runtime YAML plus `README.md` and `demo.png`, then removed and uploaded fresh so
+stale `.keyboard` caches do not survive. All other skins are left untouched.
 
 ## Build logic
 

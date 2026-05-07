@@ -10,6 +10,7 @@
          (prefix-in terra_pinyin: "../schema/terra_pinyin.rkt")
          (prefix-in jyut6ping3: "../schema/jyut6ping3.rkt")
          "../schema/lib/mobile/core/preview.rkt"
+         "../schema/lib/mobile/layouts/bopomofo-page.rkt"
          "../schema/lib/mobile/layouts/standard-phone-pinyin-page.rkt")
 
 (define (generated-file files path)
@@ -69,6 +70,16 @@
     (check-not-false (string-contains? yaml "dictionary: terra_pinyin"))
     (check-not-false (string-contains? yaml "prism: terra_pinyin"))
     (check-equal? terra_pinyin:mobile-skins '("terra_pinyin")))
+
+  (test-case "bopomofo shares er with an instead of adding a fourth-row key"
+    (define page (generated-json bopomofo-pinyin-files "light/pinyinPortrait.yaml"))
+    (check-equal? (layout-row-cell-ids page 3)
+                  '("foButton" "leButton" "heButton" "xiButton" "riButton"
+                    "siButton" "yuButton" "ehButton" "ouButton" "engButton"))
+    (check-false (hash-has-key? page 'erButton))
+    (check-equal? (hash-ref (hash-ref (page-button page "anButton") 'action) 'character) "0")
+    (check-equal? (hash-ref (hash-ref (page-button page "anButton") 'swipeUpAction) 'character) "-")
+    (check-equal? (button-width page "engButton") "112.5/1125"))
 
   (test-case "flypy_14 schema DSL emits stable schema YAML"
     (define yaml (generated-file flypy_14:config-files "flypy_14.schema.yaml"))

@@ -7,67 +7,76 @@
 
 (provide bopomofo-pinyin-files)
 
-(struct bopomofo-spec (name label code width) #:transparent)
+(struct bopomofo-spec (name label code width swipe-up-label swipe-up-code) #:transparent)
+
+(define (spec name label code width #:swipe-up-label [swipe-up-label #f] #:swipe-up-code [swipe-up-code #f])
+  (bopomofo-spec name label code width swipe-up-label swipe-up-code))
 
 (define phone-width "112.5/1125")
-(define compact-width "102.27/1125")
 
 (define bopomofo-button-center
   (object ["x" (json-number "0.5")]
           ["y" (json-number "0.54000000000000004")]))
 
+(define bopomofo-shared-button-center
+  (object ["x" (json-number "0.5")]
+          ["y" (json-number "0.62")]))
+
+(define bopomofo-swipe-up-center
+  (object ["x" (json-number "0.5")]
+          ["y" (json-number "0.28")]))
+
 (define row1
   (list
-   (bopomofo-spec "boButton" "ㄅ" "1" phone-width)
-   (bopomofo-spec "deButton" "ㄉ" "2" phone-width)
-   (bopomofo-spec "thirdToneButton" "ˇ" "3" phone-width)
-   (bopomofo-spec "fourthToneButton" "ˋ" "4" phone-width)
-   (bopomofo-spec "zhiButton" "ㄓ" "5" phone-width)
-   (bopomofo-spec "secondToneButton" "ˊ" "6" phone-width)
-   (bopomofo-spec "lightToneButton" "˙" "7" phone-width)
-   (bopomofo-spec "aButtonZhuyin" "ㄚ" "8" phone-width)
-   (bopomofo-spec "aiButton" "ㄞ" "9" phone-width)
-   (bopomofo-spec "anButton" "ㄢ" "0" phone-width)))
+   (spec "boButton" "ㄅ" "1" phone-width)
+   (spec "deButton" "ㄉ" "2" phone-width)
+   (spec "thirdToneButton" "ˇ" "3" phone-width)
+   (spec "fourthToneButton" "ˋ" "4" phone-width)
+   (spec "zhiButton" "ㄓ" "5" phone-width)
+   (spec "secondToneButton" "ˊ" "6" phone-width)
+   (spec "lightToneButton" "˙" "7" phone-width)
+   (spec "aButtonZhuyin" "ㄚ" "8" phone-width)
+   (spec "aiButton" "ㄞ" "9" phone-width)
+   (spec "anButton" "ㄢ" "0" phone-width #:swipe-up-label "ㄦ" #:swipe-up-code "-")))
 
 (define row2
   (list
-   (bopomofo-spec "poButton" "ㄆ" "q" phone-width)
-   (bopomofo-spec "teButton" "ㄊ" "w" phone-width)
-   (bopomofo-spec "geButton" "ㄍ" "e" phone-width)
-   (bopomofo-spec "jiButton" "ㄐ" "r" phone-width)
-   (bopomofo-spec "chiButton" "ㄔ" "t" phone-width)
-   (bopomofo-spec "ziButton" "ㄗ" "y" phone-width)
-   (bopomofo-spec "yiButton" "ㄧ" "u" phone-width)
-   (bopomofo-spec "oButtonZhuyin" "ㄛ" "i" phone-width)
-   (bopomofo-spec "eiButton" "ㄟ" "o" phone-width)
-   (bopomofo-spec "enButton" "ㄣ" "p" phone-width)))
+   (spec "poButton" "ㄆ" "q" phone-width)
+   (spec "teButton" "ㄊ" "w" phone-width)
+   (spec "geButton" "ㄍ" "e" phone-width)
+   (spec "jiButton" "ㄐ" "r" phone-width)
+   (spec "chiButton" "ㄔ" "t" phone-width)
+   (spec "ziButton" "ㄗ" "y" phone-width)
+   (spec "yiButton" "ㄧ" "u" phone-width)
+   (spec "oButtonZhuyin" "ㄛ" "i" phone-width)
+   (spec "eiButton" "ㄟ" "o" phone-width)
+   (spec "enButton" "ㄣ" "p" phone-width)))
 
 (define row3
   (list
-   (bopomofo-spec "moButton" "ㄇ" "a" phone-width)
-   (bopomofo-spec "neButton" "ㄋ" "s" phone-width)
-   (bopomofo-spec "keButton" "ㄎ" "d" phone-width)
-   (bopomofo-spec "qiButton" "ㄑ" "f" phone-width)
-   (bopomofo-spec "shiButton" "ㄕ" "g" phone-width)
-   (bopomofo-spec "ciButton" "ㄘ" "h" phone-width)
-   (bopomofo-spec "wuButton" "ㄨ" "j" phone-width)
-   (bopomofo-spec "eButtonZhuyin" "ㄜ" "k" phone-width)
-   (bopomofo-spec "aoButton" "ㄠ" "l" phone-width)
-   (bopomofo-spec "angButton" "ㄤ" ";" phone-width)))
+   (spec "moButton" "ㄇ" "a" phone-width)
+   (spec "neButton" "ㄋ" "s" phone-width)
+   (spec "keButton" "ㄎ" "d" phone-width)
+   (spec "qiButton" "ㄑ" "f" phone-width)
+   (spec "shiButton" "ㄕ" "g" phone-width)
+   (spec "ciButton" "ㄘ" "h" phone-width)
+   (spec "wuButton" "ㄨ" "j" phone-width)
+   (spec "eButtonZhuyin" "ㄜ" "k" phone-width)
+   (spec "aoButton" "ㄠ" "l" phone-width)
+   (spec "angButton" "ㄤ" ";" phone-width)))
 
 (define row4
   (list
-   (bopomofo-spec "foButton" "ㄈ" "z" compact-width)
-   (bopomofo-spec "leButton" "ㄌ" "x" compact-width)
-   (bopomofo-spec "heButton" "ㄏ" "c" compact-width)
-   (bopomofo-spec "xiButton" "ㄒ" "v" compact-width)
-   (bopomofo-spec "riButton" "ㄖ" "b" compact-width)
-   (bopomofo-spec "siButton" "ㄙ" "n" compact-width)
-   (bopomofo-spec "yuButton" "ㄩ" "m" compact-width)
-   (bopomofo-spec "ehButton" "ㄝ" "," compact-width)
-   (bopomofo-spec "ouButton" "ㄡ" "." compact-width)
-   (bopomofo-spec "engButton" "ㄥ" "/" compact-width)
-   (bopomofo-spec "erButton" "ㄦ" "-" compact-width)))
+   (spec "foButton" "ㄈ" "z" phone-width)
+   (spec "leButton" "ㄌ" "x" phone-width)
+   (spec "heButton" "ㄏ" "c" phone-width)
+   (spec "xiButton" "ㄒ" "v" phone-width)
+   (spec "riButton" "ㄖ" "b" phone-width)
+   (spec "siButton" "ㄙ" "n" phone-width)
+   (spec "yuButton" "ㄩ" "m" phone-width)
+   (spec "ehButton" "ㄝ" "," phone-width)
+   (spec "ouButton" "ㄡ" "." phone-width)
+   (spec "engButton" "ㄥ" "/" phone-width)))
 
 (define keyboard-layout
   (array
@@ -186,18 +195,42 @@
            ["insets" insets])))
 
 (define (bopomofo-button-entry dark? spec)
-  (hash
-   (bopomofo-spec-name spec)
-   (object ["action" (char-action (bopomofo-spec-code spec))]
-           ["backgroundStyle" "alphabeticButtonBackgroundStyle"]
-           ["foregroundStyle" (string-append (bopomofo-spec-name spec) "ForegroundStyle")]
-           ["size" (object ["width" (bopomofo-spec-width spec)])])
-   (string-append (bopomofo-spec-name spec) "ForegroundStyle")
-   (text-foreground-style dark?
-                          (bopomofo-spec-label spec)
-                          #:font-size 18
-                          #:center bopomofo-button-center
-                          #:font-weight "normal")))
+  (define name (bopomofo-spec-name spec))
+  (define swipe-up-label (bopomofo-spec-swipe-up-label spec))
+  (define swipe-up-code (bopomofo-spec-swipe-up-code spec))
+  (define primary-center
+    (if swipe-up-label bopomofo-shared-button-center bopomofo-button-center))
+  (define foreground-style
+    (if swipe-up-label
+        (array (string-append name "SwipeUpForegroundStyle")
+               (string-append name "ForegroundStyle"))
+        (string-append name "ForegroundStyle")))
+  (hash-union
+   (hash
+    name
+    (append
+     (object ["action" (char-action (bopomofo-spec-code spec))]
+             ["backgroundStyle" "alphabeticButtonBackgroundStyle"]
+             ["foregroundStyle" foreground-style]
+             ["size" (object ["width" (bopomofo-spec-width spec)])])
+     (if swipe-up-code
+         (object ["swipeUpAction" (char-action swipe-up-code)])
+         '()))
+    (string-append name "ForegroundStyle")
+    (text-foreground-style dark?
+                           (bopomofo-spec-label spec)
+                           #:font-size 18
+                           #:center primary-center
+                           #:font-weight "normal"))
+   (if swipe-up-label
+       (hash
+        (string-append name "SwipeUpForegroundStyle")
+        (text-foreground-style dark?
+                               swipe-up-label
+                               #:font-size 13
+                               #:center bopomofo-swipe-up-center
+                               #:font-weight "normal"))
+       (hash))))
 
 (define enter-background-style
   (array

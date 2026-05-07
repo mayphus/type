@@ -1,12 +1,10 @@
 #lang racket/base
 
 (require racket/string
-         racket/runtime-path
-         "preview-svg.rkt")
+         racket/runtime-path)
 
 (provide (struct-out skin-meta)
          make-skin-meta
-         make-skin-demo-files
          make-skin-doc-files)
 
 (struct skin-meta (slug english-name chinese-name summary features) #:transparent)
@@ -44,26 +42,6 @@
         "\n\n"))
    "This README and `demo.png` are generated from the skin metadata.\n"))
 
-(define (demo-svg meta preview-spec)
-  (define light-preview
-    (if (and (hash? preview-spec) (hash-has-key? preview-spec 'dark))
-        (hash-remove preview-spec 'dark)
-        preview-spec))
-  (demo-preview-svg (skin-meta-chinese-name meta) light-preview))
-
-(define (make-skin-demo-files meta preview-spec)
-  (if (and preview-spec
-           (string=? (or (getenv "RIME_RENDER_SKIN_DOCS") "") "1"))
-      (with-handlers ([exn:fail?
-                       (lambda (exn)
-                         (define out (current-error-port))
-                         (fprintf out "skin demo render failed: ~a\n" (exn-message exn))
-                         (hash))])
-        (define svg (demo-svg meta preview-spec))
-        (hash "demo.svg" svg
-              "demo.png" (demo-preview-png-bytes (skin-meta-chinese-name meta) preview-spec)))
-      (hash)))
-
 (define (make-skin-doc-files meta preview-spec)
   (define readme (render-readme meta))
   (if (and preview-spec
@@ -73,8 +51,6 @@
                          (define out (current-error-port))
                          (fprintf out "skin doc render failed: ~a\n" (exn-message exn))
                          (hash "README.md" readme))])
-        (define svg (demo-svg meta preview-spec))
         (hash "README.md" readme
-              "demo.svg" svg
               "demo.png" (demo-preview-png-bytes (skin-meta-chinese-name meta) preview-spec)))
       (hash "README.md" readme)))
