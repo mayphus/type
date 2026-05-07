@@ -508,7 +508,7 @@
   (define profile-out (build-path output-dir profile-name))
   (build-profile-from-hash! profile profile-name profile-out))
 
-;; ---- Zip -------------------------------------------------------------------
+;; ---- ZIP archives -----------------------------------------------------------
 
 (define (zip-profile-path! profile-name profile-out zip-path)
   (delete-file* zip-path)
