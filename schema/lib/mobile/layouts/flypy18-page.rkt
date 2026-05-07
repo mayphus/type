@@ -35,7 +35,6 @@
   (object ["alignment" "left"]
           ["width" "160/242.5"]))
 
-
 (define main-center
   (object ["x" (json-number "0.5")]
           ["y" (json-number "0.46000000000000002")]))

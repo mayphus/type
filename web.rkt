@@ -6,11 +6,15 @@
          racket/file
          racket/list
          racket/runtime-path
+         racket/string
+         net/url
          json
          "web-ui.rkt"
          "build.rkt")
 
-(provide skin-items list-static-schemas)
+(provide skin-items
+         list-static-schemas
+         canonical-redirect-location)
 
 ;; ---- Helpers ---------------------------------------------------------------
 
@@ -43,6 +47,31 @@
 
 (define schema-ids
   (remove-duplicates (append generated-config-ids (list-static-schemas))))
+
+(define legacy-host "rime-config.mayphus.org")
+(define canonical-host "rime.mayphus.org")
+
+(define (request-host req)
+  (for/first ([header (in-list (request-headers/raw req))]
+              #:when (string-ci=? (bytes->string/utf-8 (header-field header))
+                                  "host"))
+    (bytes->string/utf-8 (header-value header))))
+
+(define (host-without-port host)
+  (car (string-split host ":")))
+
+(define (canonical-redirect-location req)
+  (define host (request-host req))
+  (and host
+       (string-ci=? (host-without-port host) legacy-host)
+       (string-append "https://" canonical-host (url->string (request-uri req)))))
+
+(define (canonical-redirect-response location)
+  (response/full
+   308 #"Permanent Redirect" (current-seconds) #"text/plain; charset=utf-8"
+   (list (make-header #"Location" (string->bytes/utf-8 location))
+         (make-header #"Cache-Control" #"public, max-age=86400"))
+   (list #"Redirecting to rime.mayphus.org")))
 
 ;; Precompute skin data once at startup. Concrete skins are declared by
 ;; schema modules and materialized into temporary modules for the existing
@@ -197,12 +226,18 @@
    [("skins" (string-arg) "demo.png") handle-skin-demo]
    [("build") #:method "post" handle-build]))
 
+(define (canonical-dispatch req)
+  (define location (canonical-redirect-location req))
+  (if location
+      (canonical-redirect-response location)
+      (dispatch req)))
+
 (define (start)
   (define port      (let ([p (getenv "PORT")])      (if p (string->number p) 5001)))
   (define listen-ip (let ([h (getenv "LISTEN_IP")]) (or h "127.0.0.1")))
   (printf "Rime API starting on ~a:~a...\n" listen-ip port)
   (serve/servlet
-   dispatch
+   canonical-dispatch
    #:servlet-path ""
    #:servlet-regexp #rx""
    #:port port

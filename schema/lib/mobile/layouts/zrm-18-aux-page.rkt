@@ -3,7 +3,8 @@
 (require "../core/dsl.rkt"
          "../keysets/pinyin-common.rkt"
          "flypy18-page.rkt"
-         "flypy18-bases.rkt")
+         "flypy18-bases.rkt"
+         "phone-layout-rows.rkt")
 
 (provide zrm-18-aux-iphone-pinyin-files)
 
@@ -52,13 +53,7 @@
                             (object ["Cell" "bn18AuxButton"])
                             (object ["Cell" "m18AuxButton"])
                             (object ["Cell" "backspaceButton"]))])])
-   (object ["HStack"
-            (object ["subviews"
-                     (array (object ["Cell" "numericButton"])
-                            (object ["Cell" "emojiButton"])
-                            (object ["Cell" "spaceButton"])
-                            (object ["Cell" "semicolonButton"])
-                            (object ["Cell" "enterButton"]))])])))
+   standard-pinyin-last-row))
 
 ;; Auxiliary legends for ZRM
 ;; Q: 犭   W: 文   R:    T: 土   Y: 言   I: 厂   P: 丿

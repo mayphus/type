@@ -3,7 +3,8 @@
 (require "../core/dsl.rkt"
          "../keysets/pinyin-common.rkt"
          "flypy18-page.rkt"
-         "flypy18-bases.rkt")
+         "flypy18-bases.rkt"
+         "phone-layout-rows.rkt")
 
 (provide zrm-18-iphone-pinyin-files)
 
@@ -36,13 +37,7 @@
                             (object ["Cell" "bn18AltButton"])
                             (object ["Cell" "m18AltButton"])
                             (object ["Cell" "backspaceButton"]))])])
-   (object ["HStack"
-            (object ["subviews"
-                     (array (object ["Cell" "numericButton"])
-                            (object ["Cell" "emojiButton"])
-                            (object ["Cell" "spaceButton"])
-                            (object ["Cell" "semicolonButton"])
-                            (object ["Cell" "enterButton"]))])])))
+   standard-pinyin-last-row))
 
 ;; Ziranma 18-key button specs — same grid shape as Flypy 18, different finals
 (define button-specs

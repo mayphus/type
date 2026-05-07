@@ -12,9 +12,12 @@
          "../schema/lib/mobile/core/preview.rkt"
          "../schema/lib/mobile/layouts/bopomofo-page.rkt"
          (prefix-in flypy14-layout: "../schema/lib/mobile/layouts/flypy-14-page.rkt")
+         (prefix-in flypy18-layout: "../schema/lib/mobile/layouts/flypy-18-page.rkt")
          (prefix-in pinyin14-layout: "../schema/lib/mobile/layouts/pinyin-14-page.rkt")
          "../schema/lib/mobile/layouts/shuffle-17-pages.rkt"
-         "../schema/lib/mobile/layouts/standard-phone-pinyin-page.rkt")
+         "../schema/lib/mobile/layouts/standard-phone-pinyin-page.rkt"
+         (prefix-in zrm18-layout: "../schema/lib/mobile/layouts/zrm-18-page.rkt")
+         (prefix-in zrm18-aux-layout: "../schema/lib/mobile/layouts/zrm-18-aux-page.rkt"))
 
 (define (generated-file files path)
   (hash-ref files path (lambda () (error 'generated-file "missing ~a" path))))
@@ -116,6 +119,27 @@
     (check-equal? (button-width page "strokeHButton") "113.5/1125")
     (check-equal? (button-width page "strokeZButton") "113.5/1125")
     (check-equal? (button-width page "spaceButton") "267.5/1125"))
+
+  (test-case "only shuffle_17 and bopomofo keep custom phone last rows"
+    (define standard-last-row
+      '("numericButton" "emojiButton" "spaceButton" "semicolonButton" "enterButton"))
+    (for ([files (in-list (list flypy14-layout:flypy-14-iphone-pinyin-files
+                                pinyin14-layout:pinyin-14-iphone-pinyin-files
+                                flypy18-layout:flypy-18-iphone-pinyin-files
+                                zrm18-layout:zrm-18-iphone-pinyin-files
+                                zrm18-aux-layout:zrm-18-aux-iphone-pinyin-files))])
+      (define page (generated-json files "light/pinyinPortrait.yaml"))
+      (check-equal? (layout-row-cell-ids page 3) standard-last-row))
+    (check-equal? (layout-row-cell-ids (generated-json shuffle-17-pinyin-files
+                                                       "light/pinyinPortrait.yaml")
+                                       3)
+                  '("strokeHButton" "strokeSButton" "strokePButton" "strokeNButton"
+                    "strokeZButton" "spaceButton" "numericButton" "enterButton"))
+    (check-equal? (layout-row-cell-ids (generated-json bopomofo-pinyin-files
+                                                       "light/pinyinPortrait.yaml")
+                                       4)
+                  '("numericButton" "emojiButton" "spaceButton" "backspaceButton"
+                    "enterButton")))
 
   (test-case "flypy_14 schema DSL emits stable schema YAML"
     (define yaml (generated-file flypy_14:config-files "flypy_14.schema.yaml"))
