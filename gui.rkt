@@ -110,10 +110,13 @@
   (define profile-out (build-path output-dir mobile-output-name))
   (define skin-source-dir (build-path output-dir mobile-skins-output-name))
   (define zip-path (build-path output-dir (string-append app-profile-name "-mobile.zip")))
-  (build-profile-from-hash! profile app-profile-name profile-out)
-  (zip-profile-path! app-profile-name profile-out zip-path)
-  (build-profile-skin-directories! profile app-profile-name skin-source-dir)
-  (values profile-out zip-path))
+  (define-values (built-out built-zip _skin-dir)
+    (build-bundle! profile
+                   app-profile-name
+                   profile-out
+                   zip-path
+                   #:skin-dir skin-source-dir))
+  (values built-out built-zip))
 
 (define (selected-skin-dir)
   (build-path output-dir mobile-skins-output-name))

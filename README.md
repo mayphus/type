@@ -82,6 +82,24 @@ runtime YAML plus `README.md`, `demo.svg`, and `demo.png`, then removed and
 uploaded fresh so stale `.keyboard` caches do not survive. All other skins are
 left untouched.
 
+## Build logic
+
+`build.rkt` is the shared build boundary for both web and GUI:
+
+1. A profile says which schemas to build, plus flags such as `desktop?`.
+2. `resolve-schemas` expands dependencies and filters mobile-only schemas for
+   desktop profiles.
+3. `compute-assets` decides the generated YAML, static Rime files, static
+   directories, and mobile skins needed by the resolved schemas.
+4. `build-profile-from-hash!` writes the profile directory: generated YAML,
+   copied static assets, `default.custom.yaml`, and `.cskin` packages.
+5. `build-bundle!` is the common web/GUI entry point: build the profile
+   directory, zip it, and optionally build unpacked `/Skins/<skin>/` upload
+   folders.
+6. `do-upload!` syncs the built profile to Yuanshu `RimeUserData/rime/`; when a
+   skin directory is provided, it also refreshes only those selected `/Skins/`
+   folders.
+
 Regenerate Kubernetes manifests after changing deploy settings:
 
 ```sh

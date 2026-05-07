@@ -27,6 +27,7 @@
          build-profile!
          build-profile-from-hash!
          build-profile-skin-directories!
+         build-bundle!
          zip-profile-path!
          zip-profile!
          do-upload!
@@ -474,7 +475,7 @@
   (build-unpacked-skins! skins schemas out-dir)
   skins)
 
-;; ---- Build one profile -----------------------------------------------------
+;; ---- Build one bundle ------------------------------------------------------
 
 (define (build-profile-from-hash! profile profile-name profile-out)
   (delete-directory/files profile-out #:must-exist? #f)
@@ -518,6 +519,17 @@
       (delete-file* default-custom))
 
   (build-skins! skins schemas profile-name profile-out))
+
+(define (build-bundle! profile
+                       profile-name
+                       profile-out
+                       zip-path
+                       #:skin-dir [skin-dir #f])
+  (build-profile-from-hash! profile profile-name profile-out)
+  (zip-profile-path! profile-name profile-out zip-path)
+  (when skin-dir
+    (build-profile-skin-directories! profile profile-name skin-dir))
+  (values profile-out zip-path skin-dir))
 
 (define (build-profile! profile-name)
   (define profile     (named-rime-profile profile-name))

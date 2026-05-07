@@ -173,8 +173,7 @@
      (dynamic-wind
       void
       (lambda ()
-        (build-profile-from-hash! final-profile profile-name profile-out)
-        (zip-profile-path! profile-name profile-out zip-path)
+        (build-bundle! final-profile profile-name profile-out zip-path)
         (define zip-bytes (file->bytes zip-path))
         (response/full
          200 #"OK" (current-seconds) #"application/zip"
