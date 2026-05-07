@@ -33,6 +33,23 @@
            "127.0.0.1"))
 
 (module+ test
+  (test-case "mobile page includes only global instructions before preview cards"
+    (define html (render-page (req "/") schemas skins #:route 'mobile))
+    (check-true (regexp-match? #rx"Pick the keyboard preview you want" html))
+    (check-true (regexp-match? #rx"Required dependencies are added automatically" html))
+    (check-true (regexp-match? #rx"小鶴雙拼" html))
+    (check-true (regexp-match? #rx"/skins/flypy/preview.svg" html))
+    (check-false (regexp-match? #rx"Common User" html))
+    (check-false (regexp-match? #rx"Static files" html))
+    (check-false (regexp-match? #rx"href=\"/docs\"" html)))
+
+  (test-case "global instructions support Traditional Chinese copy"
+    (define html (render-page (req "/?locale=zh-Hant") schemas skins #:route 'mobile))
+    (check-true (regexp-match? #rx"<html lang=\"zh-Hant\"" html))
+    (check-true (regexp-match? #rx"選擇你想要的鍵盤預覽" html))
+    (check-true (regexp-match? #rx"需要的依賴方案會自動加入" html))
+    (check-false (regexp-match? #rx"Common User" html)))
+
   (test-case "home page defaults to mobile configurator"
     (define html (render-page (req "/") schemas skins #:route 'home))
     (check-true (regexp-match? #rx"rime-platform-tabs" html))

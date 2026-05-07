@@ -3,6 +3,7 @@
 (require racket/list
          racket/match
          racket/string
+         net/url
          web-server/http
          xml)
 
@@ -30,6 +31,10 @@
     'desktop "Desktop"
     'mobile "Mobile"
     'home "Home"
+    'instructions-title "Use"
+    'instructions-mobile "Pick the keyboard preview you want, then build the ZIP and import it in Yuanshu."
+    'instructions-desktop "Pick the desktop schemas you want, then build a ZIP for Squirrel, Weasel, or fcitx-rime."
+    'instructions-deps "Required dependencies are added automatically."
     'schemas "Schemas"
     'schemas-copy "Dependent schemas are added automatically."
     'skins "Skins"
@@ -57,6 +62,10 @@
     'desktop "桌面"
     'mobile "移動端"
     'home "首頁"
+    'instructions-title "使用"
+    'instructions-mobile "選擇你想要的鍵盤預覽，然後編譯 ZIP 並導入元書。"
+    'instructions-desktop "選擇需要的桌面方案，然後編譯適合鼠鬚管、小狼毫或 fcitx-rime 的 ZIP。"
+    'instructions-deps "需要的依賴方案會自動加入。"
     'schemas "方案"
     'schemas-copy "依賴方案會自動補上。"
     'skins "皮膚"
@@ -141,11 +150,17 @@
        (bytes->string/utf-8 (binding:form-value binding))))
 
 (define (request-values req key)
-  (for/list ([binding (in-list (request-bindings/raw req))]
-             #:when (equal? (bytes->string/utf-8 (binding-id binding)) key)
-             #:do [(define value (binding-value binding))]
-             #:when value)
-    value))
+  (append
+   (for/list ([binding (in-list (request-bindings/raw req))]
+              #:when (equal? (bytes->string/utf-8 (binding-id binding)) key)
+              #:do [(define value (binding-value binding))]
+              #:when value)
+     value)
+   (for/list ([query-param (in-list (url-query (request-uri req)))]
+              #:when (equal? (symbol->string (car query-param)) key)
+              #:do [(define value (cdr query-param))]
+              #:when value)
+     value)))
 
 (define (request-value req key [default #f])
   (match (request-values req key)
@@ -379,6 +394,14 @@
                                  (type "submit"))
                                 ,(t locale 'build)))))))
 
+(define (instructions-section locale route)
+  `(section ((class "rime-instructions"))
+            (h2 ((class "rime-instructions-title")) ,(t locale 'instructions-title))
+            (p ,(if (eq? route 'desktop)
+                    (t locale 'instructions-desktop)
+                    (t locale 'instructions-mobile)))
+            (p ,(t locale 'instructions-deps))))
+
 (define (page-shell req schemas skins route)
   (define route* (if (eq? route 'home) 'mobile route))
   (define state (parse-state req route*))
@@ -403,13 +426,14 @@
                                    (h1 ((class "page-title")) ,(t locale 'title))
                                    (p ((class "rime-section-copy"))
                                       ,@(hero-copy locale current-route))))
-                              (nav ((class "rime-platform-tabs"))
+                     (nav ((class "rime-platform-tabs"))
                                    (a ((class ,(classes "rime-platform-tab"
                                                         (and (eq? current-route 'mobile) "is-active")))
                                        (href "/")) ,(t locale 'mobile))
                                    (a ((class ,(classes "rime-platform-tab"
                                                         (and (eq? current-route 'desktop) "is-active")))
                                        (href "/desktop")) ,(t locale 'desktop))))
+                     ,(instructions-section locale current-route)
                      (div ((id "configurator"))
                           ,(configurator-xexpr req schemas skins #:route current-route))
                      (footer ((class "rime-footer"))

@@ -473,6 +473,32 @@ input {
   font-size: 0.92rem;
 }
 
+.rime-instructions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 0.8rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.rime-instructions-title,
+.rime-instructions p {
+  margin: 0;
+}
+
+.rime-instructions-title {
+  color: var(--accent);
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.rime-instructions p {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 @media (max-width: 860px) {
   #app {
     padding: 1.25rem 0.9rem 2.6rem;
