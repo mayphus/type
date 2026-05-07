@@ -46,11 +46,6 @@
   (define readme (render-readme meta))
   (if (and preview-spec
            render-demo?)
-      (with-handlers ([exn:fail?
-                       (lambda (exn)
-                         (define out (current-error-port))
-                         (fprintf out "skin doc render failed: ~a\n" (exn-message exn))
-                         (hash "README.md" readme))])
-        (hash "README.md" readme
-              "demo.png" (demo-preview-png-bytes (skin-meta-chinese-name meta) preview-spec)))
+      (hash "README.md" readme
+            "demo.png" (demo-preview-png-bytes (skin-meta-chinese-name meta) preview-spec))
       (hash "README.md" readme)))

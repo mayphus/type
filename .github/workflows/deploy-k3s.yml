@@ -49,6 +49,9 @@ jobs:
       - name: Check generated k8s manifests
         run: racket -e '(require "k8s.rkt") (check-k8s!)'
 
+      - name: Validate generated profiles
+        run: racket -e '(require "build.rkt") (build-profile! "desktop") (build-profile! "all")'
+
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
