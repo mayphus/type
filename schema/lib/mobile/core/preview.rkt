@@ -5,7 +5,9 @@
          racket/string
          json)
 
-(provide preview-spec-from-files)
+(provide preview-spec-from-files
+         preview-layout
+         preview-key-visible?)
 
 (define preview-logical-width 375)
 ;; Use the search return-key state so previews match common iOS search fields.
@@ -169,6 +171,9 @@
   (and (string? cell-id)
        (regexp-match? #rx"Spacer$" cell-id)))
 
+(define (preview-key-visible? key)
+  (not (hash-ref key 'spacer? #f)))
+
 (define (extract-key-preview page button-id)
   (define button (page-ref page button-id #f))
   (and (hash? button)
@@ -204,6 +209,7 @@
                              (loop (cdr refs)))]))])
          (hash 'id button-id
                'kind (button-kind button-id button)
+               'spacer? (layout-spacer-cell? button-id)
                'label (or (and primary-layer (hash-ref primary-layer 'text "")) "")
                'icon (or icon "")
                'icon-size (or icon-size 20)
@@ -221,9 +227,63 @@
   (filter values
           (for/list ([subview (in-list (if (vector? subviews) (vector->list subviews) subviews))]
                      #:when (hash? subview)
-                     [cell-id (in-value (page-ref subview 'Cell ""))]
-                     #:unless (layout-spacer-cell? cell-id))
+                     [cell-id (in-value (page-ref subview 'Cell ""))])
             (extract-key-preview page cell-id))))
+
+(define (preview-layout preview #:pad [pad 8] #:key-gap [key-gap 4] #:row-gap [row-gap 6])
+  (define size (hash-ref preview 'size (hash)))
+  (define width (parse-numberish (hash-ref size 'width 375)))
+  (define height (parse-numberish (hash-ref size 'height 216)))
+  (define rows (hash-ref preview 'rows '()))
+  (define row-count (max 1 (length rows)))
+  (define key-height (/ (- height (* (+ row-count 1) row-gap)) row-count))
+  (define (row-units row)
+    (apply + (map (lambda (key)
+                    (or (parse-numberish (hash-ref key 'width #f)) 1))
+                  row)))
+  (define letter-rows
+    (filter (lambda (row)
+              (>= (length (filter preview-key-visible? row)) 7))
+            rows))
+  (define reference-units
+    (let ([sum (apply max 1 (map row-units letter-rows))])
+      (if (positive? sum) sum 1)))
+  (define reference-gap-count
+    (apply max 0 (map (lambda (row) (max 0 (sub1 (length row)))) letter-rows)))
+  (define reference-unit-width
+    (/ (- width (* 2 pad) (* reference-gap-count key-gap))
+       reference-units))
+  (for/list ([row (in-list rows)]
+             [row-index (in-naturals)])
+    (define y (+ row-gap (* row-index (+ key-height row-gap))))
+    (define row-gap-count (max 0 (sub1 (length row))))
+    (define units (row-units row))
+    (define centered-letter-row?
+      (and (>= (length (filter preview-key-visible? row)) 7)
+           (< units reference-units)))
+    (define unit-width
+      (if centered-letter-row?
+          reference-unit-width
+          (/ (- width (* 2 pad) (* row-gap-count key-gap))
+             (if (positive? units) units 1))))
+    (define row-width (+ (* units unit-width)
+                         (* row-gap-count key-gap)))
+    (define start-x (/ (- width row-width) 2))
+    (let loop ([keys row] [x start-x] [items '()])
+      (cond
+        [(null? keys) (reverse items)]
+        [else
+         (define key (car keys))
+         (define key-width (* (or (parse-numberish (hash-ref key 'width #f)) 1)
+                              unit-width))
+         (loop (cdr keys)
+               (+ x key-width key-gap)
+               (cons (hash 'key key
+                           'x x
+                           'y y
+                           'width key-width
+                           'height key-height)
+                     items))]))))
 
 (define (preferred-preview-page-path preview-files theme)
   (define keys (hash-keys preview-files))

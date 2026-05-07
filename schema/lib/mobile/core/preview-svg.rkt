@@ -2,7 +2,8 @@
 
 (require racket/format
          racket/match
-         racket/string)
+         racket/string
+         "preview.rkt")
 
 (provide keyboard-preview-svg
          demo-preview-svg
@@ -267,51 +268,19 @@
        (fallback-label-svg key x y width height))))
 
 (define (keyboard-body-svg preview)
-  (define size (hash-get preview 'size (hash)))
-  (define width (numberish (hash-get size 'width 375) 375))
-  (define height (numberish (hash-get size 'height 216) 216))
-  (define rows (hash-get preview 'rows '()))
-  (define row-count (max 1 (length rows)))
-  (define key-height (/ (- height (* (+ row-count 1) row-gap)) row-count))
-  (define (row-units row)
-    (apply + (map (lambda (key) (numberish (hash-get key 'width 1) 1)) row)))
-  (define letter-rows
-    (filter (lambda (row) (>= (length row) 7)) rows))
-  (define reference-units
-    (let ([sum (apply max 1 (map row-units letter-rows))])
-      (if (positive? sum) sum 1)))
-  (define reference-gap-count
-    (apply max 0 (map (lambda (row) (max 0 (sub1 (length row)))) letter-rows)))
-  (define reference-unit-width
-    (/ (- width (* 2 keyboard-pad) (* reference-gap-count key-gap))
-       reference-units))
   (apply
    string-append
-   (for/list ([row (in-list rows)]
-              [row-index (in-naturals)])
-     (define y (+ row-gap (* row-index (+ key-height row-gap))))
-     (define row-gap-count (max 0 (sub1 (length row))))
-     (define units (row-units row))
-     (define centered-letter-row?
-       (and (>= (length row) 7)
-            (< units reference-units)))
-     (define unit-width
-       (if centered-letter-row?
-           reference-unit-width
-           (/ (- width (* 2 keyboard-pad) (* row-gap-count key-gap))
-              (if (positive? units) units 1))))
-     (define row-width (+ (* units unit-width)
-                          (* row-gap-count key-gap)))
-     (define start-x (/ (- width row-width) 2))
-     (let loop ([keys row] [x start-x] [pieces '()])
-       (match keys
-         ['() (apply string-append (reverse pieces))]
-         [(cons key rest)
-          (define key-width (* (numberish (hash-get key 'width 1) 1)
-                               unit-width))
-          (loop rest
-                (+ x key-width key-gap)
-                (cons (key-svg key x y key-width key-height) pieces))])))))
+   (for*/list ([row (in-list (preview-layout preview
+                                             #:pad keyboard-pad
+                                             #:key-gap key-gap
+                                             #:row-gap row-gap))]
+               [item (in-list row)]
+               #:when (preview-key-visible? (hash-get item 'key #f)))
+     (key-svg (hash-get item 'key (hash))
+              (hash-get item 'x 0)
+              (hash-get item 'y 0)
+              (hash-get item 'width 0)
+              (hash-get item 'height 0)))))
 
 (define (keyboard-preview-svg preview)
   (define size (hash-get preview 'size (hash)))

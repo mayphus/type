@@ -47,6 +47,12 @@
                #:when (equal? (hash-ref key 'id) id))
     key))
 
+(define (visible-preview-row-ids preview row-index)
+  (define row (list-ref (hash-ref preview 'rows) row-index))
+  (for/list ([key (in-list row)]
+             #:when (preview-key-visible? key))
+    (hash-ref key 'id)))
+
 (module+ test
   (test-case "flypy shared config emits desktop schema YAML"
     (define yaml (generated-file flypy:config-files "flypy.schema.yaml"))
@@ -134,8 +140,7 @@
       (check-equal? (button-width page "thirdRowLeftSpacer") "82.5/1125")
       (check-equal? (button-width page "thirdRowRightSpacer") "82.5/1125")
       (define preview (preview-spec-from-files files))
-      (define third-row (third (hash-ref preview 'rows)))
-      (check-equal? (map (lambda (key) (hash-ref key 'id)) third-row)
+      (check-equal? (visible-preview-row-ids preview 2)
                     '("shiftButton" "zx14Button" "cv14Button" "bn14Button" "m14Button"
                       "backspaceButton"))))
 
@@ -158,8 +163,7 @@
   (test-case "phone preview hides middle row layout spacers"
     (define files (make-flypy-phone-files standard-phone-base-for-test))
     (define preview (preview-spec-from-files files))
-    (define middle-row (second (hash-ref preview 'rows)))
-    (check-equal? (map (lambda (key) (hash-ref key 'id)) middle-row)
+    (check-equal? (visible-preview-row-ids preview 1)
                   '("aButton" "sButton" "dButton" "fButton" "gButton"
                     "hButton" "jButton" "kButton" "lButton")))
 
