@@ -11,7 +11,7 @@
 
 (define demo-width 996)
 (define demo-height 770)
-(define demo-keyboard-scale 0.9)
+(define demo-keyboard-scale 1.0)
 (define keyboard-pad 8)
 (define key-gap 4)
 (define row-gap 6)
@@ -309,9 +309,9 @@
   (define panel-width 812)
   (define panel-height 548)
   (define keyboard-x (+ panel-x 34))
-  (define keyboard-y (+ panel-y 88))
+  (define keyboard-y (+ panel-y 84))
   (define keyboard-width (- panel-width 68))
-  (define keyboard-height (- panel-height 128))
+  (define keyboard-height (- panel-height 116))
   (define size (hash-get preview 'size (hash)))
   (define logical-width (numberish (hash-get size 'width 375) 375))
   (define logical-height (numberish (hash-get size 'height 216) 216))
@@ -322,7 +322,7 @@
   (define scaled-height (* logical-height scale))
   (define offset-x (+ keyboard-x (/ (- keyboard-width scaled-width) 2)))
   (define offset-y (+ keyboard-y (/ (- keyboard-height scaled-height) 2)))
-  (format "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"~a\" height=\"~a\" viewBox=\"0 0 ~a ~a\" role=\"img\" aria-label=\"~a\"><rect width=\"100%\" height=\"100%\" fill=\"#FAFAFA\"/><text x=\"~a\" y=\"72\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"42\" font-weight=\"700\" fill=\"#5F6368\">~a</text><text x=\"~a\" y=\"114\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"22\" font-weight=\"600\" fill=\"#6F747B\">Yuanshu skin preview</text><rect x=\"~a\" y=\"~a\" width=\"~a\" height=\"~a\" rx=\"30\" fill=\"#E9ECEF\"/><g transform=\"translate(~a ~a) scale(~a)\">~a</g></svg>"
+  (format "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"~a\" height=\"~a\" viewBox=\"0 0 ~a ~a\" role=\"img\" aria-label=\"~a\"><rect width=\"100%\" height=\"100%\" fill=\"#FAFAFA\"/><text x=\"~a\" y=\"72\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"42\" font-weight=\"700\" fill=\"#5F6368\">~a</text><text x=\"~a\" y=\"116\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"24\" font-weight=\"600\" fill=\"#6F747B\">作者： Mayphus</text><rect x=\"~a\" y=\"~a\" width=\"~a\" height=\"~a\" rx=\"30\" fill=\"#E9ECEF\"/><g transform=\"translate(~a ~a) scale(~a)\">~a</g></svg>"
           demo-width
           demo-height
           demo-width
