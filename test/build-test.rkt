@@ -25,6 +25,15 @@
   (check-true (file-exists? (build-path extract-dir skin "demo.png")))
   (check-false (file-exists? (build-path extract-dir skin "demo.svg"))))
 
+(define (unzip! zip-path extract-dir)
+  (define unzip-exe (find-executable-path "unzip"))
+  (check-true (path? unzip-exe))
+  (make-directory* extract-dir)
+  (check-true (system* unzip-exe "-q" (path->string zip-path) "-d" (path->string extract-dir))))
+
+(define (check-zip-file extract-dir . rel-parts)
+  (check-true (file-exists? (apply build-path extract-dir rel-parts))))
+
 (module+ test
   (test-case "bundle shares unpacked skin directory and packaged cskin"
     (define tmp (make-temporary-file "rime-config-bundle-~a" 'directory))
@@ -41,6 +50,14 @@
            zip-path))
         (define skins (map path->string (directory-list skin-dir)))
         (check-equal? skins '("flypy"))
+        (check-true (file-exists? zip-path))
+        (define extract-profile (build-path tmp "extract-profile"))
+        (unzip! zip-path extract-profile)
+        (check-zip-file extract-profile "profile" "flypy.schema.yaml")
+        (check-zip-file extract-profile "profile" "flypy.custom.yaml")
+        (check-zip-file extract-profile "profile" "cangjie6.custom.yaml")
+        (check-zip-file extract-profile "profile" "default.custom.yaml")
+        (check-zip-file extract-profile "profile" "skins" "flypy.cskin")
         (check-upload-skin-files skin-dir "flypy")
         (check-cskin-doc-files tmp profile-out "flypy"))
       (lambda ()

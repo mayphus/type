@@ -25,4 +25,16 @@
                    (req "/?locale=en" "rime-config.mayphus.org:443"))
                   "https://rime.mayphus.org/?locale=en")
     (check-false (canonical-redirect-location
-                  (req "/" "rime.mayphus.org")))))
+                  (req "/" "rime.mayphus.org"))))
+
+  (test-case "web skin previews are ready for page image URLs"
+    (check-not-equal? skin-items '())
+    (for ([item (in-list skin-items)])
+      (define skin-id (car item))
+      (define preview-svgs (cadddr item))
+      (for ([theme (in-list '(light dark))])
+        (define svg (hash-ref preview-svgs theme #f))
+        (check-true
+         (and (string? svg)
+              (regexp-match? #rx"^<svg[^>]+Keyboard preview" svg))
+         (format "~a preview ~a should be an SVG" skin-id theme))))))
