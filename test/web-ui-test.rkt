@@ -41,6 +41,9 @@
     (check-true (regexp-match? #rx"value=\"flypy\" checked=\"checked\"" html))
     (check-true (regexp-match? #rx"href=\"/desktop\"" html))
     (check-true (regexp-match? #rx"href=\"/\"" html))
+    (check-true (regexp-match? #rx"<del class=\"rime-unready-device\">iPad</del>\\."
+                               html))
+    (check-false (regexp-match? #rx"not ready" html))
     (check-true (regexp-match? #rx"href=\"/\"[^>]*>Mobile</a><a class=\"rime-platform-tab\" href=\"/desktop\""
                                html)))
 

@@ -107,6 +107,12 @@ input {
   color: var(--muted);
 }
 
+.rime-unready-device {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 0.11em;
+  text-decoration-color: var(--error);
+}
+
 .rime-config-shell,
 .rime-primary-column,
 .rime-section-header,

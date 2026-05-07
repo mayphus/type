@@ -17,7 +17,7 @@
 (define htmx-script
   "https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js")
 
-(define app-css-href "/app.css?v=20260506")
+(define app-css-href "/app.css?v=20260507")
 
 (define copy
   (hash
@@ -81,6 +81,21 @@
 
 (define (t locale key)
   (hash-ref (hash-ref copy locale) key))
+
+(define (hero-copy locale route)
+  (case route
+    [(desktop) (list (t locale 'desktop-copy))]
+    [(mobile)
+     (case locale
+       [(zh-Hant)
+        (list "導出元書輸入法方案與配套皮膚，適合 iPhone 或 "
+              '(del ((class "rime-unready-device")) "iPad")
+              "。")]
+       [else
+        (list "Export Yuanshu IME schemas and matching skins for iPhone or "
+              '(del ((class "rime-unready-device")) "iPad")
+              ".")])]
+    [else (list (t locale 'landing-copy))]))
 
 (define (next-locale locale)
   (if (eq? locale 'zh-Hant) 'en 'zh-Hant))
@@ -387,10 +402,7 @@
                                         (href "/")) ,(t locale 'home))
                                    (h1 ((class "page-title")) ,(t locale 'title))
                                    (p ((class "rime-section-copy"))
-                                      ,(case current-route
-                                         [(desktop) (t locale 'desktop-copy)]
-                                         [(mobile) (t locale 'mobile-copy)]
-                                         [else (t locale 'landing-copy)]))))
+                                      ,@(hero-copy locale current-route))))
                               (nav ((class "rime-platform-tabs"))
                                    (a ((class ,(classes "rime-platform-tab"
                                                         (and (eq? current-route 'mobile) "is-active")))
