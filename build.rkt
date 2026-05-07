@@ -13,6 +13,7 @@
          racket/string
          racket/system
          "default-profile.rkt"
+         "schema/registry.rkt"
          "tools/yuanshu-sync.rkt")
 
 (provide rime-dir
@@ -45,22 +46,10 @@
 
 (define zip-exe (find-executable-path "zip"))
 
-;; ---- Known generated IDs ---------------------------------------------------
-
-(define generated-schema-ids '("flypy" "flypy_14" "flypy_18" "flypy_ice" "luna_pinyin" "pinyin_14" "shuffle_17" "terra_pinyin"))
-(define generated-custom-ids '("cangjie6" "flypy" "jyut6ping3"))
-(define generated-config-ids (remove-duplicates (append generated-schema-ids generated-custom-ids)))
-(define extra-schema-ids-with-mobile '("bopomofo"))
-(define generated-schema-sources
-  (hash "flypy_ice" "flypy"))
-
 ;; ---- Schema module helpers -------------------------------------------------
 
 ;; Safely dynamic-require a binding from a generated schema module.
 ;; Returns default if the module does not exist or does not export the binding.
-(define (schema-source-id schema)
-  (hash-ref generated-schema-sources schema schema))
-
 (define (schema-module-path schema)
   (build-path schema-dir (string-append (schema-source-id schema) ".rkt")))
 
