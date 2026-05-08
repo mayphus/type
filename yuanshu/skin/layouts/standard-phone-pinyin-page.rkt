@@ -1,12 +1,15 @@
 #lang racket/base
 
-(require racket/hash
+(require racket/format
+         racket/hash
          racket/list
          racket/string
+         "../../../keyboard/catalog.rkt"
          "../core/dsl.rkt"
          "../core/visual-policy.rkt"
          "../keysets/pinyin-common.rkt"
-         "base-page.rkt")
+         "base-page.rkt"
+         "phone-layout-rows.rkt")
 
 (provide make-flypy-phone-files
          make-cangjie6-phone-files
@@ -29,11 +32,32 @@
 (define standard-phone-landscape-light-base (standard-phone-base #f #f))
 (define standard-phone-landscape-dark-base  (standard-phone-base #t #f))
 
+(define standard-phone-model
+  (keyboard-model-definition-ref 'standard-26))
+
+(define (model-clause name)
+  (define clause (assoc name standard-phone-model))
+  (and clause (cdr clause)))
+
+(define standard-phone-columns
+  (car (or (model-clause 'columns)
+           (error 'standard-phone-columns "missing standard-26 columns"))))
+
+(define (trim-decimal s)
+  (regexp-replace #rx"\\.$"
+                  (regexp-replace #rx"0+$" s "")
+                  ""))
+
+(define (model-width units)
+  (format "~a/1125"
+          (trim-decimal
+           (real->decimal-string (/ (* 1125 units) standard-phone-columns) 4))))
+
 (define normal-button-size
-  (square-key-size "112.5/1125"))
+  (square-key-size (model-width 1)))
 
 (define middle-row-spacer-size
-  (object ["width" "56.25/1125"]))
+  (object ["width" (model-width 1/2)]))
 
 (define middle-row-spacer-entries
   (hash "middleRowLeftSpacer"
@@ -45,49 +69,48 @@
   (object ["height" 50]
           ["width" 50]))
 
+(define (letter-id key)
+  (string-append (symbol->string key) "Button"))
+
+(define (row-spacer-id row-index side)
+  (case row-index
+    [(1) (if (eq? side 'left) "middleRowLeftSpacer" "middleRowRightSpacer")]
+    [else (format "row~a~aSpacer"
+                  row-index
+                  (if (eq? side 'left) "Left" "Right"))]))
+
+(define (keyboard-layout-rows rows row-offsets)
+  (list->vector
+   (for/list ([row (in-list rows)]
+              [offset (in-list row-offsets)]
+              [row-index (in-naturals)])
+     (define letter-ids (map letter-id row))
+     (define ids
+       (case row-index
+         [(2) (append (list "shiftButton") letter-ids (list "backspaceButton"))]
+         [else
+          (append
+           (if (and (number? offset) (positive? offset))
+               (list (row-spacer-id row-index 'left))
+               '())
+           letter-ids
+           (if (and (number? offset) (positive? offset))
+               (list (row-spacer-id row-index 'right))
+               '()))]))
+     (keyboard-layout-row ids))))
+
+(define standard-phone-letter-layout-rows
+  (keyboard-layout-rows
+   (or (model-clause 'rows)
+       (error 'standard-phone-keyboard-layout "missing standard-26 rows"))
+   (or (model-clause 'row-offsets)
+       (error 'standard-phone-keyboard-layout "missing standard-26 row offsets"))))
+
 (define standard-phone-keyboard-layout
-  (array
-   (object ["HStack"
-            (object ["subviews"
-                     (array (object ["Cell" "qButton"])
-                            (object ["Cell" "wButton"])
-                            (object ["Cell" "eButton"])
-                            (object ["Cell" "rButton"])
-                            (object ["Cell" "tButton"])
-                            (object ["Cell" "yButton"])
-                            (object ["Cell" "uButton"])
-                            (object ["Cell" "iButton"])
-                            (object ["Cell" "oButton"])
-                            (object ["Cell" "pButton"]))])])
-   (object ["HStack"
-            (object ["subviews"
-                     (array (object ["Cell" "middleRowLeftSpacer"])
-                            (object ["Cell" "aButton"])
-                            (object ["Cell" "sButton"])
-                            (object ["Cell" "dButton"])
-                            (object ["Cell" "fButton"])
-                            (object ["Cell" "gButton"])
-                            (object ["Cell" "hButton"])
-                            (object ["Cell" "jButton"])
-                            (object ["Cell" "kButton"])
-                            (object ["Cell" "lButton"])
-                            (object ["Cell" "middleRowRightSpacer"]))])])
-   (object ["HStack"
-            (object ["subviews"
-                     (array (object ["Cell" "shiftButton"])
-                            (object ["Cell" "zButton"])
-                            (object ["Cell" "xButton"])
-                            (object ["Cell" "cButton"])
-                            (object ["Cell" "vButton"])
-                            (object ["Cell" "bButton"])
-                            (object ["Cell" "nButton"])
-                            (object ["Cell" "mButton"])
-                            (object ["Cell" "backspaceButton"]))])])
-   (object ["HStack"
-            (object ["subviews"
-                     (array (object ["Cell" "numericButton"])
-                            (object ["Cell" "spaceButton"])
-                            (object ["Cell" "enterButton"]))])])))
+  (list->vector
+   (append (vector->list standard-phone-letter-layout-rows)
+           (list (keyboard-layout-row
+                  '("numericButton" "spaceButton" "enterButton"))))))
 
 (define phone-legend-centers
   (hash 'abc (key-note-position 'top)
