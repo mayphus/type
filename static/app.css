@@ -419,13 +419,19 @@ select {
 
 .rime-artifact-form {
   display: grid;
-  grid-template-columns: minmax(11rem, 1fr) minmax(13rem, auto);
+  grid-template-columns: minmax(11rem, 18rem) minmax(0, auto);
   gap: 0.5rem;
   margin: 0;
   align-items: stretch;
 }
 
-.rime-artifact-form .rime-build-button {
+.rime-artifact-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rime-artifact-buttons .rime-build-button {
   min-width: 13rem;
 }
 
@@ -666,7 +672,12 @@ select {
     grid-template-columns: 1fr;
   }
 
-  .rime-artifact-form .rime-build-button {
+  .rime-artifact-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .rime-artifact-buttons .rime-build-button {
     min-width: 0;
   }
 

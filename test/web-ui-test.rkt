@@ -57,6 +57,9 @@
            5001
            "127.0.0.1"))
 
+(define (match-count rx s)
+  (length (regexp-match* rx s)))
+
 (module+ test
   (test-case "museum catalog has exhibit cards instead of platform tabs"
     (define html (render-page (req "/") schemas layouts))
@@ -97,6 +100,7 @@
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"rime\"" html))
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"yuanshu\"" html))
     (check-true (regexp-match? #rx"<select[^>]+name=\"schemas\"" html))
+    (check-equal? (match-count #rx"<select[^>]+name=\"schemas\"" html) 1)
     (check-true (regexp-match? #rx"<option[^>]+value=\"flypy\"" html))
     (check-true (regexp-match? #rx"<option[^>]+value=\"flypy_ice\"" html))
     (check-true (regexp-match? #rx"Dictionary" html))

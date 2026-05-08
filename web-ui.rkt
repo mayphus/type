@@ -14,7 +14,7 @@
          form-profile
          form-request?)
 
-(define app-css-href "/app.css?v=20260508-variants")
+(define app-css-href "/app.css?v=20260508-sharedvariant")
 (define preview-svg-version "20260508-compactheight")
 
 (define copy
@@ -189,6 +189,14 @@
           (member artifact (schema-artifacts candidate))))
    schemas))
 
+(define (schema-artifact-variant-items schema schemas artifacts)
+  (remove-duplicates
+   (append-map (lambda (artifact)
+                 (schema-variant-items schema schemas artifact))
+               artifacts)
+   (lambda (left right)
+     (equal? (schema-id left) (schema-id right)))))
+
 (define (layout-id layout)
   (hash-ref layout 'id))
 
@@ -332,19 +340,25 @@
                                    ,(schema-name locale variant)))))
       `(input ((type "hidden") (name "schemas") (value ,(schema-id schema))))))
 
-(define (artifact-form locale schema variants artifact)
+(define (artifact-button locale artifact)
+  `(button ((class ,(classes "rime-build-button"
+                             (and (equal? artifact "yuanshu")
+                                  "rime-build-button-secondary")))
+            (type "submit")
+            (name "artifact")
+            (value ,artifact))
+           ,(if (equal? artifact "yuanshu")
+                (t locale 'download-yuanshu)
+                (t locale 'download-rime))))
+
+(define (artifact-form locale schema variants artifacts)
   `(form ((class "rime-artifact-form")
           (method "post")
           (action "/build"))
          ,(schema-select locale schema variants)
-         (input ((type "hidden") (name "artifact") (value ,artifact)))
-         (button ((class ,(classes "rime-build-button"
-                                   (and (equal? artifact "yuanshu")
-                                        "rime-build-button-secondary")))
-                  (type "submit"))
-                 ,(if (equal? artifact "yuanshu")
-                      (t locale 'download-yuanshu)
-                      (t locale 'download-rime)))))
+         (div ((class "rime-artifact-buttons"))
+              ,@(for/list ([artifact (in-list artifacts)])
+                  (artifact-button locale artifact)))))
 
 (define (layout-detail-card locale layout)
   `(article ((class "rime-layout-card"))
@@ -371,11 +385,10 @@
                           (p ((class "rime-section-copy rime-hero-copy"))
                              ,(schema-description locale schema)))))
            (section ((class "rime-exhibit-actions"))
-                    ,@(for/list ([artifact (in-list artifacts)])
-                        (artifact-form locale
-                                       schema
-                                       (schema-variant-items schema schemas artifact)
-                                       artifact)))
+                    ,(artifact-form locale
+                                    schema
+                                    (schema-artifact-variant-items schema schemas artifacts)
+                                    artifacts))
            (section ((class "rime-section rime-exhibit-section"))
                     (h2 ((class "rime-section-title")) ,(t locale 'layouts))
                     (div ((class "rime-layout-grid"))
