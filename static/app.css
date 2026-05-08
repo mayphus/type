@@ -69,6 +69,7 @@ body {
   background: var(--bg-soft);
   color: var(--ink);
   font-family: "Avenir Next", "Segoe UI", "Noto Sans", "PingFang SC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  font-weight: 400;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -93,7 +94,7 @@ select {
 .rime-section-title {
   margin: 0;
   font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0;
 }
 
@@ -177,7 +178,7 @@ select {
   margin-bottom: 0.65rem;
   color: var(--accent);
   font-size: 0.86rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .rime-platform-tabs {
@@ -196,7 +197,7 @@ select {
   border-radius: 999px;
   color: var(--muted);
   font-size: 0.86rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .rime-platform-tab:hover,
@@ -219,7 +220,7 @@ select {
   color: var(--muted);
   cursor: pointer;
   font-size: 0.76rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .rime-language-toggle:hover {
@@ -265,7 +266,7 @@ select {
   margin: 0;
   color: var(--accent);
   font-size: 1.08rem;
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
 }
@@ -344,7 +345,7 @@ select {
 .rime-option-action {
   color: var(--accent);
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .rime-option-input {
@@ -371,7 +372,7 @@ select {
 .rime-platform-label,
 .rime-option-title {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .rime-inline-note {
@@ -398,7 +399,7 @@ select {
   cursor: pointer;
   background: transparent;
   color: var(--ink);
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .rime-build-button:hover {
@@ -452,7 +453,7 @@ select {
   flex: 0 0 auto;
   color: var(--muted);
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .rime-variant-select {
@@ -462,7 +463,7 @@ select {
   background: transparent;
   color: var(--ink);
   font-size: 0.92rem;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .rime-variant-select:focus-visible {

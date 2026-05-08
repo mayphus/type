@@ -257,7 +257,7 @@
       (let ([label (special-label key)])
         (if (or (not (string? label)) (string=? label ""))
             ""
-            (format "<text x=\"~a\" y=\"~a\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"~a\" font-weight=\"500\" fill=\"~a\">~a</text>"
+            (format "<text x=\"~a\" y=\"~a\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"~a\" font-weight=\"400\" fill=\"~a\">~a</text>"
                     (real->decimal-string (+ x (/ width 2)) 2)
                     (real->decimal-string (+ y (/ height 2)) 2)
                     (real->decimal-string
@@ -324,7 +324,7 @@
           [icon icon]
           [(or (not (string? label)) (string=? label "")) ""]
           [else
-           (format "<text x=\"~a\" y=\"~a\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"~a\" font-weight=\"600\" fill=\"~a\">~a</text>"
+           (format "<text x=\"~a\" y=\"~a\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"~a\" font-weight=\"400\" fill=\"~a\">~a</text>"
                    (real->decimal-string (+ x (/ width 2)) 2)
                    (real->decimal-string (+ y (/ height 2)) 2)
                    (real->decimal-string

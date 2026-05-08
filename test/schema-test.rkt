@@ -133,6 +133,19 @@
     (check-not-false (string-contains? yaml "prism: flypy"))
     (check-equal? flypy:keyboard-layouts '("flypy")))
 
+  (test-case "flypy skin preview includes flypy legends"
+    (define flypy-layout-module
+      (for/first ([item (in-list (list-keyboard-layout-items catalog:generated-config-ids))]
+                  #:when (equal? (cadr item) "flypy"))
+        (caddr item)))
+    (define preview
+      (keyboard-layout-module-ref flypy-layout-module 'keyboard-layout-preview-spec))
+    (define q-key (preview-key preview "qButton"))
+    (check-not-false q-key)
+    (check-true
+     (for/or ([layer (in-list (hash-ref q-key 'layers))])
+       (equal? (hash-ref layer 'text) "iu"))))
+
   (test-case "flypy ice is a dictionary variant in flypy config"
     (define ice-files (hash-ref flypy:schema-config-files "flypy_ice"))
     (define yaml (generated-file ice-files "flypy_ice.schema.yaml"))

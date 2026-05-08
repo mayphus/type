@@ -85,7 +85,7 @@
   (define symbol-secondary? (config-ref config 'symbol-secondary? #t))
   (define cangjie-font-weight (layer-font-weight config 'cangjie-font-weight))
   (define flypy-single-font-weight (layer-font-weight config 'flypy-single-font-weight))
-  (define flypy-double-font-weight (layer-font-weight config 'flypy-double-font-weight "bold"))
+  (define flypy-double-font-weight (layer-font-weight config 'flypy-double-font-weight))
   (for/fold ([acc (hash)]) ([spec (in-list specs)])
     (define prefix (button-name (key-spec-letter spec)))
     (define-values (size bounds hint-extra) (size-for spec))

@@ -134,9 +134,7 @@
    'cangjie-font-weight "bold"
    'symbol-font-size 10
    'flypy-single-font-size (json-number "13.5")
-   'flypy-single-font-weight "bold"
    'flypy-double-font-size 10
-   'flypy-double-font-weight "bold"
    'hint-style-extra (list (cons "size" hint-size))))
 
 (define (ordered-page base-page letter-builder dark? portrait?)

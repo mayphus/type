@@ -326,6 +326,11 @@
   (define (print-clause->layer clause)
     (cadr clause))
 
+  (define (print-clause->enabled-layer clause)
+    (case (print-clause->layer clause)
+      [(flypy-single flypy-top flypy-bottom) 'flypy]
+      [else (print-clause->layer clause)]))
+
   (define (print-clause->slot clause)
     (caddr clause))
 
@@ -364,7 +369,7 @@
   (define (abstract-phone-layout model prints variant)
     (cond
       [(eq? model 'standard-26)
-       (define layers (remove-duplicates (map print-clause->layer prints)))
+       (define layers (remove-duplicates (map print-clause->enabled-layer prints)))
        (define positions (map print-clause->position prints))
        (define fonts (filter values (map print-clause->font prints)))
        `(phone-layout

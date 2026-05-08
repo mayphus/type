@@ -14,9 +14,9 @@
       "Standard numeric and symbolic secondary pages"))
     (variant flypy)
     (print abc top #:font-size 11 #:role secondary)
-    (print flypy-single bottom #:font-size 18.5 #:weight bold)
+    (print flypy-single bottom #:font-size 18.5)
     (print flypy-top center)
-    (print flypy-bottom bottom #:font-size 13 #:weight bold)
+    (print flypy-bottom bottom #:font-size 13)
     (ipad
      (raw
       (ipad-layout
@@ -29,8 +29,8 @@
         (flypy-bottom bottom))
        (fonts
         (abc          11   #:secondary)
-        (flypy-single 18.5 #:weight bold)
-        (flypy-double 13   #:weight bold))))))
+        (flypy-single 18.5)
+        (flypy-double 13))))))
 
   (variant flypy_ice
     (name "小鶴雙拼-霧凇")
