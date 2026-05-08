@@ -118,13 +118,15 @@
     [else "400"]))
 
 (define (text-layer-svg layer x y width height scale)
+  (text-layer-svg* layer x y width height scale (hash-get layer 'color "#111111")))
+
+(define (text-layer-svg* layer x y width height scale color)
   (define text (hash-get layer 'text ""))
   (if (or (not (string? text)) (string=? text ""))
       ""
       (let* ([lx (+ x (* (numberish (hash-get layer 'x 0.5) 0.5) width))]
              [ly (+ y (* (numberish (hash-get layer 'y 0.5) 0.5) height))]
-             [font-size (max 9 (* scale (numberish (hash-get layer 'font-size 14) 14)))]
-             [color (hash-get layer 'color "#111111")])
+             [font-size (max 9 (* scale (numberish (hash-get layer 'font-size 14) 14)))])
         (format "<text x=\"~a\" y=\"~a\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"~a\" font-weight=\"~a\" ~a>~a</text>"
                 (real->decimal-string lx 2)
                 (real->decimal-string ly 2)
@@ -273,6 +275,63 @@
                 (text-layer-svg layer x y width height 1.02)))
        (fallback-label-svg key x y width height))))
 
+(define (diagram-colors preview)
+  (if (color-bright? (hash-get preview 'background "#f2f3f7"))
+      (hash 'background "#f6f7f9"
+            'key "#ffffff"
+            'special "#e9edf2"
+            'stroke "#6c748014"
+            'text "#1d232b"
+            'muted-text "#596270")
+      (hash 'background "#111418"
+            'key "#222830"
+            'special "#303844"
+            'stroke "#ffffff1c"
+            'text "#f4f6f8"
+            'muted-text "#c8d0da")))
+
+(define (special-key? key)
+  (or (member (hash-get key 'kind "")
+              '("shift" "backspace" "enter" "space" "numeric" "emojis" "face.smiling"))
+      (member (hash-get key 'icon "")
+              '("shift" "shift.fill" "capslock.fill" "delete.left" "delete.left.fill"
+                "space" "space.fill" "face.smiling"))))
+
+(define (diagram-label-svg key x y width height colors)
+  (define color (hash-ref colors (if (special-key? key) 'muted-text 'text)))
+  (define layers (hash-get key 'layers '()))
+  (if (and (list? layers) (pair? layers))
+      (apply string-append
+             (for/list ([layer (in-list layers)])
+               (text-layer-svg* layer x y width height 1.0 color)))
+      (let* ([kind (hash-get key 'kind "")]
+             [icon-size (numberish (hash-get key 'icon-size 20) 20)]
+             [icon (or (special-icon-svg kind x y width height color icon-size)
+                       (special-icon-svg (hash-get key 'icon "") x y width height color icon-size))]
+             [label (special-label key)])
+        (cond
+          [icon icon]
+          [(or (not (string? label)) (string=? label "")) ""]
+          [else
+           (format "<text x=\"~a\" y=\"~a\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"~a\" font-weight=\"600\" fill=\"~a\">~a</text>"
+                   (real->decimal-string (+ x (/ width 2)) 2)
+                   (real->decimal-string (+ y (/ height 2)) 2)
+                   (real->decimal-string (if (equal? kind "numeric") 15 17) 2)
+                   (attr-escape color)
+                   (text-escape label))]))))
+
+(define (diagram-key-svg key x y width height colors)
+  (define fill (hash-ref colors (if (special-key? key) 'special 'key)))
+  (string-append
+   (format "<rect x=\"~a\" y=\"~a\" width=\"~a\" height=\"~a\" rx=\"6\" fill=\"~a\" stroke=\"~a\" stroke-width=\"1\"/>"
+           (real->decimal-string x 2)
+           (real->decimal-string y 2)
+           (real->decimal-string width 2)
+           (real->decimal-string height 2)
+           (attr-escape fill)
+           (attr-escape (hash-ref colors 'stroke)))
+   (diagram-label-svg key x y width height colors)))
+
 (define (keyboard-body-svg preview)
   (apply
    string-append
@@ -288,20 +347,36 @@
               (hash-get item 'width 0)
               (hash-get item 'height 0)))))
 
+(define (keyboard-diagram-body-svg preview colors)
+  (apply
+   string-append
+   (for*/list ([row (in-list (preview-layout preview
+                                             #:pad keyboard-pad
+                                             #:key-gap key-gap
+                                             #:row-gap row-gap))]
+               [item (in-list row)]
+               #:when (preview-key-visible? (hash-get item 'key #f)))
+     (diagram-key-svg (hash-get item 'key (hash))
+                      (hash-get item 'x 0)
+                      (hash-get item 'y 0)
+                      (hash-get item 'width 0)
+                      (hash-get item 'height 0)
+                      colors))))
+
 (define (keyboard-preview-svg preview)
   (define size (hash-get preview 'size (hash)))
   (define width (numberish (hash-get size 'width 375) 375))
   (define height (numberish (hash-get size 'height 216) 216))
-  (define background (hash-get preview 'background "#f2f3f7"))
-  (format "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"~a\" height=\"~a\" viewBox=\"0 0 ~a ~a\" role=\"img\" aria-label=\"Keyboard preview\"><rect width=\"~a\" height=\"~a\" rx=\"18\" ~a/>~a</svg>"
+  (define colors (diagram-colors preview))
+  (format "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"~a\" height=\"~a\" viewBox=\"0 0 ~a ~a\" role=\"img\" aria-label=\"Keyboard preview\"><rect width=\"~a\" height=\"~a\" rx=\"12\" fill=\"~a\"/>~a</svg>"
           (real->decimal-string width 2)
           (real->decimal-string height 2)
           (real->decimal-string width 2)
           (real->decimal-string height 2)
           (real->decimal-string width 2)
           (real->decimal-string height 2)
-          (fill-attrs background "#f2f3f7")
-          (keyboard-body-svg preview)))
+          (attr-escape (hash-ref colors 'background))
+          (keyboard-diagram-body-svg preview colors)))
 
 (define (demo-preview-svg title preview)
   (define panel-x 92)

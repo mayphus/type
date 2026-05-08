@@ -65,7 +65,15 @@
       (check-true (hash-has-key? names 'zh-Hant))
       (for ([theme (in-list '(light dark))])
         (define svg (hash-ref preview-svgs theme #f))
+        (define expected-background
+          (case theme
+            [(light) "fill=\"#f6f7f9\""]
+            [(dark) "fill=\"#111418\""]))
         (check-true
          (and (string? svg)
               (regexp-match? #rx"^<svg[^>]+Keyboard preview" svg))
-         (format "~a preview ~a should be an SVG" layout-id theme))))))
+         (format "~a preview ~a should be an SVG" layout-id theme))
+        (check-true
+         (and (string? svg)
+              (regexp-match? (regexp-quote expected-background) svg))
+         (format "~a preview ~a should use neutral diagram colors" layout-id theme))))))
