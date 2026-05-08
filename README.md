@@ -6,7 +6,7 @@ Chinese input museum and Rime/Yuanshu package builder, served by one Racket app.
 
 - `web.rkt` serves the public museum HTML, keyboard layout previews, and ZIP builds.
 - `gui.rkt` opens a native Racket GUI for local Yuanshu builds and iPhone pushes.
-- `build.rkt` is the callable build library for schemas, Rime/Yuanshu artifacts, keyboard layouts, and archives.
+- `build.rkt` is the callable build facade; focused build modules live in `build/`.
 - `web-ui.rkt` renders the server-side UI.
 - `k8s.rkt` generates and checks the Kubernetes YAML.
 - `rime/` holds native Rime YAML and dictionaries; `schema/` holds this project's DSL source.
@@ -82,7 +82,18 @@ other Yuanshu layouts are left untouched.
 
 ## Build logic
 
-`build.rkt` is the shared build boundary for both web and GUI:
+`build.rkt` is the shared build facade for both web and GUI. The implementation
+is split under `build/`:
+
+- `paths.rkt` owns shared paths and tool locations.
+- `schema.rkt` resolves schemas, profiles, artifacts, and asset lists.
+- `keyboard.rkt` creates dynamic Yuanshu keyboard layout modules.
+- `writer.rkt` writes exported module file hashes to disk.
+- `profile.rkt` builds profiles, keyboard layout packages, previews, and ZIPs.
+- `upload.rkt` syncs generated bundles to Yuanshu.
+- `deploy.rkt` deploys the desktop Rime config.
+
+The build flow is:
 
 1. A profile says which schemas to build and which artifact to produce:
    `rime` or `yuanshu`. Legacy `desktop?` values still map to those artifacts.
