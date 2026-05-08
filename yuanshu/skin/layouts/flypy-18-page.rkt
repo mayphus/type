@@ -43,7 +43,7 @@
 (define button-specs
   (list
    (merged18-spec "q18AltButton"  "q" "Q"  "iu"       seven-column-size #f                    #f)
-   (merged18-spec "we18AltButton" "w" "WE" "ei e"     seven-column-size #f                    (key-spec-swipe-down (find-hybrid-letter-spec "e")))
+   (merged18-spec "we18AltButton" "w" "WE" "ei e"     seven-column-size #f                    #f)
    (merged18-spec "rt18AltButton" "r" "RT" "uan ue"   seven-column-size #f                    #f)
    (merged18-spec "y18AltButton"  "y" "Y"  "un"       seven-column-size #f                    #f)
    (merged18-spec "u18AltButton"  "u" "U"  "sh"       seven-column-size #f                    #f)

@@ -147,6 +147,15 @@
      (for/or ([layer (in-list (hash-ref q-key 'layers))])
        (equal? (hash-ref layer 'text) "iu"))))
 
+  (test-case "generated Yuanshu layouts do not emit swipe-down actions"
+    (for* ([item (in-list (list-keyboard-layout-items catalog:generated-config-ids))]
+           [files (in-value ((keyboard-layout-module-ref (caddr item)
+                                                         'keyboard-layout-files-with-docs)))]
+           [(path content) (in-hash files)]
+           #:when (regexp-match? #rx"[.]yaml$" path))
+      (check-false (string-contains? content "swipeDownAction")
+                   (format "~a should not contain swipeDownAction" path))))
+
   (test-case "flypy ice is a dictionary variant in flypy config"
     (define ice-files (hash-ref flypy:schema-config-files "flypy_ice"))
     (define yaml (generated-file ice-files "flypy_ice.schema.yaml"))

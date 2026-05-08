@@ -11,7 +11,7 @@
 (define button-specs
   (list
    (merged18-spec "qw14Button" "q" "QW" "" compact-14-key-size #f #f)
-   (merged18-spec "er14Button" "e" "ER" "" compact-14-key-size #f (key-spec-swipe-down (find-hybrid-letter-spec "e")))
+   (merged18-spec "er14Button" "e" "ER" "" compact-14-key-size #f #f)
    (merged18-spec "ty14Button" "t" "TY" "" compact-14-key-size #f #f)
    (merged18-spec "ui14Button" "u" "UI" "" compact-14-key-size #f #f)
    (merged18-spec "op14Button" "o" "OP" "" compact-14-key-size #f #f)

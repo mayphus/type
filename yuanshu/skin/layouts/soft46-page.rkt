@@ -460,7 +460,6 @@
    size
    "phoneSystemForegroundStyle"
    #:swipe-up (send-keys-action "Tab")
-   #:swipe-down (send-keys-action "Tab")
    #:caps-locked-style "phoneSystemForegroundStyle"
    #:uppercased-style "phoneSystemForegroundStyle"
    #:badge? #t))
@@ -480,7 +479,6 @@
     (if portrait? portrait-system-width landscape-backspace-width)
     "phoneSystemForegroundStyle"
     #:swipe-up (send-keys-action "Shift+Return")
-    #:swipe-down (send-keys-action "Control+Delete")
     #:repeat-action "backspace")
    (phone-simple-system-entry
     "enterButton"
@@ -618,7 +616,6 @@
            ["capsLockedStateForegroundStyle" "shiftButtonCapsLockedForegroundStyle"]
            ["foregroundStyle" "leftshiftButtonForegroundStyle"]
            ["size" (object ["width" "2.5/16"])]
-           ["swipeDownAction" (send-keys-action "Tab")]
            ["swipeUpAction" (send-keys-action "Tab")]
            ["uppercasedStateForegroundStyle" "shiftButtonUppercasedForegroundStyle"])
    "leftshiftButtonForegroundStyle"
@@ -629,7 +626,6 @@
            ["capsLockedStateForegroundStyle" "shiftButtonCapsLockedForegroundStyle"]
            ["foregroundStyle" "rightshiftButtonForegroundStyle"]
            ["size" (object ["width" "2.5/16"])]
-           ["swipeDownAction" (send-keys-action "Tab")]
            ["swipeUpAction" (send-keys-action "Tab")]
            ["uppercasedStateForegroundStyle" "shiftButtonUppercasedForegroundStyle"])
    "rightshiftButtonForegroundStyle"
@@ -651,7 +647,6 @@
                             #:center right-system-offset
                             #:highlight-image "delete.left.fill"
                             #:swipe-up (send-keys-action "Shift+Return")
-                            #:swipe-down (send-keys-action "Control+Delete")
                             #:repeat-action "backspace")
    (hash
     "numericButton"

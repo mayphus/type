@@ -62,7 +62,7 @@
 (define button-specs
   (list
    (merged18-spec "q18AuxButton" "q" "Q" "iu 犭" seven-column-size #f #f)
-   (merged18-spec "we18AuxButton" "w" "WE" "ia ua e 文" seven-column-size #f (key-spec-swipe-down (find-hybrid-letter-spec "e")))
+   (merged18-spec "we18AuxButton" "w" "WE" "ia ua e 文" seven-column-size #f #f)
    (merged18-spec "rt18AuxButton" "r" "RT" "uan ue 土" seven-column-size #f #f)
    (merged18-spec "y18AuxButton" "y" "Y" "ing uai 言" seven-column-size #f #f)
    (merged18-spec "u18AuxButton" "u" "U" "sh 山" seven-column-size #f #f)
