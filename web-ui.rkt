@@ -20,21 +20,16 @@
   (hash
    'en
    (hash
-    'title "Chinese Input Museum"
-    'landing-copy "A small working museum for Chinese input methods. Browse an exhibit, inspect its keyboard layout, then download a Rime or Yuanshu package."
-    'home "Museum"
-    'back "Back to museum"
-    'details "Exhibit"
-    'families "Families"
+    'title "Chinese Input Method Museum"
+    'landing-copy "Browse input methods by family. Open an exhibit for layouts, dependencies, and downloads."
+    'back "Home"
     'layouts "Keyboard layouts"
     'dependencies "Dependencies"
     'no-dependencies "No extra schema dependencies."
-    'artifacts "Artifacts"
     'rime "Rime"
     'yuanshu "Yuanshu"
     'download-rime "Download Rime package"
     'download-yuanshu "Download Yuanshu package"
-    'layout-copy "The same keyboard layout data renders as web SVG previews and as Yuanshu .cskin packages with demo.png."
     'missing "Exhibit not found."
     'support "Support"
     'footer-credit "Powered by Racket on pb62"
@@ -42,20 +37,15 @@
    'zh-Hant
    (hash
     'title "中文輸入博物館"
-    'landing-copy "一座可以實際使用的中文輸入博物館。瀏覽展品、查看鍵盤佈局，然後下載 Rime 或元書輸入法套件。"
-    'home "博物館"
-    'back "回到博物館"
-    'details "展品"
-    'families "分類"
+    'landing-copy "按輸入法家族瀏覽。進入展品查看鍵盤佈局、依賴與下載。"
+    'back "首頁"
     'layouts "鍵盤佈局"
     'dependencies "依賴方案"
     'no-dependencies "沒有額外方案依賴。"
-    'artifacts "輸出"
     'rime "Rime"
     'yuanshu "元書"
     'download-rime "下載 Rime 套件"
     'download-yuanshu "下載元書套件"
-    'layout-copy "同一份鍵盤佈局資料可以渲染成網頁 SVG 預覽，也可以生成元書 .cskin 套件與 demo.png。"
     'missing "找不到這個展品。"
     'support "支持"
     'footer-credit "Powered by Racket on pb62"
@@ -226,17 +216,6 @@
                       (symbol->string (next-locale locale)))))
       ,(t locale 'language)))
 
-(define (artifact-label locale artifact)
-  (cond
-    [(equal? artifact "yuanshu") (t locale 'yuanshu)]
-    [else (t locale 'rime)]))
-
-(define (artifact-chips locale artifacts)
-  `(div ((class "rime-artifact-chips"))
-        ,@(for/list ([artifact (in-list artifacts)])
-            `(span ((class "rime-artifact-chip"))
-                   ,(artifact-label locale artifact)))))
-
 (define (layout-preview locale layout)
   `(div ((class "rime-layout-preview keyboard-preview keyboard-preview-svg-wrap"))
         (picture
@@ -248,18 +227,14 @@
                (alt ,(layout-name locale layout)))))))
 
 (define (schema-card locale schema layouts)
-  (define catalog-id (schema-id->catalog-id (schema-id schema)))
   (define preview-layouts (schema-layout-items schema layouts))
   `(a ((class "rime-exhibit-card")
        (href ,(format "/exhibits/~a" (schema-id schema))))
       (div ((class "rime-option-head"))
            (div ((class "rime-option-copy"))
                 (div ((class "rime-option-title-row"))
-                     (span ((class "rime-option-title")) ,(schema-name locale schema))
-                     (span ((class "rime-option-id")) ,(schema-id schema)))
-                (span ((class "rime-family-label")) ,(schema-catalog-label catalog-id locale))))
+                     (span ((class "rime-option-title")) ,(schema-name locale schema)))))
       (p ((class "rime-card-description")) ,(schema-description locale schema))
-      ,(artifact-chips locale (schema-artifacts schema))
       ,@(if (pair? preview-layouts)
             `((div ((class "rime-schema-previews"))
                    ,@(for/list ([layout (in-list preview-layouts)])
@@ -310,13 +285,9 @@
    `((section ((class "rime-hero-card"))
               (div ((class "rime-hero-head"))
                    (div
-                    (a ((class "rime-back-link") (href "/")) ,(t locale 'home))
                     (h1 ((class "page-title")) ,(t locale 'title))
                     (p ((class "rime-section-copy rime-hero-copy"))
                        ,(t locale 'landing-copy)))))
-     (section ((class "rime-instructions"))
-              (h2 ((class "rime-instructions-title")) ,(t locale 'families))
-              (p ,(t locale 'layout-copy)))
      (div ((class "rime-schema-catalogs"))
           ,@(for/list ([catalog (in-list (cataloged-schemas schemas))])
               (catalog-section locale layouts catalog))))))
@@ -369,14 +340,12 @@
                              ,(schema-description locale schema))))
                     (div ((class "rime-exhibit-meta"))
                          (span ((class "rime-family-label")) ,(schema-catalog-label catalog-id locale))
-                         (span ((class "rime-option-id")) ,(schema-id schema))
-                         ,(artifact-chips locale artifacts)))
+                         (span ((class "rime-option-id")) ,(schema-id schema))))
            (section ((class "rime-exhibit-actions"))
                     ,@(for/list ([artifact (in-list artifacts)])
                         (artifact-form locale schema artifact)))
            (section ((class "rime-section rime-exhibit-section"))
                     (h2 ((class "rime-section-title")) ,(t locale 'layouts))
-                    (p ((class "rime-section-copy")) ,(t locale 'layout-copy))
                     (div ((class "rime-layout-grid"))
                          ,@(for/list ([layout (in-list schema-layouts)])
                              (layout-detail-card locale layout))))
