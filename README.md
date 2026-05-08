@@ -16,8 +16,11 @@ Chinese input museum and Rime/Yuanshu package builder, served by one Racket app.
   `shapes.rkt` for blank keyboard geometry, and `catalog.rkt` as the public
   resolver. Schema modules own schema-specific printed labels and layout
   binding.
+- `preview/` contains shared preview layout and SVG rendering code used by the
+  web app and Yuanshu build outputs.
 - `lib/yaml/` contains the internal YAML renderer.
-- `yuanshu/skin/` is the Yuanshu skin compiler and preview renderer.
+- `yuanshu/skin/` is the Yuanshu skin compiler and adapts generated Yuanshu
+  page files into shared preview specs.
 - `tools/` contains maintenance scripts.
 - `k8s/` is ignored generated deploy output from `k8s.rkt`.
 

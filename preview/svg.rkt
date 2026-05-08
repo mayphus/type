@@ -3,8 +3,7 @@
 (require racket/format
          racket/match
          racket/string
-         "../yuanshu/skin/core/preview.rkt"
-         "../yuanshu/skin/core/visual-policy.rkt")
+         "spec.rkt")
 
 (provide keyboard-preview-svg
          demo-preview-svg
@@ -16,6 +15,7 @@
 (define keyboard-pad 8)
 (define key-gap 4)
 (define row-gap 6)
+(define default-key-corner-radius 6)
 
 (define (attr-escape value)
   (define s (~a value))
@@ -47,7 +47,7 @@
   (if (hash? h) (hash-ref h key fallback) fallback))
 
 (define (key-corner-radius _key)
-  square-key-corner-radius)
+  default-key-corner-radius)
 
 (define (color-components color)
   (and (string? color)
@@ -341,7 +341,7 @@
            (real->decimal-string y 2)
            (real->decimal-string width 2)
            (real->decimal-string height 2)
-           (real->decimal-string square-key-corner-radius 2)
+           (real->decimal-string default-key-corner-radius 2)
            (attr-escape fill)
            (attr-escape (hash-ref colors 'stroke)))
    (diagram-label-svg key x y width height colors)))
