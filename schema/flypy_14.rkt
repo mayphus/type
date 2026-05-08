@@ -3,15 +3,17 @@
 (rime-schema flypy_14
   (name "小鶴雙拼-14鍵")
   (artifacts yuanshu)
-  (keyboard-layout flypy_14
+  (keyboard flypy_14
+    (model compact-14)
     (meta
      (name "Flypy-14 Key" "小鶴-14鍵")
      (summary "A compact Yuanshu keyboard layout for the Flypy 14-key layout.")
      (features
       "14-key phone layout"
       "Standard iPad pinyin page and secondary pages"))
-    (phone-layout flypy-14)
-    (ipad-layout standard-18))
+    (variant flypy-14)
+    (print flypy center)
+    (ipad standard-18))
   (deps cangjie6)
   (static-files "rime_ice.dict.yaml")
   (static-dirs "rime_ice_dicts")

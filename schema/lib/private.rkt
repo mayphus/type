@@ -33,6 +33,7 @@
          "../../yuanshu/patches.rkt"
          "../../lib/yaml/dsl.rkt"
          (for-syntax racket/base
+                     racket/list
                      syntax/parse))
 
 (provide (except-out (all-from-out racket/base) #%module-begin)
@@ -41,6 +42,7 @@
          (all-from-out "../../yuanshu/patches.rkt")
          (rename-out [rime-schema-module-begin #%module-begin])
          rime-schema
+         keyboard
          include-ref
          switch
          engine
@@ -61,6 +63,9 @@
 
 (define (dsl-sequence values)
   (apply sequence (map dsl-name values)))
+
+(define (keyboard . _)
+  (error 'keyboard "keyboard is only valid inside rime-schema"))
 
 (define (schema-document #:id id
                          #:name name
@@ -296,7 +301,7 @@
     (define lst (syntax->list clause))
     (and lst
          (pair? lst)
-         (memq (syntax-e (car lst)) '(keyboard-layout mobile-skin yuanshu-skin skin))))
+         (memq (syntax-e (car lst)) '(keyboard keyboard-layout mobile-skin yuanshu-skin skin))))
 
   (define (keyboard-layout-id layout-cl)
     (define items (syntax->list layout-cl))
@@ -304,10 +309,114 @@
       (raise-syntax-error 'keyboard-layout "missing layout id" layout-cl))
     (id-or-string->string (cadr items)))
 
+  (define (clause? value tag)
+    (and (pair? value) (eq? (car value) tag)))
+
+  (define (datum-clause-body clauses tag)
+    (cond
+      [(for/first ([clause (in-list clauses)]
+                   #:when (clause? clause tag))
+         (cdr clause))]
+      [else #f]))
+
+  (define (datum-clause-value clauses tag)
+    (define body (datum-clause-body clauses tag))
+    (and body (pair? body) (car body)))
+
+  (define (print-clause->layer clause)
+    (cadr clause))
+
+  (define (print-clause->slot clause)
+    (caddr clause))
+
+  (define (print-clause-options clause)
+    (cdddr clause))
+
+  (define (option-ref options key [default #f])
+    (cond
+      [(memq key options) => (lambda (tail)
+                               (if (pair? (cdr tail))
+                                   (cadr tail)
+                                   default))]
+      [else default]))
+
+  (define (option-present? options key)
+    (and (memq key options) #t))
+
+  (define (print-clause->font clause)
+    (define layer (print-clause->layer clause))
+    (define options (print-clause-options clause))
+    (define font-size (option-ref options '#:font-size #f))
+    (define role (option-ref options '#:role #f))
+    (define weight (option-ref options '#:weight #f))
+    (and font-size
+         `(,layer
+           ,font-size
+           ,@(case role
+               [(primary) '(#:primary)]
+               [(secondary) '(#:secondary)]
+               [else '()])
+           ,@(if weight `(#:weight ,weight) '()))))
+
+  (define (print-clause->position clause)
+    `(,(print-clause->layer clause) ,(print-clause->slot clause)))
+
+  (define (abstract-phone-layout model prints variant)
+    (cond
+      [(eq? model 'standard-26)
+       (define layers (remove-duplicates (map print-clause->layer prints)))
+       (define positions (map print-clause->position prints))
+       (define fonts (filter values (map print-clause->font prints)))
+       `(phone-layout
+         (layers ,@layers)
+         (positions ,@positions)
+         ,@(if (null? fonts) '() `((fonts ,@fonts))))]
+      [(and (eq? model 'compact-14) variant)
+       `(phone-layout ,variant)]
+      [(and (eq? model 'compact-18) variant)
+       `(phone-layout ,variant)]
+      [(and (eq? model 'compact-17) variant)
+       `(phone-layout ,variant)]
+      [(and (eq? model 'zhuyin) variant)
+       `(phone-layout ,variant)]
+      [else
+       (error 'keyboard "unsupported keyboard model/variant: ~v ~v" model variant)]))
+
+  (define (abstract-ipad-layout model ipad prints)
+    (cond
+      [(not ipad) '()]
+      [(and (pair? ipad) (eq? (car ipad) 'raw))
+       (list (cadr ipad))]
+      [(symbol? ipad)
+       (list `(ipad-layout ,ipad))]
+      [(and (eq? model 'standard-26) (eq? ipad 'standard-26))
+       (list `(ipad-layout
+               (layers ,@(remove-duplicates (map print-clause->layer prints)))
+               (positions ,@(map print-clause->position prints))
+               (fonts ,@(filter values (map print-clause->font prints)))))]
+      [else
+       (list `(ipad-layout ,ipad))]))
+
+  (define (abstract-keyboard-body datums)
+    (define clauses datums)
+    (define model (or (datum-clause-value clauses 'model) 'standard-26))
+    (define variant (datum-clause-value clauses 'variant))
+    (define ipad (datum-clause-value clauses 'ipad))
+    (define prints (filter (lambda (clause) (clause? clause 'print)) clauses))
+    (define meta-clauses (filter (lambda (clause) (clause? clause 'meta)) clauses))
+    (append
+     meta-clauses
+     (list (abstract-phone-layout model prints variant))
+     (abstract-ipad-layout model ipad prints)))
+
   (define (keyboard-layout-def layout-cl)
     (define items (syntax->list layout-cl))
+    (define tag (syntax-e (car items)))
     (define layout-id (id-or-string->string (cadr items)))
-    (define body (map syntax->datum (cddr items)))
+    (define body
+      (if (eq? tag 'keyboard)
+          (abstract-keyboard-body (map syntax->datum (cddr items)))
+          (map syntax->datum (cddr items))))
     #`(cons #,(string-expr layout-cl layout-id) '#,body))
 
 )

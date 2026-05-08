@@ -98,6 +98,10 @@
 
   (test-case "keyboard catalog owns reusable keyboard models"
     (check-not-false (keyboard:keyboard-model-definition-ref "standard-26"))
+    (check-not-false (keyboard:keyboard-model-definition-ref "compact-14"))
+    (check-not-false (keyboard:keyboard-model-definition-ref "compact-18"))
+    (check-not-false (keyboard:keyboard-model-definition-ref "compact-17"))
+    (check-not-false (keyboard:keyboard-model-definition-ref "zhuyin"))
     (check-false (keyboard:keyboard-layout-definition-ref "flypy"))
     (check-not-false (keyboard:keyboard-shape-definition-ref "compact-14"))
     (check-false (keyboard:keyboard-layout-definition-ref "missing-layout")))

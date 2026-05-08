@@ -2,18 +2,16 @@
 
 (rime-schema terra_pinyin
   (name "地球拼音")
-  (keyboard-layout terra_pinyin
+  (keyboard terra_pinyin
+    (model standard-26)
     (meta
      (name "Terra Pinyin" "地球拼音")
      (summary "A Yuanshu keyboard layout for Terra Pinyin with tone-number input.")
      (features
       "Standard QWERTY pinyin phone layout"
       "Standard iPad pinyin, numeric, and symbolic pages"))
-    (phone-layout
-     (layers abc)
-     (positions (abc center))
-     (fonts (abc 25 #:primary #:weight bold)))
-    (ipad-layout standard-18))
+    (print abc center #:font-size 25 #:role primary #:weight bold)
+    (ipad standard-18))
   (static-files "terra_pinyin.dict.yaml")
   (schema
    (version "0.1")

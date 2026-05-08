@@ -20,6 +20,31 @@
       (q w e r t y u i o p)
       (a s d f g h j k l)
       (z x c v b n m))
+     (slots ,standard-key-slots))
+    (compact-14
+     (rows
+      (qw er ty ui op)
+      (as df gh jk l)
+      (zx cv bn m backspace))
+     (slots ,standard-key-slots))
+    (compact-18
+     (rows
+      (q we rt y u io p)
+      (a sd fg h jk l)
+      (z xc v bn m))
+     (slots ,standard-key-slots))
+    (compact-17
+     (rows
+      (a b c d e f)
+      (g h i j k)
+      (l m n o p q))
+     (slots ,standard-key-slots))
+    (zhuyin
+     (rows
+      (bo de third-tone fourth-tone zhi second-tone light-tone a ai an)
+      (po te ge ji chi zi yi o ei en)
+      (mo ne ke qi shi ci wu e ao ang)
+      (fo le he xi ri si yu eh ou eng))
      (slots ,standard-key-slots))))
 
 (define (keyboard-model-definition-ref model [default #f])

@@ -2,18 +2,16 @@
 
 (rime-schema luna_pinyin
   (name "朙月拼音")
-  (keyboard-layout luna_pinyin
+  (keyboard luna_pinyin
+    (model standard-26)
     (meta
      (name "Luna Pinyin" "朙月拼音")
      (summary "A Yuanshu keyboard layout for standard full-pinyin typing.")
      (features
       "Standard QWERTY pinyin phone layout"
       "Standard iPad pinyin, numeric, and symbolic pages"))
-    (phone-layout
-     (layers abc)
-     (positions (abc center))
-     (fonts (abc 25 #:primary #:weight bold)))
-    (ipad-layout standard-18))
+    (print abc center #:font-size 25 #:role primary #:weight bold)
+    (ipad standard-18))
   (static-files "luna_pinyin.dict.yaml" "zhuyin.yaml")
   (schema
    (version "0.1")
