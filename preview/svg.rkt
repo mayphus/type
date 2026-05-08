@@ -3,8 +3,8 @@
 (require racket/format
          racket/match
          racket/string
-         "preview.rkt"
-         "visual-policy.rkt")
+         "../yuanshu/skin/core/preview.rkt"
+         "../yuanshu/skin/core/visual-policy.rkt")
 
 (provide keyboard-preview-svg
          demo-preview-svg

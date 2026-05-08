@@ -4,7 +4,7 @@
          racket/port
          racket/string
          racket/system
-         "preview-svg.rkt")
+         "../../../preview/svg.rkt")
 
 (provide demo-preview-png-bytes)
 

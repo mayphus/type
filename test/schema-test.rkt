@@ -16,8 +16,8 @@
          (prefix-in terra_pinyin: "../schema/terra_pinyin.rkt")
          (prefix-in jyut6ping3: "../schema/jyut6ping3.rkt")
          "../build.rkt"
+         "../preview/svg.rkt"
          "../yuanshu/skin/core/preview.rkt"
-         "../yuanshu/skin/core/preview-svg.rkt"
          "../yuanshu/skin/layouts/bopomofo-page.rkt"
          (prefix-in flypy14-layout: "../yuanshu/skin/layouts/flypy-14-page.rkt")
          (prefix-in flypy18-layout: "../yuanshu/skin/layouts/flypy-18-page.rkt")
