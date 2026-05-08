@@ -3,6 +3,7 @@
 (rime-schema shuffle_17
   (name "小鶴雙拼-亂序17鍵")
   (artifacts yuanshu)
+  (keyboard-layouts shuffle_17)
   (static-files "rime_ice.dict.yaml")
   (static-dirs "rime_ice_dicts")
   (schema
@@ -72,12 +73,4 @@
     (includes yuanshu_common_patch yuanshu_script_patch)
     (version "0.1")
     (description
-     "朙月拼音＋亂序17方案。\n使用 rime-ice 詞庫，精簡版，適合移動端匯入"))
-  (keyboard-layout shuffle_17
-    (meta
-      (name "Flypy-Shuffle 17 Key" "小鶴-亂序17鍵")
-      (summary "An experimental 17-key Yuanshu keyboard layout for the shuffle_17 schema family.")
-      (features
-        "17-key shuffled phone layout"
-        "Custom iPad pages"))
-    (phone-layout shuffle-17)))
+     "朙月拼音＋亂序17方案。\n使用 rime-ice 詞庫，精簡版，適合移動端匯入")))

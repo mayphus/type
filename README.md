@@ -11,20 +11,23 @@ Chinese input museum and Rime/Yuanshu package builder, served by one Racket app.
 - `k8s.rkt` generates and checks the Kubernetes YAML.
 - `rime/` holds native Rime YAML and dictionaries; `schema/` holds this project's DSL source.
 - `schema/lib/lang.rkt` is the public schema DSL language.
+- `keyboard/` contains reusable keyboard layout definitions shared by schemas.
 - `lib/yaml/` contains the internal YAML renderer.
 - `yuanshu/skin/` is the Yuanshu skin compiler and preview renderer.
 - `tools/` contains maintenance scripts.
 - `k8s/` is ignored generated deploy output from `k8s.rkt`.
 
 Generated schema modules use `#lang s-exp "lib/lang.rkt"` and declare their
-artifact support in the schema itself. Inline `(keyboard-layout ...)` clauses
-are now treated as custom Yuanshu skin definitions; default layouts should move
-to a root keyboard catalog instead of living in schema modules:
+artifact support in the schema itself. Default keyboard layouts live in
+`keyboard/catalog.rkt`, so schema modules should normally reference them by id
+with `(keyboard-layouts ...)`. Inline `(keyboard-layout ...)` clauses are kept
+for custom, schema-local Yuanshu skin definitions:
 
 ```racket
 (rime-schema flypy_14
   (name "14鍵")
   (artifacts yuanshu)
+  (keyboard-layouts flypy_14)
   (deps cangjie6)
   (static-files "rime_ice.dict.yaml")
   (static-dirs "rime_ice_dicts")
@@ -42,13 +45,7 @@ to a root keyboard catalog instead of living in schema modules:
     (includes yuanshu_common_patch yuanshu_reverse_lookup_patch)
     (version "0.1")
     (description "適合 Yuanshu iPhone 14 鍵圖示鍵盤佈局。")
-    (patch "recognizer/patterns/reverse_lookup" "`[a-z]*'?$"))
-  (yuanshu-skin flypy_14
-    (meta
-      (name "Flypy 14" "小鶴十四鍵")
-      (summary "A compact Yuanshu keyboard layout for the Flypy 14-key layout."))
-    (phone-layout flypy-14)
-    (ipad-layout standard-18)))
+    (patch "recognizer/patterns/reverse_lookup" "`[a-z]*'?$")))
 ```
 
 ## URL strategy

@@ -3,6 +3,7 @@
 (rime-schema flypy_18
   (name "小鶴雙拼-18鍵")
   (artifacts yuanshu)
+  (keyboard-layouts flypy_18)
   (deps cangjie6)
   (static-files "rime_ice.dict.yaml")
   (static-dirs "rime_ice_dicts")
@@ -76,13 +77,4 @@
     (includes yuanshu_common_patch yuanshu_reverse_lookup_patch)
     (version "0.1")
     (description
-     "朙月拼音＋小鶴雙拼 18 鍵方案。\n使用 rime-ice 詞庫，適合 Yuanshu iPhone 18 鍵圖示皮膚。"))
-  (keyboard-layout flypy_18
-    (meta
-      (name "Flypy-18 Key" "小鶴-18鍵")
-      (summary "A compact Yuanshu keyboard layout for the Flypy 18-key layout.")
-      (features
-        "18-key phone layout"
-        "Standard iPad pinyin page and secondary pages"))
-    (phone-layout flypy-18)
-    (ipad-layout standard-18)))
+     "朙月拼音＋小鶴雙拼 18 鍵方案。\n使用 rime-ice 詞庫，適合 Yuanshu iPhone 18 鍵圖示皮膚。")))

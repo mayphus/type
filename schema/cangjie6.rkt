@@ -13,19 +13,4 @@
     (patch "engine/filters" '("simplifier@simplify"
                               "reverse_lookup_filter@flypy_reverse_lookup"
                               "uniquifier"))
-    (patch "recognizer/patterns/reverse_lookup" "`[a-z]*;?$"))
-  (keyboard-layout cangjie6
-    (meta
-      (name "Cangjie 6" "倉頡六代")
-      (summary "A Yuanshu keyboard layout focused on Cangjie 6 labels across phone and iPad layouts.")
-      (features
-        "Cangjie-centered legends"
-        "Standard numeric and symbolic secondary pages"))
-    (phone-layout
-      (layers cangjie)
-      (fonts [cangjie 25 #:primary #:weight bold]))
-    (ipad-layout
-      (layers cangjie)
-      (size "1.1/16")
-      (fonts
-        [cangjie 22.5 #:primary #:weight bold]))))
+    (patch "recognizer/patterns/reverse_lookup" "`[a-z]*;?$")))

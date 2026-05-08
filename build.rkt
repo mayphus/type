@@ -13,6 +13,7 @@
          racket/string
          racket/system
          "default-profile.rkt"
+         "keyboard/catalog.rkt"
          "schema/registry.rkt"
          "tools/yuanshu-sync.rkt")
 
@@ -123,6 +124,7 @@
                                          (schema-module-ref schema 'mobile-skin-defs '())))
   (cond
     [(assoc layout layout-defs) => cdr]
+    [(keyboard-layout-definition-ref layout) => values]
     [else #f]))
 
 (define (schema-mobile-skin-body schema skin)

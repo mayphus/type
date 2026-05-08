@@ -2,6 +2,7 @@
 
 (rime-schema terra_pinyin
   (name "地球拼音")
+  (keyboard-layouts terra_pinyin)
   (static-files "terra_pinyin.dict.yaml")
   (schema
    (version "0.1")
@@ -29,16 +30,4 @@
    (preset-section 'key_binder)
    (recognizer
     #:patterns
-    (list (pattern 'punct "^/([0-9]0?|[A-Za-z]+)$"))))
-  (keyboard-layout terra_pinyin
-    (meta
-      (name "Terra Pinyin" "地球拼音")
-      (summary "A Yuanshu keyboard layout for Terra Pinyin with tone-number input.")
-      (features
-        "Standard QWERTY pinyin phone layout"
-        "Standard iPad pinyin, numeric, and symbolic pages"))
-    (phone-layout
-      (layers abc)
-      (positions [abc center])
-      (fonts [abc 25 #:primary #:weight bold]))
-    (ipad-layout standard-18)))
+    (list (pattern 'punct "^/([0-9]0?|[A-Za-z]+)$")))))

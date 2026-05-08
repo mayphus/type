@@ -5,6 +5,7 @@
          racket/list
          racket/runtime-path
          racket/string
+         (prefix-in keyboard: "../keyboard/catalog.rkt")
          (prefix-in catalog: "../schema/catalog.rkt")
          (prefix-in model: "../schema/model.rkt")
          (prefix-in registry: "../schema/registry.rkt")
@@ -93,6 +94,12 @@
   (test-case "schema catalog ids are unique"
     (define ids (catalog:schema-definition-ids))
     (check-equal? (length ids) (length (remove-duplicates ids))))
+
+  (test-case "keyboard catalog owns reusable layout bodies"
+    (check-not-false (keyboard:keyboard-layout-definition-ref "flypy"))
+    (check-not-false (keyboard:keyboard-layout-definition-ref "cangjie6"))
+    (check-not-false (keyboard:keyboard-layout-definition-ref "bopomofo"))
+    (check-false (keyboard:keyboard-layout-definition-ref "missing-layout")))
 
   (test-case "generated schema catalog entries point at module files"
     (for ([id (in-list catalog:generated-config-ids)])
