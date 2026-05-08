@@ -66,6 +66,21 @@
 (define (t locale key)
   (hash-ref (hash-ref copy locale) key))
 
+(define (localized-value value locale [default ""])
+  (define (string-or-default maybe-value)
+    (if (and (string? maybe-value)
+             (not (string=? maybe-value "")))
+        maybe-value
+        default))
+  (cond
+    [(hash? value)
+     (string-or-default
+      (or (hash-ref value locale #f)
+          (hash-ref value 'en #f)
+          (hash-ref value 'zh-Hant #f)))]
+    [(string? value) (string-or-default value)]
+    [else default]))
+
 (define (next-locale locale)
   (if (eq? locale 'zh-Hant) 'en 'zh-Hant))
 
@@ -144,11 +159,16 @@
 (define (schema-id schema)
   (hash-ref schema 'id))
 
-(define (schema-name schema)
-  (hash-ref schema 'name (schema-id schema)))
+(define (schema-name locale schema)
+  (localized-value (hash-ref schema 'names
+                             (hash-ref schema 'name (schema-id schema)))
+                   locale
+                   (schema-id schema)))
 
-(define (schema-description schema)
-  (hash-ref schema 'description ""))
+(define (schema-description locale schema)
+  (localized-value (hash-ref schema 'descriptions
+                             (hash-ref schema 'description ""))
+                   locale))
 
 (define (schema-deps schema)
   (hash-ref schema 'deps '()))
@@ -167,9 +187,11 @@
 (define (layout-id layout)
   (hash-ref layout 'id))
 
-(define (layout-name layout)
-  (define name (hash-ref layout 'name ""))
-  (if (string=? name "") (layout-id layout) name))
+(define (layout-name locale layout)
+  (localized-value (hash-ref layout 'names
+                             (hash-ref layout 'name (layout-id layout)))
+                   locale
+                   (layout-id layout)))
 
 (define (layout-by-id layouts id)
   (for/first ([layout (in-list layouts)]
@@ -215,7 +237,7 @@
             `(span ((class "rime-artifact-chip"))
                    ,(artifact-label locale artifact)))))
 
-(define (layout-preview layout)
+(define (layout-preview locale layout)
   `(div ((class "rime-layout-preview keyboard-preview keyboard-preview-svg-wrap"))
         (picture
          (source ((media "(prefers-color-scheme: dark)")
@@ -223,7 +245,7 @@
          (img ((class "keyboard-preview-svg")
                (loading "lazy")
                (src ,(format "/layouts/~a/preview.svg" (layout-id layout)))
-               (alt ,(layout-name layout)))))))
+               (alt ,(layout-name locale layout)))))))
 
 (define (schema-card locale schema layouts)
   (define catalog-id (schema-id->catalog-id (schema-id schema)))
@@ -233,15 +255,15 @@
       (div ((class "rime-option-head"))
            (div ((class "rime-option-copy"))
                 (div ((class "rime-option-title-row"))
-                     (span ((class "rime-option-title")) ,(schema-name schema))
+                     (span ((class "rime-option-title")) ,(schema-name locale schema))
                      (span ((class "rime-option-id")) ,(schema-id schema)))
-                (span ((class "rime-family-label")) ,(schema-catalog-label catalog-id))))
-      (p ((class "rime-card-description")) ,(schema-description schema))
+                (span ((class "rime-family-label")) ,(schema-catalog-label catalog-id locale))))
+      (p ((class "rime-card-description")) ,(schema-description locale schema))
       ,(artifact-chips locale (schema-artifacts schema))
       ,@(if (pair? preview-layouts)
             `((div ((class "rime-schema-previews"))
                    ,@(for/list ([layout (in-list preview-layouts)])
-                       (layout-preview layout))))
+                       (layout-preview locale layout))))
             '())))
 
 (define (catalog-section locale layouts catalog)
@@ -250,9 +272,9 @@
   `(section ((class "rime-schema-catalog"))
             (div ((class "rime-catalog-heading"))
                  (h2 ((class "rime-schema-catalog-title"))
-                     ,(schema-catalog-label catalog-id))
+                     ,(schema-catalog-label catalog-id locale))
                  (p ((class "rime-section-copy"))
-                    ,(schema-catalog-summary catalog-id)))
+                    ,(schema-catalog-summary catalog-id locale)))
             (div ((class "rime-option-grid"))
                  ,@(for/list ([schema (in-list schemas)])
                      (schema-card locale schema layouts)))))
@@ -320,12 +342,12 @@
                       (t locale 'download-yuanshu)
                       (t locale 'download-rime)))))
 
-(define (layout-detail-card layout)
+(define (layout-detail-card locale layout)
   `(article ((class "rime-layout-card"))
             (div ((class "rime-option-title-row"))
-                 (h3 ((class "rime-layout-title")) ,(layout-name layout))
+                 (h3 ((class "rime-layout-title")) ,(layout-name locale layout))
                  (span ((class "rime-option-id")) ,(layout-id layout)))
-            ,(layout-preview layout)))
+            ,(layout-preview locale layout)))
 
 (define (exhibit-page req schemas layouts schema-id*)
   (define locale (request-locale req))
@@ -342,11 +364,11 @@
                     (div ((class "rime-hero-head"))
                          (div
                           (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
-                          (h1 ((class "page-title")) ,(schema-name schema))
+                          (h1 ((class "page-title")) ,(schema-name locale schema))
                           (p ((class "rime-section-copy rime-hero-copy"))
-                             ,(schema-description schema))))
+                             ,(schema-description locale schema))))
                     (div ((class "rime-exhibit-meta"))
-                         (span ((class "rime-family-label")) ,(schema-catalog-label catalog-id))
+                         (span ((class "rime-family-label")) ,(schema-catalog-label catalog-id locale))
                          (span ((class "rime-option-id")) ,(schema-id schema))
                          ,(artifact-chips locale artifacts)))
            (section ((class "rime-exhibit-actions"))
@@ -357,7 +379,7 @@
                     (p ((class "rime-section-copy")) ,(t locale 'layout-copy))
                     (div ((class "rime-layout-grid"))
                          ,@(for/list ([layout (in-list schema-layouts)])
-                             (layout-detail-card layout))))
+                             (layout-detail-card locale layout))))
            (section ((class "rime-section rime-exhibit-section"))
                     (h2 ((class "rime-section-title")) ,(t locale 'dependencies))
                     ,(dependency-list locale (schema-deps schema)))))

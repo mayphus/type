@@ -10,7 +10,8 @@
          net/url
          json
          "web-ui.rkt"
-         "build.rkt")
+         "build.rkt"
+         "schema/registry.rkt")
 
 (provide keyboard-layout-items
          skin-items
@@ -89,6 +90,8 @@
     (hash 'id layout-id
           'schemas (list schema-id)
           'name (keyboard-layout-module-ref layout-module 'chinese-name (lambda () ""))
+          'names (hash 'en (keyboard-layout-module-ref layout-module 'english-name (lambda () ""))
+                       'zh-Hant (keyboard-layout-module-ref layout-module 'chinese-name (lambda () "")))
           'preview-svgs (keyboard-layout-preview-svgs layout-module))))
 
 (define skin-items
@@ -107,7 +110,13 @@
     (define description (or (read-schema-description s) ""))
     (hash 'id s
           'name (or zh-name s)
+          'names (or (schema-display-names s)
+                     (hash 'en (or zh-name s)
+                           'zh-Hant (or zh-name s)))
           'description description
+          'descriptions (or (schema-display-descriptions s)
+                            (hash 'en description
+                                  'zh-Hant description))
           'deps deps
           'artifacts artifacts
           'keyboard-layouts keyboard-layouts)))

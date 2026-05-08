@@ -9,13 +9,19 @@
 (define schemas
   (list (hash 'id "flypy"
               'name "小鶴雙拼"
+              'names (hash 'en "Flypy" 'zh-Hant "小鶴雙拼")
               'description "Flypy double pinyin exhibit."
+              'descriptions (hash 'en "Flypy double pinyin exhibit."
+                                  'zh-Hant "小鶴雙拼展品。")
               'deps '("cangjie6")
               'artifacts '("rime" "yuanshu")
               'keyboard-layouts '("flypy"))
         (hash 'id "flypy_14"
               'name "小鶴十四鍵"
+              'names (hash 'en "Flypy 14-Key" 'zh-Hant "小鶴十四鍵")
               'description "A compact Yuanshu-only 14-key exhibit."
+              'descriptions (hash 'en "A compact Yuanshu-only 14-key exhibit."
+                                  'zh-Hant "緊湊的元書十四鍵展品。")
               'deps '("flypy")
               'artifacts '("yuanshu")
               'keyboard-layouts '("flypy_14"))))
@@ -24,10 +30,12 @@
   (list (hash 'id "flypy"
               'schemas '("flypy")
               'name "小鶴雙拼"
+              'names (hash 'en "Flypy" 'zh-Hant "小鶴雙拼")
               'preview-svgs (hash 'light "<svg/>"))
         (hash 'id "flypy_14"
               'schemas '("flypy_14")
               'name "小鶴十四鍵"
+              'names (hash 'en "Flypy 14-Key" 'zh-Hant "小鶴十四鍵")
               'preview-svgs (hash 'light "<svg/>"))))
 
 (define (req path #:method [method #"GET"] #:headers [headers '()] #:bindings [bindings '()])
@@ -48,6 +56,7 @@
     (check-true (regexp-match? #rx"href=\"/exhibits/flypy_14\"" html))
     (check-true (regexp-match? #rx"/layouts/flypy/preview.svg" html))
     (check-true (regexp-match? #rx"Double Pinyin" html))
+    (check-true (regexp-match? #rx"Flypy double pinyin exhibit" html))
     (check-false (regexp-match? #rx"rime-platform-tabs" html))
     (check-false (regexp-match? #rx"type=\"checkbox\"" html))
     (check-false (regexp-match? #rx"href=\"/desktop\"" html))
@@ -57,6 +66,8 @@
     (define html (render-page (req "/?locale=zh-Hant") schemas layouts))
     (check-true (regexp-match? #rx"<html lang=\"zh-Hant\"" html))
     (check-true (regexp-match? #rx"中文輸入博物館" html))
+    (check-true (regexp-match? #rx"雙拼" html))
+    (check-true (regexp-match? #rx"小鶴雙拼展品" html))
     (check-true (regexp-match? #rx">EN</a>" html)))
 
   (test-case "exhibit page shows details, dependencies, previews, and artifact actions"
