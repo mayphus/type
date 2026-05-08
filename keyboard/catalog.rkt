@@ -1,7 +1,6 @@
 #lang racket/base
 
-(require "layouts.rkt"
-         "models.rkt"
+(require "models.rkt"
          "shapes.rkt")
 
 (provide keyboard-layout-definitions
@@ -9,6 +8,10 @@
          keyboard-model-definitions
          keyboard-model-definition-ref
          keyboard-shape-definition-ref)
+
+;; Schema modules own concrete printed keyboard layouts. Keep this empty shared
+;; catalog only as the fallback API for older build code paths.
+(define keyboard-layout-definitions '())
 
 (define (catalog-symbol value)
   (cond
