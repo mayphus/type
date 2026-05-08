@@ -11,7 +11,7 @@ Chinese input museum and Rime/Yuanshu package builder, served by one Racket app.
 - `k8s.rkt` generates and checks the Kubernetes YAML.
 - `rime/` holds native Rime YAML and dictionaries; `schema/` holds this project's DSL source.
 - `schema/lib/lang.rkt` is the public schema DSL language.
-- `schema/lib/yaml/` contains the internal YAML renderer.
+- `lib/yaml/` contains the internal YAML renderer.
 - `yuanshu/skin/` is the Yuanshu skin compiler and preview renderer.
 - `tools/` contains maintenance scripts.
 - `k8s/` is ignored generated deploy output from `k8s.rkt`.

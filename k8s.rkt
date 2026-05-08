@@ -3,7 +3,7 @@
 (require racket/file
          racket/runtime-path
          racket/string
-         "schema/lib/yaml/yaml.rkt")
+         "lib/yaml/yaml.rkt")
 
 (provide k8s-documents
          render-k8s!

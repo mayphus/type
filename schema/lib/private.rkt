@@ -30,7 +30,7 @@
 ;;       (ipad-layout standard-18)))
 
 (require "shared.rkt"
-         "yaml/dsl.rkt"
+         "../../lib/yaml/dsl.rkt"
          (for-syntax racket/base
                      syntax/parse))
 
