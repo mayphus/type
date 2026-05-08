@@ -246,6 +246,42 @@
     (check-equal? (hash-ref (hash-ref (hash-ref flypy-page 'qw14ButtonMainForegroundStyle) 'center) 'y)
                   0.5))
 
+  (test-case "shape keyboard layout uses default abc-sized primary glyphs"
+    (define luna-layout-module
+      (schema-keyboard-layout-module-path "luna_pinyin" '("luna_pinyin")))
+    (define cangjie-layout-module
+      (schema-keyboard-layout-module-path "cangjie6" '("cangjie6")))
+    (define luna-phone
+      (generated-json (keyboard-layout-module-ref luna-layout-module
+                                                  'keyboard-layout-files)
+                      "light/pinyinPortrait.yaml"))
+    (define cangjie-phone
+      (generated-json (keyboard-layout-module-ref cangjie-layout-module
+                                                  'keyboard-layout-files)
+                      "light/pinyinPortrait.yaml"))
+    (define luna-ipad
+      (generated-json (keyboard-layout-module-ref luna-layout-module
+                                                  'keyboard-layout-files)
+                      "light/iPadPinyinPortrait.yaml"))
+    (define cangjie-ipad
+      (generated-json (keyboard-layout-module-ref cangjie-layout-module
+                                                  'keyboard-layout-files)
+                      "light/iPadPinyinPortrait.yaml"))
+    (check-equal?
+     (hash-ref (hash-ref cangjie-phone 'aButtonCangjieForegroundStyle) 'fontSize)
+     (hash-ref (hash-ref luna-phone 'aButtonAbcForegroundStyle) 'fontSize))
+    (check-equal?
+     (hash-ref (hash-ref cangjie-phone 'aButtonCangjieForegroundStyle) 'fontWeight)
+     "bold")
+    (check-equal?
+     (hash-ref (hash-ref cangjie-ipad 'aButtonCangjieForegroundStyle) 'fontSize)
+     (hash-ref (hash-ref luna-ipad 'aButtonUppercaseForegroundStyle) 'fontSize))
+    (check-equal?
+     (hash-ref (hash-ref cangjie-ipad 'aButtonCangjieForegroundStyle) 'fontWeight)
+     "bold")
+    (check-equal? (registry:static-schema-keyboard-layouts "quick5") '("cangjie6"))
+    (check-equal? (registry:static-schema-keyboard-layouts "cangjie5") '("cangjie6")))
+
   (test-case "standard phone middle row keeps real key widths"
     (define files (make-flypy-phone-files standard-phone-base-for-test))
     (define page (generated-json files "light/pinyinPortrait.yaml"))

@@ -23,9 +23,9 @@
         "Standard numeric and symbolic secondary pages"))
     (phone-layout
       (layers cangjie)
-      (fonts [cangjie 14 #:weight bold]))
+      (fonts [cangjie 25 #:primary #:weight bold]))
     (ipad-layout
       (layers cangjie)
       (size "1.1/16")
       (fonts
-        [cangjie 17.5 #:weight bold]))))
+        [cangjie 22.5 #:primary #:weight bold]))))
