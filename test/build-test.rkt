@@ -119,6 +119,37 @@
       (lambda ()
         (delete-directory/files tmp #:must-exist? #f))))
 
+  (test-case "static upstream schemas copy their dictionaries and dependency assets"
+    (define tmp (make-temporary-file "rime-config-static-upstream-~a" 'directory))
+    (dynamic-wind
+      void
+      (lambda ()
+        (define profile-out (build-path tmp "profile"))
+        (define zip-path (build-path tmp "profile.zip"))
+        (define-values (_built-out _built-zip _layout-dir)
+          (build-bundle!
+           (hash 'schemas (list "double_pinyin" "wubi86" "quick5" "cangjie5")
+                 'artifact "rime")
+           "test-static-upstream"
+           profile-out
+           zip-path))
+        (for ([file (in-list '("double_pinyin.schema.yaml"
+                               "stroke.schema.yaml"
+                               "stroke.dict.yaml"
+                               "wubi86.schema.yaml"
+                               "wubi86.dict.yaml"
+                               "pinyin_simp.schema.yaml"
+                               "pinyin_simp.dict.yaml"
+                               "quick5.schema.yaml"
+                               "quick5.dict.yaml"
+                               "cangjie5.schema.yaml"
+                               "cangjie5.dict.yaml"
+                               "luna_quanpin.schema.yaml"
+                               "pinyin.yaml"))])
+          (check-true (file-exists? (build-path profile-out file)) file)))
+      (lambda ()
+        (delete-directory/files tmp #:must-exist? #f))))
+
   (test-case "legacy desktop flag still maps to yuanshu artifact behavior"
     (define tmp (make-temporary-file "rime-config-legacy-artifact-~a" 'directory))
     (dynamic-wind

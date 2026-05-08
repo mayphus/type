@@ -8,6 +8,8 @@
          extra-schema-ids-with-mobile
          schema-source-id
          static-schema-deps
+         static-schema-extra-files
+         static-schema-extra-dirs
          static-schema-name
          static-schema-description
          static-schema-artifacts
@@ -87,11 +89,86 @@
          'descriptions
          (hash 'en "A 14-key full-pinyin Yuanshu schema using adjacent QWERTY groups."
                'zh-Hant "14 鍵全拼元書方案，使用相鄰 QWERTY 分組。"))
+   "double_pinyin"
+   (hash 'names (hash 'en "Double Pinyin ZRM" 'zh-Hant "自然碼雙拼")
+         'descriptions
+         (hash 'en "Upstream Rime double-pinyin schema using the Ziranma layout."
+               'zh-Hant "上游 Rime 自然碼雙拼方案。"))
+   "double_pinyin_abc"
+   (hash 'names (hash 'en "Double Pinyin ABC" 'zh-Hant "智能ABC雙拼")
+         'descriptions
+         (hash 'en "Upstream Rime double-pinyin schema using the Intelligent ABC layout."
+               'zh-Hant "上游 Rime 智能 ABC 雙拼方案。"))
+   "double_pinyin_flypy"
+   (hash 'names (hash 'en "Double Pinyin Flypy" 'zh-Hant "小鶴雙拼")
+         'descriptions
+         (hash 'en "Upstream Rime double-pinyin schema using the Flypy layout."
+               'zh-Hant "上游 Rime 小鶴雙拼方案。"))
+   "double_pinyin_mspy"
+   (hash 'names (hash 'en "Double Pinyin MSPY" 'zh-Hant "微軟雙拼")
+         'descriptions
+         (hash 'en "Upstream Rime double-pinyin schema using the Microsoft layout."
+               'zh-Hant "上游 Rime 微軟雙拼方案。"))
+   "double_pinyin_pyjj"
+   (hash 'names (hash 'en "Double Pinyin PYJJ" 'zh-Hant "拼音加加雙拼")
+         'descriptions
+         (hash 'en "Upstream Rime double-pinyin schema using the Pinyin Jiajia layout."
+               'zh-Hant "上游 Rime 拼音加加雙拼方案。"))
+   "double_pinyin_st"
+   (hash 'names (hash 'en "Double Pinyin ST" 'zh-Hant "四通雙拼")
+         'descriptions
+         (hash 'en "Upstream Rime double-pinyin schema using the Stone layout."
+               'zh-Hant "上游 Rime 四通雙拼方案。"))
+   "cangjie5"
+   (hash 'names (hash 'en "Cangjie 5" 'zh-Hant "倉頡五代")
+         'descriptions
+         (hash 'en "Upstream Rime fifth-generation Cangjie shape input."
+               'zh-Hant "上游 Rime 第五代倉頡字形輸入方案。"))
+   "cangjie5_express"
+   (hash 'names (hash 'en "Cangjie 5 Express" 'zh-Hant "倉頡五代·快打模式")
+         'descriptions
+         (hash 'en "Upstream Rime Cangjie 5 schema with express auto-selection behavior."
+               'zh-Hant "上游 Rime 倉頡五代快打模式方案。"))
    "cangjie6"
    (hash 'names (hash 'en "Cangjie 6" 'zh-Hant "蒼頡六代")
          'descriptions
          (hash 'en "Sixth-generation Cangjie shape input with Rime config and Yuanshu keyboard layout support."
                'zh-Hant "第六代蒼頡字形輸入，提供 Rime 設定與元書鍵盤佈局。"))
+   "wubi86"
+   (hash 'names (hash 'en "Wubi 86" 'zh-Hant "五筆86")
+         'descriptions
+         (hash 'en "Upstream Rime Wubi 86 shape input."
+               'zh-Hant "上游 Rime 五筆 86 字形輸入方案。"))
+   "wubi_pinyin"
+   (hash 'names (hash 'en "Wubi Pinyin" 'zh-Hant "五筆·拼音")
+         'descriptions
+         (hash 'en "Upstream Rime Wubi schema with pinyin mixed input."
+               'zh-Hant "上游 Rime 五筆拼音混輸方案。"))
+   "wubi_trad"
+   (hash 'names (hash 'en "Wubi Traditional" 'zh-Hant "五筆·簡入繁出")
+         'descriptions
+         (hash 'en "Upstream Rime Wubi schema for simplified input with traditional output."
+               'zh-Hant "上游 Rime 五筆簡入繁出方案。"))
+   "quick5"
+   (hash 'names (hash 'en "Quick 5" 'zh-Hant "速成")
+         'descriptions
+         (hash 'en "Upstream Rime Quick 5 shape input derived from Cangjie."
+               'zh-Hant "上游 Rime 速成五代字形輸入方案。"))
+   "stroke"
+   (hash 'names (hash 'en "Stroke" 'zh-Hant "五筆畫")
+         'descriptions
+         (hash 'en "Supporting five-stroke lookup schema used by upstream double-pinyin and Wubi packages."
+               'zh-Hant "上游雙拼與五筆方案使用的五筆畫反查支援方案。"))
+   "pinyin_simp"
+   (hash 'names (hash 'en "Pinyin Simplified" 'zh-Hant "袖珍簡化字拼音")
+         'descriptions
+         (hash 'en "Supporting simplified pinyin schema used by upstream Wubi packages."
+               'zh-Hant "上游五筆方案使用的簡化字拼音反查支援方案。"))
+   "luna_quanpin"
+   (hash 'names (hash 'en "Luna Quanpin" 'zh-Hant "全拼")
+         'descriptions
+         (hash 'en "Supporting full-pinyin reverse-lookup schema used by upstream Cangjie and Quick packages."
+               'zh-Hant "上游倉頡與速成方案使用的全拼反查支援方案。"))
    "jyut6ping3"
    (hash 'names (hash 'en "Jyutping" 'zh-Hant "粵拼")
          'descriptions
@@ -106,8 +183,47 @@
 (define static-schema-metadata
   (hash "bopomofo" (hash 'deps '()
                          'artifacts '("yuanshu"))
+        "double_pinyin" (hash 'deps '("stroke")
+                              'artifacts '("rime"))
+        "double_pinyin_abc" (hash 'deps '("stroke")
+                                  'artifacts '("rime"))
+        "double_pinyin_flypy" (hash 'deps '("stroke")
+                                    'artifacts '("rime"))
+        "double_pinyin_mspy" (hash 'deps '("stroke")
+                                   'artifacts '("rime"))
+        "double_pinyin_pyjj" (hash 'deps '("stroke")
+                                   'artifacts '("rime"))
+        "double_pinyin_st" (hash 'deps '("stroke")
+                                 'artifacts '("rime"))
+        "cangjie5" (hash 'deps '("luna_quanpin")
+                         'artifacts '("rime")
+                         'files '("cangjie5.dict.yaml"))
+        "cangjie5_express" (hash 'deps '("luna_quanpin")
+                                 'artifacts '("rime")
+                                 'files '("cangjie5.dict.yaml"))
         "cangjie6" (hash 'deps '("flypy")
                          'artifacts '("rime" "yuanshu"))
+        "wubi86" (hash 'deps '("pinyin_simp")
+                       'artifacts '("rime")
+                       'files '("wubi86.dict.yaml"))
+        "wubi_pinyin" (hash 'deps '("pinyin_simp")
+                            'artifacts '("rime")
+                            'files '("wubi86.dict.yaml"))
+        "wubi_trad" (hash 'deps '("pinyin_simp")
+                          'artifacts '("rime")
+                          'files '("wubi86.dict.yaml"))
+        "quick5" (hash 'deps '("luna_quanpin")
+                       'artifacts '("rime")
+                       'files '("quick5.dict.yaml"))
+        "stroke" (hash 'deps '("luna_pinyin")
+                       'artifacts '("rime")
+                       'files '("stroke.dict.yaml"))
+        "pinyin_simp" (hash 'deps '("stroke")
+                            'artifacts '("rime")
+                            'files '("pinyin_simp.dict.yaml"))
+        "luna_quanpin" (hash 'deps '("luna_pinyin")
+                             'artifacts '("rime")
+                             'files '("pinyin.yaml"))
         "jyut6ping3" (hash 'deps '("flypy" "cangjie6")
                            'artifacts '("rime" "yuanshu"))))
 
@@ -133,6 +249,12 @@
 (define (static-schema-deps schema)
   (hash-ref (hash-ref static-schema-metadata schema (hash)) 'deps '()))
 
+(define (static-schema-extra-files schema)
+  (hash-ref (hash-ref static-schema-metadata schema (hash)) 'files '()))
+
+(define (static-schema-extra-dirs schema)
+  (hash-ref (hash-ref static-schema-metadata schema (hash)) 'dirs '()))
+
 (define (static-schema-name schema)
   (localized-value (schema-display-names schema) 'zh-Hant))
 
@@ -147,9 +269,16 @@
 
 (define (schema-id->catalog-id id)
   (cond
-    [(member id '("flypy" "flypy_ice" "flypy_14" "flypy_18" "shuffle_17")) "double-pinyin"]
-    [(member id '("luna_pinyin" "terra_pinyin" "pinyin_14" "jyut6ping3")) "full-pinyin"]
-    [(equal? id "cangjie6") "shape"]
+    [(member id '("flypy" "flypy_ice" "flypy_14" "flypy_18" "shuffle_17"
+                  "double_pinyin" "double_pinyin_abc" "double_pinyin_flypy"
+                  "double_pinyin_mspy" "double_pinyin_pyjj" "double_pinyin_st"))
+     "double-pinyin"]
+    [(member id '("luna_pinyin" "terra_pinyin" "pinyin_14" "jyut6ping3"
+                  "luna_quanpin" "pinyin_simp"))
+     "full-pinyin"]
+    [(member id '("cangjie5" "cangjie5_express" "cangjie6" "wubi86"
+                  "wubi_pinyin" "wubi_trad" "quick5" "stroke"))
+     "shape"]
     [(equal? id "bopomofo") "phonetic"]
     [else "other"]))
 
