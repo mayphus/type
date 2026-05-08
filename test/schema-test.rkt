@@ -40,6 +40,9 @@
 (define (button-width page id)
   (hash-ref (hash-ref (page-button page id) 'size) 'width))
 
+(define (button-height page id)
+  (hash-ref (hash-ref (page-button page id) 'size) 'height #f))
+
 (define (layout-row-cell-ids page row-index)
   (define row (list-ref (hash-ref page 'keyboardLayout) row-index))
   (define subviews (hash-ref (hash-ref row 'HStack) 'subviews))
@@ -73,6 +76,12 @@
                [item (in-list row)]
                #:when (equal? (hash-ref (hash-ref item 'key) 'id) key-id))
     (hash-ref item 'width)))
+
+(define (layout-item-height layout key-id)
+  (for*/first ([row (in-list layout)]
+               [item (in-list row)]
+               #:when (equal? (hash-ref (hash-ref item 'key) 'id) key-id))
+    (hash-ref item 'height)))
 
 (module+ test
   (test-case "flypy shared config emits desktop schema YAML"
@@ -137,7 +146,9 @@
   (test-case "shuffle_17 phone space gives width to symbol keys"
     (define page (generated-json shuffle-17-pinyin-files "light/pinyinPortrait.yaml"))
     (check-equal? (button-width page "strokeHButton") "113.5/1125")
+    (check-equal? (button-height page "strokeHButton") "113.5/1125")
     (check-equal? (button-width page "strokeZButton") "113.5/1125")
+    (check-equal? (button-height page "strokeZButton") "113.5/1125")
     (check-equal? (button-width page "spaceButton") "267.5/1125"))
 
   (test-case "shuffle_17 preview hides punctuation control row"
@@ -187,7 +198,8 @@
       (for ([button-id (in-list '("qw14Button" "as14Button" "zx14Button"
                                   "cv14Button" "bn14Button" "m14Button"
                                   "backspaceButton"))])
-        (check-equal? (button-width page button-id) "225/1125"))
+        (check-equal? (button-width page button-id) "225/1125")
+        (check-equal? (button-height page button-id) "225/1125"))
       (define preview (preview-spec-from-files files))
       (check-equal? (visible-preview-row-ids preview 2)
                     '("zx14Button" "cv14Button" "bn14Button" "m14Button"))))
@@ -214,14 +226,17 @@
                     "hButton" "jButton" "kButton" "lButton"
                     "middleRowRightSpacer"))
     (check-equal? (button-width page "qButton") "112.5/1125")
+    (check-equal? (button-height page "qButton") "112.5/1125")
     (check-equal? (button-width page "aButton") "112.5/1125")
+    (check-equal? (button-height page "aButton") "112.5/1125")
     (check-equal? (button-width page "lButton") "112.5/1125")
+    (check-equal? (button-height page "lButton") "112.5/1125")
     (check-false (hash-ref (page-button page "aButton") 'bounds #f))
     (check-false (hash-ref (page-button page "lButton") 'bounds #f))
     (check-equal? (button-width page "middleRowLeftSpacer") "56.25/1125")
     (check-equal? (button-width page "middleRowRightSpacer") "56.25/1125"))
 
-  (test-case "phone skin and preview use square key policy"
+  (test-case "phone skin keeps compact square typing geometry available"
     (define files (make-flypy-phone-files standard-phone-base-for-test))
     (define page (generated-json files "light/pinyinPortrait.yaml"))
     (define preview (preview-spec-from-files files))
@@ -248,11 +263,16 @@
       (check-equal? (svg-height (keyboard-preview-svg compact-preview))
                     standard-svg-height)))
 
-  (test-case "web preview hides controls but demo image SVG includes real control keys"
+  (test-case "web preview keeps compact layout while demo reads Yuanshu skin shape"
     (define files (make-flypy-phone-files standard-phone-base-for-test))
     (define preview (preview-spec-from-files files))
-    (define web-svg (keyboard-preview-svg preview))
+    (define web-svg (hash-ref (preview-spec->svgs preview) 'light))
     (define demo-svg (demo-preview-svg "Flypy" preview))
+    (define skin-layout (preview-layout preview #:geometry 'skin-proportional))
+    (check-equal? (svg-height web-svg)
+                  (svg-height (keyboard-preview-svg preview)))
+    (check-equal? (layout-item-height skin-layout "qButton")
+                  (layout-item-width skin-layout "qButton"))
     (check-false (svg-text? web-svg "space"))
     (check-false (svg-text? web-svg "123"))
     (check-true (svg-text? demo-svg "123"))

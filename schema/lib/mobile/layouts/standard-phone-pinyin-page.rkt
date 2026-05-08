@@ -30,7 +30,7 @@
 (define standard-phone-landscape-dark-base  (standard-phone-base #t #f))
 
 (define normal-button-size
-  (object ["width" "112.5/1125"]))
+  (square-key-size "112.5/1125"))
 
 (define middle-row-spacer-size
   (object ["width" "56.25/1125"]))

@@ -240,6 +240,7 @@
                'icon (or icon "")
                'icon-size (or icon-size 20)
                'width (or (parse-numberish (page-ref size 'width #f)) 1)
+               'height (parse-numberish (page-ref size 'height #f))
                'align (or (page-ref bounds 'alignment #f) "center")
                'background (or (and (hash? background-style) (page-ref background-style 'normalColor #f))
                                "#ffffff")
@@ -320,15 +321,21 @@
         [(null? keys) (reverse items)]
         [else
          (define key (car keys))
-         (define key-width (* (or (parse-numberish (hash-ref key 'width #f)) 1)
-                              unit-width))
+         (define width-units (or (parse-numberish (hash-ref key 'width #f)) 1))
+         (define key-width (* width-units unit-width))
+         (define explicit-height-units (parse-numberish (hash-ref key 'height #f)))
+         (define item-height
+           (if (and explicit-height-units (positive? explicit-height-units))
+               (* key-width (/ explicit-height-units width-units))
+               key-height))
+         (define item-y (+ y (/ (- key-height item-height) 2)))
          (loop (cdr keys)
                (+ x key-width key-gap)
                (cons (hash 'key key
                            'x x
-                           'y y
+                           'y item-y
                            'width key-width
-                           'height key-height)
+                           'height item-height)
                      items))]))))
 
 (define (preview-layout preview

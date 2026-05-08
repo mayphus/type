@@ -422,7 +422,7 @@ select {
   grid-template-columns: minmax(11rem, 18rem) minmax(0, auto);
   gap: 0.5rem;
   margin: 0;
-  align-items: stretch;
+  align-items: start;
 }
 
 .rime-artifact-buttons {
@@ -436,14 +436,16 @@ select {
 }
 
 .rime-variant-control {
-  display: flex;
-  min-width: min(18rem, 100%);
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 2.7rem;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.44rem 0.58rem;
+  gap: 0.45rem;
+  padding: 0.36rem 0.5rem 0.36rem 0.7rem;
   border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  background: transparent;
+  border-radius: 999px;
+  background: var(--surface);
 }
 
 .rime-variant-label {
@@ -454,11 +456,12 @@ select {
 }
 
 .rime-variant-select {
-  min-width: 0;
-  flex: 1 1 auto;
+  width: auto;
+  max-width: min(9rem, 42vw);
   border: 0;
   background: transparent;
   color: var(--ink);
+  font-size: 0.92rem;
   font-weight: 800;
 }
 

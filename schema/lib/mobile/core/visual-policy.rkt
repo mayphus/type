@@ -3,9 +3,14 @@
 (require "dsl.rkt")
 
 (provide square-key-corner-radius
+         square-key-size
          key-note-position)
 
 (define square-key-corner-radius 6)
+
+(define (square-key-size width [height width])
+  (object ["width" width]
+          ["height" height]))
 
 (define (position x y)
   (object ["x" (json-number x)]

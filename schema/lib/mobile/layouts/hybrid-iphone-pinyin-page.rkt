@@ -2,6 +2,7 @@
 
 (require racket/hash
          "../core/dsl.rkt"
+         "../core/visual-policy.rkt"
          "../keysets/pinyin-common.rkt"
          "base-page.rkt"
          "standard-phone-pinyin-page.rkt")
@@ -18,7 +19,7 @@
 (provide iphone-pinyin-files)
 
 (define normal-button-size
-  (object ["width" "112.5/1125"]))
+  (square-key-size "112.5/1125"))
 
 (define hint-size
   (object ["height" 50]

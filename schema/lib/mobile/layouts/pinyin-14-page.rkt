@@ -2,6 +2,7 @@
 
 (require racket/hash
          "../core/dsl.rkt"
+         "../core/visual-policy.rkt"
          "../keysets/pinyin-common.rkt"
          "flypy18-page.rkt"
          "flypy18-bases.rkt"
@@ -10,7 +11,7 @@
 (provide pinyin-14-iphone-pinyin-files)
 
 (define five-column-size
-  (object ["width" "225/1125"]))
+  (square-key-size "225/1125"))
 
 (define keyboard-layout
   (array

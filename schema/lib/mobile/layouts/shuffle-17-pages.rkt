@@ -22,7 +22,7 @@
 
 
 (define six-column-size
-  (object ["width" "187.5/1125"]))
+  (square-key-size "187.5/1125"))
 
 (define numeric-small-size
   (object ["width" "90/1125"]))
@@ -34,7 +34,7 @@
   (object ["width" "200/1125"]))
 
 (define stroke-size
-  (object ["width" "113.5/1125"]))
+  (square-key-size "113.5/1125"))
 
 (define legend-main-center
   (key-note-position 'center))

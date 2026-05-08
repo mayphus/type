@@ -20,13 +20,13 @@
 (struct merged18-spec (name base-letter label hint size bounds swipe-down-action) #:transparent)
 
 (define seven-column-size
-  (object ["width" "160.7142857143/1125"]))
+  (square-key-size "160.7142857143/1125"))
 
 (define six-column-size
-  (object ["width" "160/1125"]))
+  (square-key-size "160/1125"))
 
 (define side-inset-size
-  (object ["width" "242.5/1125"]))
+  (square-key-size "242.5/1125" "160/1125"))
 
 (define side-inset-right-bounds
   (object ["alignment" "right"]

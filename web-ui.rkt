@@ -14,8 +14,8 @@
          form-profile
          form-request?)
 
-(define app-css-href "/app.css?v=20260508-sharedvariant")
-(define preview-svg-version "20260508-compactheight")
+(define app-css-href "/app.css?v=20260508-compactselector")
+(define preview-svg-version "20260508-skinrender")
 
 (define copy
   (hash
