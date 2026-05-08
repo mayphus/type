@@ -2,7 +2,18 @@
 
 (rime-schema jyut6ping3
   (name "粵拼")
-  (keyboard-layouts jyut6ping3)
+  (keyboard-layout jyut6ping3
+    (meta
+     (name "Jyutping" "粵拼")
+     (summary "A Yuanshu keyboard layout for Jyutping Cantonese input.")
+     (features
+      "Standard QWERTY Jyutping phone layout"
+      "Standard iPad pinyin, numeric, and symbolic pages"))
+    (phone-layout
+     (layers abc)
+     (positions (abc center))
+     (fonts (abc 25 #:primary #:weight bold)))
+    (ipad-layout standard-18))
   (static-files "jyut6ping3.dict.yaml" "symbols_cantonese.yaml")
   (static-dirs "jyut6ping3_dicts")
   (custom "jyut6ping3.custom.yaml"

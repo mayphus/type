@@ -2,7 +2,21 @@
 
 (rime-schema cangjie6
   (name "蒼頡六代")
-  (keyboard-layouts cangjie6)
+  (keyboard-layout cangjie6
+    (meta
+     (name "Cangjie 6" "倉頡六代")
+     (summary "A Yuanshu keyboard layout focused on Cangjie 6 labels across phone and iPad layouts.")
+     (features
+      "Cangjie-centered legends"
+      "Standard numeric and symbolic secondary pages"))
+    (phone-layout
+     (layers cangjie)
+     (fonts (cangjie 25 #:primary #:weight bold)))
+    (ipad-layout
+     (layers cangjie)
+     (size "1.1/16")
+     (fonts
+      (cangjie 22.5 #:primary #:weight bold))))
   (deps flypy)
   (static-files "cangjie6.dict.yaml")
   (custom "cangjie6.custom.yaml"

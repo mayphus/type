@@ -12,6 +12,7 @@
          (prefix-in flypy: "../schema/flypy.rkt")
          (prefix-in flypy_14: "../schema/flypy_14.rkt")
          (prefix-in luna_pinyin: "../schema/luna_pinyin.rkt")
+         (prefix-in pinyin_14: "../schema/pinyin_14.rkt")
          (prefix-in terra_pinyin: "../schema/terra_pinyin.rkt")
          (prefix-in jyut6ping3: "../schema/jyut6ping3.rkt")
          "../build.rkt"
@@ -95,10 +96,10 @@
     (define ids (catalog:schema-definition-ids))
     (check-equal? (length ids) (length (remove-duplicates ids))))
 
-  (test-case "keyboard catalog owns reusable layout bodies"
-    (check-not-false (keyboard:keyboard-layout-definition-ref "flypy"))
-    (check-not-false (keyboard:keyboard-layout-definition-ref "cangjie6"))
-    (check-not-false (keyboard:keyboard-layout-definition-ref "bopomofo"))
+  (test-case "keyboard catalog owns reusable keyboard models"
+    (check-not-false (keyboard:keyboard-model-definition-ref "standard-26"))
+    (check-false (keyboard:keyboard-layout-definition-ref "flypy"))
+    (check-not-false (keyboard:keyboard-shape-definition-ref "compact-14"))
     (check-false (keyboard:keyboard-layout-definition-ref "missing-layout")))
 
   (test-case "generated schema catalog entries point at module files"
@@ -223,6 +224,14 @@
     (check-not-false (string-contains? yaml "alphabet: qetuoadgjlzcbm"))
     (check-not-false (string-contains? yaml "dictionary: rime_ice"))
     (check-not-false (string-contains? yaml "prism: flypy_14")))
+
+  (test-case "14-key schemas own their layout definitions"
+    (check-equal? flypy_14:keyboard-layouts '("flypy_14"))
+    (check-equal? pinyin_14:keyboard-layouts '("pinyin_14"))
+    (check-not-false (assoc "flypy_14" flypy_14:keyboard-layout-defs))
+    (check-not-false (assoc "pinyin_14" pinyin_14:keyboard-layout-defs))
+    (check-false (keyboard:keyboard-layout-definition-ref "flypy_14"))
+    (check-false (keyboard:keyboard-layout-definition-ref "pinyin_14")))
 
   (test-case "14-key third row uses five equal-width buttons"
     (for ([files (in-list (list flypy14-layout:flypy-14-iphone-pinyin-files

@@ -11,23 +11,30 @@ Chinese input museum and Rime/Yuanshu package builder, served by one Racket app.
 - `k8s.rkt` generates and checks the Kubernetes YAML.
 - `assets/rime/` holds native Rime YAML and dictionaries; `schema/` holds this project's DSL source.
 - `schema/lib/lang.rkt` is the public schema DSL language.
-- `keyboard/` contains reusable keyboard layout definitions shared by schemas.
+- `keyboard/` contains reusable keyboard models shared by schemas:
+  `models.rkt` for keyboard geometry and print-slot defaults,
+  `shapes.rkt` for blank keyboard geometry, and `catalog.rkt` as the public
+  resolver. Schema modules own schema-specific printed labels and layout
+  binding.
 - `lib/yaml/` contains the internal YAML renderer.
 - `yuanshu/skin/` is the Yuanshu skin compiler and preview renderer.
 - `tools/` contains maintenance scripts.
 - `k8s/` is ignored generated deploy output from `k8s.rkt`.
 
 Generated schema modules use `#lang s-exp "lib/lang.rkt"` and declare their
-artifact support in the schema itself. Default keyboard layouts live in
-`keyboard/catalog.rkt`, so schema modules should normally reference them by id
-with `(keyboard-layouts ...)`. Inline `(keyboard-layout ...)` clauses are kept
-for custom, schema-local Yuanshu skin definitions:
+artifact support in the schema itself. Reusable keyboard models live in
+`keyboard/catalog.rkt`; schema modules define what gets printed on those
+keyboards. Inline `(keyboard-layout ...)` clauses are schema-local Yuanshu skin
+definitions:
 
 ```racket
 (rime-schema flypy_14
   (name "14鍵")
   (artifacts yuanshu)
-  (keyboard-layouts flypy_14)
+  (keyboard-layout flypy_14
+    (meta ...)
+    (phone-layout flypy-14)
+    (ipad-layout standard-18))
   (deps cangjie6)
   (static-files "rime_ice.dict.yaml")
   (static-dirs "rime_ice_dicts")

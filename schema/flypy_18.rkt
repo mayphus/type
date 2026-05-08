@@ -3,7 +3,15 @@
 (rime-schema flypy_18
   (name "小鶴雙拼-18鍵")
   (artifacts yuanshu)
-  (keyboard-layouts flypy_18)
+  (keyboard-layout flypy_18
+    (meta
+     (name "Flypy-18 Key" "小鶴-18鍵")
+     (summary "A compact Yuanshu keyboard layout for the Flypy 18-key layout.")
+     (features
+      "18-key phone layout"
+      "Standard iPad pinyin page and secondary pages"))
+    (phone-layout flypy-18)
+    (ipad-layout standard-18))
   (deps cangjie6)
   (static-files "rime_ice.dict.yaml")
   (static-dirs "rime_ice_dicts")

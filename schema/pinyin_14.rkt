@@ -3,7 +3,15 @@
 (rime-schema pinyin_14
   (name "朙月拼音-14鍵")
   (artifacts yuanshu)
-  (keyboard-layouts pinyin_14)
+  (keyboard-layout pinyin_14
+    (meta
+     (name "Pinyin-14 Key" "朙月拼音-14鍵")
+     (summary "A compact Yuanshu keyboard layout for the full-pinyin 14-key layout.")
+     (features
+      "14-key full-pinyin phone layout"
+      "Standard iPad pinyin page and secondary pages"))
+    (phone-layout pinyin-14)
+    (ipad-layout standard-18))
   (deps cangjie6)
   (static-files "rime_ice.dict.yaml")
   (static-dirs "rime_ice_dicts")
