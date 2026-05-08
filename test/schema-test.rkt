@@ -3,7 +3,11 @@
 (require rackunit
          json
          racket/list
+         racket/runtime-path
          racket/string
+         (prefix-in catalog: "../schema/catalog.rkt")
+         (prefix-in model: "../schema/model.rkt")
+         (prefix-in registry: "../schema/registry.rkt")
          (prefix-in flypy: "../schema/flypy.rkt")
          (prefix-in flypy_14: "../schema/flypy_14.rkt")
          (prefix-in luna_pinyin: "../schema/luna_pinyin.rkt")
@@ -20,6 +24,8 @@
          "../schema/lib/mobile/layouts/standard-phone-pinyin-page.rkt"
          (prefix-in zrm18-layout: "../schema/lib/mobile/layouts/zrm-18-page.rkt")
          (prefix-in zrm18-aux-layout: "../schema/lib/mobile/layouts/zrm-18-aux-page.rkt"))
+
+(define-runtime-path schema-dir "../schema")
 
 (define (generated-file files path)
   (hash-ref files path (lambda () (error 'generated-file "missing ~a" path))))
@@ -84,6 +90,29 @@
     (hash-ref item 'height)))
 
 (module+ test
+  (test-case "schema catalog ids are unique"
+    (define ids (catalog:schema-definition-ids))
+    (check-equal? (length ids) (length (remove-duplicates ids))))
+
+  (test-case "generated schema catalog entries point at module files"
+    (for ([id (in-list catalog:generated-config-ids)])
+      (define definition (catalog:schema-definition-ref id))
+      (check-true (model:schema-definition? definition) id)
+      (check-true
+       (file-exists?
+        (build-path schema-dir
+                    (string-append (model:schema-definition-source-id definition)
+                                   ".rkt")))
+       id)))
+
+  (test-case "schema catalog keeps variant and dependency metadata"
+    (check-equal? (registry:schema-source-id "flypy_ice") "flypy")
+    (check-equal? (registry:static-schema-deps "double_pinyin") '("stroke"))
+    (check-equal? (registry:static-schema-extra-files "wubi_pinyin") '("wubi86.dict.yaml"))
+    (check-equal? (registry:static-schema-artifacts "bopomofo") '("yuanshu"))
+    (check-equal? (registry:schema-id->catalog-id "cangjie6") "shape")
+    (check-equal? (registry:schema-catalog-label "double-pinyin" 'zh-Hant) "雙拼"))
+
   (test-case "flypy shared config emits desktop schema YAML"
     (define yaml (generated-file flypy:config-files "flypy.schema.yaml"))
     (check-not-false (string-contains? yaml "schema_id: flypy"))
