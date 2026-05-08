@@ -264,17 +264,10 @@
 
 (define (preview-visible-row preview row)
   (case (hash-ref preview 'visible-keys 'typing)
-    [(all) (filter (lambda (key) (not (hash-ref key 'spacer? #f))) row)]
+    [(all) row]
     [else (filter preview-key-visible? row)]))
 
-(define (preview-layout preview #:pad [pad 8] #:key-gap [key-gap 4] #:row-gap [row-gap 6])
-  (define size (hash-ref preview 'size (hash)))
-  (define width (parse-numberish (hash-ref size 'width 375)))
-  (define height (parse-numberish (hash-ref size 'height 216)))
-  (define rows
-    (filter pair?
-            (map (lambda (row) (preview-visible-row preview row))
-                 (hash-ref preview 'rows '()))))
+(define (uniform-square-preview-layout width height rows pad key-gap row-gap)
   (define row-count (max 1 (length rows)))
   (define key-height (/ (- height (* (+ row-count 1) row-gap)) row-count))
   (define max-columns
@@ -308,6 +301,53 @@
                            'width key-side
                            'height key-side)
                      items))]))))
+
+(define (skin-proportional-preview-layout width height rows pad key-gap row-gap)
+  (define row-count (max 1 (length rows)))
+  (define key-height (/ (- height (* (+ row-count 1) row-gap)) row-count))
+  (define (row-units row)
+    (apply + (map (lambda (key)
+                    (or (parse-numberish (hash-ref key 'width #f)) 1))
+                  row)))
+  (for/list ([row (in-list rows)]
+             [row-index (in-naturals)])
+    (define y (+ row-gap (* row-index (+ key-height row-gap))))
+    (define row-gap-count (max 0 (sub1 (length row))))
+    (define units (max 1 (row-units row)))
+    (define unit-width (/ (- width (* 2 pad) (* row-gap-count key-gap)) units))
+    (let loop ([keys row] [x pad] [items '()])
+      (cond
+        [(null? keys) (reverse items)]
+        [else
+         (define key (car keys))
+         (define key-width (* (or (parse-numberish (hash-ref key 'width #f)) 1)
+                              unit-width))
+         (loop (cdr keys)
+               (+ x key-width key-gap)
+               (cons (hash 'key key
+                           'x x
+                           'y y
+                           'width key-width
+                           'height key-height)
+                     items))]))))
+
+(define (preview-layout preview
+                        #:pad [pad 8]
+                        #:key-gap [key-gap 4]
+                        #:row-gap [row-gap 6]
+                        #:geometry [geometry 'uniform-square])
+  (define size (hash-ref preview 'size (hash)))
+  (define width (parse-numberish (hash-ref size 'width 375)))
+  (define height (parse-numberish (hash-ref size 'height 216)))
+  (define rows
+    (filter pair?
+            (map (lambda (row) (preview-visible-row preview row))
+                 (hash-ref preview 'rows '()))))
+  (case geometry
+    [(skin-proportional)
+     (skin-proportional-preview-layout width height rows pad key-gap row-gap)]
+    [else
+     (uniform-square-preview-layout width height rows pad key-gap row-gap)]))
 
 (define (preferred-preview-page-path preview-files theme)
   (define keys (hash-keys preview-files))

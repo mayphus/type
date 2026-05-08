@@ -68,6 +68,12 @@
 (define (svg-key-rect-count svg)
   (length (regexp-match* #rx"<rect[^>]+rx=\"6.00\"" svg)))
 
+(define (layout-item-width layout key-id)
+  (for*/first ([row (in-list layout)]
+               [item (in-list row)]
+               #:when (equal? (hash-ref (hash-ref item 'key) 'id) key-id))
+    (hash-ref item 'width)))
+
 (module+ test
   (test-case "flypy shared config emits desktop schema YAML"
     (define yaml (generated-file flypy:config-files "flypy.schema.yaml"))
@@ -254,6 +260,18 @@
                    (svg-key-rect-count web-svg)))
     (check-true (> (svg-height demo-svg)
                    (svg-height web-svg))))
+
+  (test-case "demo image layout follows real Yuanshu key width weights"
+    (define files (make-flypy-phone-files standard-phone-base-for-test))
+    (define preview (hash-set (preview-spec-from-files files) 'visible-keys 'all))
+    (define web-layout (preview-layout preview))
+    (define skin-layout (preview-layout preview #:geometry 'skin-proportional))
+    (check-equal? (layout-item-width web-layout "spaceButton")
+                  (layout-item-width web-layout "numericButton"))
+    (check-true (> (layout-item-width skin-layout "spaceButton")
+                   (layout-item-width skin-layout "numericButton")))
+    (check-true (> (layout-item-width skin-layout "backspaceButton")
+                   (layout-item-width skin-layout "zButton"))))
 
   (test-case "DSL note positions expand to square-key regions"
     (define flypy-page (generated-json (make-flypy-phone-files standard-phone-base-for-test)

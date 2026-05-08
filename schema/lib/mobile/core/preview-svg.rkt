@@ -346,11 +346,12 @@
            (attr-escape (hash-ref colors 'stroke)))
    (diagram-label-svg key x y width height colors)))
 
-(define (keyboard-layout-items preview)
+(define (keyboard-layout-items preview geometry)
   (preview-layout preview
                   #:pad keyboard-pad
                   #:key-gap key-gap
-                  #:row-gap row-gap))
+                  #:row-gap row-gap
+                  #:geometry geometry))
 
 (define (layout-y-bounds layout)
   (for*/fold ([min-y +inf.0]
@@ -362,11 +363,11 @@
     (values (min min-y y)
             (max max-y (+ y height)))))
 
-(define (compact-layout-metrics preview)
+(define (compact-layout-metrics preview geometry)
   (define size (hash-get preview 'size (hash)))
   (define width (numberish (hash-get size 'width 375) 375))
   (define source-height (numberish (hash-get size 'height 216) 216))
-  (define layout (keyboard-layout-items preview))
+  (define layout (keyboard-layout-items preview geometry))
   (cond
     [(null? layout)
      (values width source-height 0 layout)]
@@ -379,7 +380,8 @@
   (apply
    string-append
    (for*/list ([row (in-list layout)]
-               [item (in-list row)])
+               [item (in-list row)]
+               #:unless (hash-get (hash-get item 'key (hash)) 'spacer? #f))
      (key-svg (hash-get item 'key (hash))
               (hash-get item 'x 0)
               (+ (hash-get item 'y 0) y-offset)
@@ -390,7 +392,8 @@
   (apply
    string-append
    (for*/list ([row (in-list layout)]
-               [item (in-list row)])
+               [item (in-list row)]
+               #:unless (hash-get (hash-get item 'key (hash)) 'spacer? #f))
      (diagram-key-svg (hash-get item 'key (hash))
                       (hash-get item 'x 0)
                       (+ (hash-get item 'y 0) y-offset)
@@ -398,9 +401,9 @@
                       (hash-get item 'height 0)
                       colors))))
 
-(define (keyboard-preview-svg preview)
+(define (keyboard-preview-svg preview #:geometry [geometry 'uniform-square])
   (define-values (width height y-offset layout)
-    (compact-layout-metrics preview))
+    (compact-layout-metrics preview geometry))
   (define colors (diagram-colors preview))
   (format "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"~a\" height=\"~a\" viewBox=\"0 0 ~a ~a\" role=\"img\" aria-label=\"Keyboard preview\"><rect width=\"~a\" height=\"~a\" rx=\"12\" fill=\"~a\"/>~a</svg>"
           (real->decimal-string width 2)
@@ -425,7 +428,7 @@
   (define size (hash-get demo-preview 'size (hash)))
   (define logical-width (numberish (hash-get size 'width 375) 375))
   (define-values (_compact-width logical-height _y-offset _layout)
-    (compact-layout-metrics demo-preview))
+    (compact-layout-metrics demo-preview 'skin-proportional))
   (define scale (* demo-keyboard-scale
                    (min (/ keyboard-width logical-width)
                         (/ keyboard-height logical-height))))
@@ -449,7 +452,7 @@
           (real->decimal-string offset-x 2)
           (real->decimal-string offset-y 2)
           (real->decimal-string scale 4)
-          (keyboard-preview-svg demo-preview)))
+          (keyboard-preview-svg demo-preview #:geometry 'skin-proportional)))
 
 (define (preview-spec->svgs preview-spec)
   (cond
