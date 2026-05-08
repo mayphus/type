@@ -7,7 +7,7 @@ Chinese input museum and Rime/Yuanshu package builder, served by one Racket app.
 - `web.rkt` serves the public museum HTML, keyboard layout previews, and ZIP builds.
 - `gui.rkt` opens a native Racket GUI for local Yuanshu builds and iPhone pushes.
 - `build.rkt` is the callable build facade; focused build modules live in `build/`.
-- `web-ui.rkt` renders the server-side UI.
+- `web/` contains server-rendered UI pages, components, locale handling, and form parsing.
 - `k8s.rkt` generates and checks the Kubernetes YAML.
 - `assets/rime/` holds native Rime YAML and dictionaries; `schema/` holds this project's DSL source.
 - `schema/lib/lang.rkt` is the public schema DSL language.

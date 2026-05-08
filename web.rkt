@@ -9,7 +9,9 @@
          racket/string
          net/url
          json
-         "web-ui.rkt"
+         "web/pages.rkt"
+         "web/forms.rkt"
+         "web/locale.rkt"
          "build.rkt"
          "schema/registry.rkt")
 

@@ -1,153 +1,25 @@
 #lang racket/base
 
 (require racket/list
-         racket/match
          racket/string
-         net/url
-         web-server/http
-         xml
-         "schema/registry.rkt")
+         "../schema/registry.rkt"
+         "locale.rkt")
 
-(provide render-page
-         render-exhibit-page
-         remember-locale-headers
-         form-profile
-         form-request?)
-
-(define app-css-href "/app.css?v=20260508-compactselector")
-(define preview-svg-version "20260508-skinrender")
-
-(define copy
-  (hash
-   'en
-   (hash
-    'title "Chinese Input Method Museum"
-    'landing-copy "Explore Chinese input methods from history to hands-on interaction."
-    'back "Home"
-    'layouts "Keyboard layouts"
-    'dependencies "Dependencies"
-    'no-dependencies "No extra schema dependencies."
-    'rime "Rime"
-    'yuanshu "Yuanshu"
-    'dictionary "Dictionary"
-    'download-rime "Download Rime package"
-    'download-yuanshu "Download Yuanshu package"
-    'missing "Exhibit not found."
-    'support "Support"
-    'footer-credit "Powered by Racket on pb62"
-    'language "繁")
-   'zh-Hant
-   (hash
-    'title "中文輸入博物館"
-    'landing-copy "探索中文輸入法，從歷史脈絡到可互動的鍵盤佈局。"
-    'back "首頁"
-    'layouts "鍵盤佈局"
-    'dependencies "依賴方案"
-    'no-dependencies "沒有額外方案依賴。"
-    'rime "Rime"
-    'yuanshu "元書"
-    'dictionary "詞庫"
-    'download-rime "下載 Rime 套件"
-    'download-yuanshu "下載元書套件"
-    'missing "找不到這個展品。"
-    'support "支持"
-    'footer-credit "Powered by Racket on pb62"
-    'language "EN")))
-
-(define locale-cookie-name "rime-locale")
-
-(define (t locale key)
-  (hash-ref (hash-ref copy locale) key))
-
-(define (localized-value value locale [default ""])
-  (define (string-or-default maybe-value)
-    (if (and (string? maybe-value)
-             (not (string=? maybe-value "")))
-        maybe-value
-        default))
-  (cond
-    [(hash? value)
-     (string-or-default
-      (or (hash-ref value locale #f)
-          (hash-ref value 'en #f)
-          (hash-ref value 'zh-Hant #f)))]
-    [(string? value) (string-or-default value)]
-    [else default]))
-
-(define (next-locale locale)
-  (if (eq? locale 'zh-Hant) 'en 'zh-Hant))
-
-(define (locale-param value)
-  (if (equal? value "zh-Hant") 'zh-Hant 'en))
-
-(define (locale-value? value)
-  (or (equal? value "en")
-      (equal? value "zh-Hant")))
-
-(define (binding-value binding)
-  (and (binding:form? binding)
-       (bytes->string/utf-8 (binding:form-value binding))))
-
-(define (request-values req key)
-  (append
-   (for/list ([binding (in-list (request-bindings/raw req))]
-              #:when (equal? (bytes->string/utf-8 (binding-id binding)) key)
-              #:do [(define value (binding-value binding))]
-              #:when value)
-     value)
-   (for/list ([query-param (in-list (url-query (request-uri req)))]
-              #:when (equal? (symbol->string (car query-param)) key)
-              #:do [(define value (cdr query-param))]
-              #:when value)
-     value)))
-
-(define (request-value req key [default #f])
-  (match (request-values req key)
-    [(list value _ ...) value]
-    [_ default]))
-
-(define (request-cookie-value req name)
-  (for/first ([cookie (in-list (request-cookies req))]
-              #:when (equal? (client-cookie-name cookie) name))
-    (client-cookie-value cookie)))
-
-(define (request-locale req)
-  (locale-param
-   (or (request-value req "locale" #f)
-       (request-cookie-value req locale-cookie-name)
-       "en")))
-
-(define (remember-locale-headers req)
-  (define locale (request-value req "locale" #f))
-  (if (locale-value? locale)
-      (list (cookie->header
-             (make-cookie locale-cookie-name locale
-                          #:path "/"
-                          #:max-age (* 60 60 24 365))))
-      '()))
-
-(define (form-request? req)
-  (define headers (request-headers/raw req))
-  (for/or ([header (in-list headers)])
-    (and (string-ci=? (bytes->string/utf-8 (header-field header)) "content-type")
-         (regexp-match? #rx#"application/x-www-form-urlencoded"
-                        (header-value header)))))
-
-(define (valid-artifact value)
-  (cond
-    [(or (equal? value "rime") (equal? value "yuanshu")) value]
-    [(equal? value "true") "rime"]
-    [(equal? value "false") "yuanshu"]
-    [else #f]))
-
-(define (form-profile req)
-  (define schemas (request-values req "schemas"))
-  (define artifact
-    (or (valid-artifact (request-value req "artifact" #f))
-        (valid-artifact (request-value req "desktop?" #f))
-        "rime"))
-  (hash 'schemas schemas
-        'artifact artifact))
+(provide schema-id
+         schema-name
+         schema-description
+         schema-deps
+         schema-artifacts
+         schema-by-id
+         schema-source-id
+         schema-artifact-variant-items
+         schema-layout-items
+         cataloged-schemas
+         page-xexpr
+         catalog-section
+         dependency-list
+         artifact-form
+         layout-detail-card)
 
 (define (schema-id schema)
   (hash-ref schema 'id))
@@ -230,9 +102,6 @@
 (define (classes . parts)
   (string-join (filter (lambda (part) part) parts) " "))
 
-(define (attrs . pairs)
-  (filter values pairs))
-
 (define (language-toggle locale current-path)
   `(a ((class "rime-language-toggle rime-footer-language")
        (href ,(format "~a?locale=~a"
@@ -305,21 +174,6 @@
                      ,@body
                      ,(footer locale current-path))))))
 
-(define (catalog-page req schemas layouts)
-  (define locale (request-locale req))
-  (page-xexpr
-   locale
-   "/"
-   `((section ((class "rime-hero-card"))
-              (div ((class "rime-hero-head"))
-                   (div
-                    (h1 ((class "page-title")) ,(t locale 'title))
-                    (p ((class "rime-section-copy rime-hero-copy"))
-                       ,(t locale 'landing-copy)))))
-     (div ((class "rime-schema-catalogs"))
-          ,@(for/list ([catalog (in-list (cataloged-schemas schemas))])
-              (catalog-section locale layouts catalog))))))
-
 (define (dependency-list locale deps)
   (if (null? deps)
       `(p ((class "rime-empty-state")) ,(t locale 'no-dependencies))
@@ -363,46 +217,3 @@
 (define (layout-detail-card locale layout)
   `(article ((class "rime-layout-card"))
             ,(layout-preview locale layout)))
-
-(define (exhibit-page req schemas layouts schema-id*)
-  (define locale (request-locale req))
-  (define requested-schema (schema-by-id schemas schema-id*))
-  (define schema
-    (and requested-schema
-         (schema-by-id schemas (schema-source-id (schema-id requested-schema)))))
-  (define current-path (format "/exhibits/~a" (if schema (schema-id schema) schema-id*)))
-  (page-xexpr
-   locale
-   current-path
-   (if schema
-       (let* ([schema-layouts (schema-layout-items schema layouts)]
-              [artifacts (schema-artifacts schema)])
-         `((section ((class "rime-hero-card rime-exhibit-hero"))
-                    (div ((class "rime-hero-head"))
-                         (div
-                          (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
-                          (h1 ((class "page-title")) ,(schema-name locale schema))
-                          (p ((class "rime-section-copy rime-hero-copy"))
-                             ,(schema-description locale schema)))))
-           (section ((class "rime-exhibit-actions"))
-                    ,(artifact-form locale
-                                    schema
-                                    (schema-artifact-variant-items schema schemas artifacts)
-                                    artifacts))
-           (section ((class "rime-section rime-exhibit-section"))
-                    (h2 ((class "rime-section-title")) ,(t locale 'layouts))
-                    (div ((class "rime-layout-grid"))
-                         ,@(for/list ([layout (in-list schema-layouts)])
-                             (layout-detail-card locale layout))))
-           (section ((class "rime-section rime-exhibit-section"))
-                    (h2 ((class "rime-section-title")) ,(t locale 'dependencies))
-                    ,(dependency-list locale (schema-deps schema)))))
-       `((section ((class "rime-hero-card"))
-                  (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
-                  (h1 ((class "page-title")) ,(t locale 'missing)))))))
-
-(define (render-page req schemas layouts #:route [_route 'home])
-  (xexpr->string (catalog-page req schemas layouts)))
-
-(define (render-exhibit-page req schemas layouts schema-id)
-  (xexpr->string (exhibit-page req schemas layouts schema-id)))
