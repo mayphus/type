@@ -338,7 +338,6 @@
                       'abc-font-size  10
                       'abc-secondary? #t
                       'cangjie-font-size 14
-                      'cangjie-font-weight "bold"
                       'symbol-font-size 10
                       'flypy-single-font-size (json-number "13.5")
                       'flypy-double-font-size 10

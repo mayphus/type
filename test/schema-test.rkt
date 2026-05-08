@@ -304,14 +304,14 @@
      (hash-ref (hash-ref cangjie-phone 'aButtonCangjieForegroundStyle) 'fontSize)
      (hash-ref (hash-ref luna-phone 'aButtonAbcForegroundStyle) 'fontSize))
     (check-equal?
-     (hash-ref (hash-ref cangjie-phone 'aButtonCangjieForegroundStyle) 'fontWeight)
-     "bold")
+     (hash-ref (hash-ref cangjie-phone 'aButtonCangjieForegroundStyle) 'fontWeight #f)
+     #f)
     (check-equal?
      (hash-ref (hash-ref cangjie-ipad 'aButtonCangjieForegroundStyle) 'fontSize)
      (hash-ref (hash-ref luna-ipad 'aButtonUppercaseForegroundStyle) 'fontSize))
     (check-equal?
-     (hash-ref (hash-ref cangjie-ipad 'aButtonCangjieForegroundStyle) 'fontWeight)
-     "bold")
+     (hash-ref (hash-ref cangjie-ipad 'aButtonCangjieForegroundStyle) 'fontWeight #f)
+     #f)
     (check-equal? (registry:static-schema-keyboard-layouts "quick5") '("cangjie6"))
     (check-equal? (registry:static-schema-keyboard-layouts "cangjie5") '("cangjie6")))
 

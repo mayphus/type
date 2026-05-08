@@ -10,14 +10,14 @@
      (features
       "Cangjie-centered legends"
       "Standard numeric and symbolic secondary pages"))
-    (print cangjie center #:font-size 25 #:role primary #:weight bold)
+    (print cangjie center #:font-size 25 #:role primary)
     (ipad
      (raw
       (ipad-layout
        (layers cangjie)
        (size "1.1/16")
        (fonts
-        (cangjie 22.5 #:primary #:weight bold))))))
+        (cangjie 22.5 #:primary))))))
   (deps flypy)
   (static-files "cangjie6.dict.yaml")
   (custom "cangjie6.custom.yaml"
