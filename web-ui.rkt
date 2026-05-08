@@ -21,7 +21,7 @@
    'en
    (hash
     'title "Chinese Input Method Museum"
-    'landing-copy "Browse input methods by family. Open an exhibit for layouts, dependencies, and downloads."
+    'landing-copy "Explore Chinese input methods from history to hands-on interaction."
     'back "Home"
     'layouts "Keyboard layouts"
     'dependencies "Dependencies"
@@ -37,7 +37,7 @@
    'zh-Hant
    (hash
     'title "中文輸入博物館"
-    'landing-copy "按輸入法家族瀏覽。進入展品查看鍵盤佈局、依賴與下載。"
+    'landing-copy "探索中文輸入法，從歷史脈絡到可互動的鍵盤佈局。"
     'back "首頁"
     'layouts "鍵盤佈局"
     'dependencies "依賴方案"
@@ -315,9 +315,6 @@
 
 (define (layout-detail-card locale layout)
   `(article ((class "rime-layout-card"))
-            (div ((class "rime-option-title-row"))
-                 (h3 ((class "rime-layout-title")) ,(layout-name locale layout))
-                 (span ((class "rime-option-id")) ,(layout-id layout)))
             ,(layout-preview locale layout)))
 
 (define (exhibit-page req schemas layouts schema-id*)
@@ -328,8 +325,7 @@
    locale
    current-path
    (if schema
-       (let* ([catalog-id (schema-id->catalog-id (schema-id schema))]
-              [schema-layouts (schema-layout-items schema layouts)]
+       (let* ([schema-layouts (schema-layout-items schema layouts)]
               [artifacts (schema-artifacts schema)])
          `((section ((class "rime-hero-card rime-exhibit-hero"))
                     (div ((class "rime-hero-head"))
@@ -337,10 +333,7 @@
                           (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
                           (h1 ((class "page-title")) ,(schema-name locale schema))
                           (p ((class "rime-section-copy rime-hero-copy"))
-                             ,(schema-description locale schema))))
-                    (div ((class "rime-exhibit-meta"))
-                         (span ((class "rime-family-label")) ,(schema-catalog-label catalog-id locale))
-                         (span ((class "rime-option-id")) ,(schema-id schema))))
+                             ,(schema-description locale schema)))))
            (section ((class "rime-exhibit-actions"))
                     ,@(for/list ([artifact (in-list artifacts)])
                         (artifact-form locale schema artifact)))

@@ -79,7 +79,7 @@
      "朙月拼音＋小鶴雙拼 14 鍵方案。\n使用 rime-ice 詞庫，適合 Yuanshu iPhone 14 鍵圖示皮膚。"))
   (keyboard-layout flypy_14
     (meta
-      (name "Flypy-14 Key" "小鶴雙拼-14鍵")
+      (name "Flypy-14 Key" "小鶴-14鍵")
       (summary "A compact Yuanshu keyboard layout for the Flypy 14-key layout.")
       (features
         "14-key phone layout"

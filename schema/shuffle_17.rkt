@@ -75,7 +75,7 @@
      "朙月拼音＋亂序17方案。\n使用 rime-ice 詞庫，精簡版，適合移動端匯入"))
   (keyboard-layout shuffle_17
     (meta
-      (name "Flypy-Shuffle 17 Key" "小鶴雙拼-亂序17鍵")
+      (name "Flypy-Shuffle 17 Key" "小鶴-亂序17鍵")
       (summary "An experimental 17-key Yuanshu keyboard layout for the shuffle_17 schema family.")
       (features
         "17-key shuffled phone layout"

@@ -48,30 +48,30 @@
 (define schema-display-metadata
   (hash
    "flypy"
-   (hash 'names (hash 'en "Flypy" 'zh-Hant "小鶴雙拼")
+   (hash 'names (hash 'en "Flypy" 'zh-Hant "小鶴")
          'descriptions
          (hash 'en "Flypy double pinyin with Rime config and Yuanshu keyboard layout previews."
-               'zh-Hant "小鶴雙拼方案，提供 Rime 設定與元書鍵盤佈局預覽。"))
+               'zh-Hant "小鶴方案，提供 Rime 設定與元書鍵盤佈局預覽。"))
    "flypy_ice"
-   (hash 'names (hash 'en "Flypy Ice" 'zh-Hant "小鶴雙拼-霧凇")
+   (hash 'names (hash 'en "Flypy Ice" 'zh-Hant "小鶴-霧凇")
          'descriptions
          (hash 'en "Flypy double pinyin backed by rime-ice dictionaries, packaged for Yuanshu."
-               'zh-Hant "使用 rime-ice 詞庫的小鶴雙拼，作為元書套件展品。"))
+               'zh-Hant "使用 rime-ice 詞庫的小鶴方案，作為元書套件展品。"))
    "flypy_14"
-   (hash 'names (hash 'en "Flypy 14-Key" 'zh-Hant "小鶴雙拼-14鍵")
+   (hash 'names (hash 'en "Flypy 14-Key" 'zh-Hant "小鶴-14鍵")
          'descriptions
          (hash 'en "A 14-key Flypy double pinyin schema for Yuanshu, grouping adjacent QWERTY keys."
-               'zh-Hant "14 鍵小鶴雙拼元書方案，按相鄰 QWERTY 鍵位分組。"))
+               'zh-Hant "14 鍵小鶴元書方案，按相鄰 QWERTY 鍵位分組。"))
    "flypy_18"
-   (hash 'names (hash 'en "Flypy 18-Key" 'zh-Hant "小鶴雙拼-18鍵")
+   (hash 'names (hash 'en "Flypy 18-Key" 'zh-Hant "小鶴-18鍵")
          'descriptions
          (hash 'en "An 18-key Flypy double pinyin schema for Yuanshu, adapted from a compact phone layout."
-               'zh-Hant "18 鍵小鶴雙拼元書方案，改編自緊湊手機鍵盤佈局。"))
+               'zh-Hant "18 鍵小鶴元書方案，改編自緊湊手機鍵盤佈局。"))
    "shuffle_17"
-   (hash 'names (hash 'en "Flypy Shuffle 17-Key" 'zh-Hant "小鶴雙拼-亂序17鍵")
+   (hash 'names (hash 'en "Flypy Shuffle 17-Key" 'zh-Hant "小鶴-亂序17鍵")
          'descriptions
          (hash 'en "An experimental 17-key shuffled Flypy schema for Yuanshu."
-               'zh-Hant "實驗性的 17 鍵亂序小鶴雙拼元書方案。"))
+               'zh-Hant "實驗性的 17 鍵亂序小鶴元書方案。"))
    "luna_pinyin"
    (hash 'names (hash 'en "Luna Pinyin" 'zh-Hant "朙月拼音")
          'descriptions

@@ -79,7 +79,7 @@
      "朙月拼音＋小鶴雙拼 18 鍵方案。\n使用 rime-ice 詞庫，適合 Yuanshu iPhone 18 鍵圖示皮膚。"))
   (keyboard-layout flypy_18
     (meta
-      (name "Flypy-18 Key" "小鶴雙拼-18鍵")
+      (name "Flypy-18 Key" "小鶴-18鍵")
       (summary "A compact Yuanshu keyboard layout for the Flypy 18-key layout.")
       (features
         "18-key phone layout"

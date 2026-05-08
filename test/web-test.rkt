@@ -50,7 +50,7 @@
     (check-true (regexp-match? #rx"Full Spelling" en-html))
     (check-true (regexp-match? #rx"Jyutping" en-html))
     (check-false (regexp-match? #rx"<h2[^>]*>Cantonese</h2>" en-html))
-    (check-true (regexp-match? #rx"小鶴雙拼方案，提供 Rime 設定" zh-html))
+    (check-true (regexp-match? #rx"小鶴方案，提供 Rime 設定" zh-html))
     (check-true (regexp-match? #rx"雙拼" zh-html))
     (check-true (regexp-match? #rx"粵拼" zh-html))
     (check-false (regexp-match? #rx"Compact phonetic systems" zh-html)))

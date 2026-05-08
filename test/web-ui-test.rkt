@@ -8,11 +8,11 @@
 
 (define schemas
   (list (hash 'id "flypy"
-              'name "小鶴雙拼"
-              'names (hash 'en "Flypy" 'zh-Hant "小鶴雙拼")
+              'name "小鶴"
+              'names (hash 'en "Flypy" 'zh-Hant "小鶴")
               'description "Flypy double pinyin exhibit."
               'descriptions (hash 'en "Flypy double pinyin exhibit."
-                                  'zh-Hant "小鶴雙拼展品。")
+                                  'zh-Hant "小鶴展品。")
               'deps '("cangjie6")
               'artifacts '("rime" "yuanshu")
               'keyboard-layouts '("flypy"))
@@ -29,8 +29,8 @@
 (define layouts
   (list (hash 'id "flypy"
               'schemas '("flypy")
-              'name "小鶴雙拼"
-              'names (hash 'en "Flypy" 'zh-Hant "小鶴雙拼")
+              'name "小鶴"
+              'names (hash 'en "Flypy" 'zh-Hant "小鶴")
               'preview-svgs (hash 'light "<svg/>"))
         (hash 'id "flypy_14"
               'schemas '("flypy_14")
@@ -52,6 +52,7 @@
   (test-case "museum catalog has exhibit cards instead of platform tabs"
     (define html (render-page (req "/") schemas layouts))
     (check-true (regexp-match? #rx"Chinese Input Method Museum" html))
+    (check-true (regexp-match? #rx"Explore Chinese input methods from history to hands-on interaction" html))
     (check-true (regexp-match? #rx"href=\"/exhibits/flypy\"" html))
     (check-true (regexp-match? #rx"href=\"/exhibits/flypy_14\"" html))
     (check-true (regexp-match? #rx"/layouts/flypy/preview.svg" html))
@@ -73,8 +74,9 @@
     (define html (render-page (req "/?locale=zh-Hant") schemas layouts))
     (check-true (regexp-match? #rx"<html lang=\"zh-Hant\"" html))
     (check-true (regexp-match? #rx"中文輸入博物館" html))
+    (check-true (regexp-match? #rx"探索中文輸入法，從歷史脈絡到可互動的鍵盤佈局" html))
     (check-true (regexp-match? #rx"雙拼" html))
-    (check-true (regexp-match? #rx"小鶴雙拼展品" html))
+    (check-true (regexp-match? #rx"小鶴展品" html))
     (check-true (regexp-match? #rx">EN</a>" html)))
 
   (test-case "exhibit page shows details, dependencies, previews, and artifact actions"
@@ -85,7 +87,10 @@
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"rime\"" html))
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"yuanshu\"" html))
     (check-true (regexp-match? #rx"Download Rime package" html))
-    (check-true (regexp-match? #rx"Download Yuanshu package" html)))
+    (check-true (regexp-match? #rx"Download Yuanshu package" html))
+    (check-false (regexp-match? #rx"rime-exhibit-meta" html))
+    (check-false (regexp-match? #rx"rime-layout-title" html))
+    (check-false (regexp-match? #rx"<span class=\"rime-option-id\">flypy" html)))
 
   (test-case "yuanshu-only exhibit omits Rime download"
     (define html (render-exhibit-page (req "/exhibits/flypy_14") schemas layouts "flypy_14"))

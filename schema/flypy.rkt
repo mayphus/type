@@ -14,7 +14,7 @@
 
   (keyboard-layout flypy
     (meta
-      (name "Flypy" "小鶴雙拼")
+      (name "Flypy" "小鶴")
       (summary "A Yuanshu keyboard layout for Flypy double pinyin with dedicated phone and iPad layouts.")
       (features
         "Flypy legends on both phone and iPad"
