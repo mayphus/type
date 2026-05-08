@@ -41,12 +41,14 @@
               'schemas '("flypy")
               'name "小鶴"
               'names (hash 'en "Flypy" 'zh-Hant "小鶴")
-              'preview-svgs (hash 'light "<svg/>"))
+              'preview-svgs (hash 'light "<svg/>")
+              'skin-preview-svgs (hash 'light "<svg/>"))
         (hash 'id "flypy_14"
               'schemas '("flypy_14")
               'name "小鶴十四鍵"
               'names (hash 'en "Flypy 14-Key" 'zh-Hant "小鶴十四鍵")
-              'preview-svgs (hash 'light "<svg/>"))))
+              'preview-svgs (hash 'light "<svg/>")
+              'skin-preview-svgs (hash 'light "<svg/>"))))
 
 (define (req path #:method [method #"GET"] #:headers [headers '()] #:bindings [bindings '()])
   (request method
@@ -107,6 +109,12 @@
     (check-true (regexp-match? #rx"Dictionary" html))
     (check-true (regexp-match? #rx"Download Rime package" html))
     (check-true (regexp-match? #rx"Download Yuanshu package" html))
+    (check-true (regexp-match? #rx"/skins/flypy/preview.svg" html))
+    (define preview-pos (regexp-match-positions #rx"rime-download-preview" html))
+    (define yuanshu-pos (regexp-match-positions #rx"Download Yuanshu package" html))
+    (check-not-false preview-pos)
+    (check-not-false yuanshu-pos)
+    (check-true (< (caar preview-pos) (caar yuanshu-pos)))
     (check-false (regexp-match? #rx"rime-exhibit-meta" html))
     (check-false (regexp-match? #rx"rime-layout-title" html))
     (check-false (regexp-match? #rx"<span class=\"rime-option-id\">flypy" html)))

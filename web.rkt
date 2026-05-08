@@ -9,6 +9,7 @@
          racket/string
          net/url
          json
+         "preview/svg.rkt"
          "web/pages.rkt"
          "web/forms.rkt"
          "web/locale.rkt"
@@ -39,10 +40,35 @@
   (with-handlers ([exn:fail? (lambda (_) (hash))])
     (keyboard-layout-module-ref layout-module 'keyboard-layout-preview-svgs)))
 
+(define (keyboard-layout-skin-preview-svgs layout-module)
+  (with-handlers ([exn:fail? (lambda (_) (hash))])
+    (define preview-spec
+      (keyboard-layout-module-ref layout-module 'keyboard-layout-preview-spec))
+    (define (preview-for-theme theme)
+      (cond
+        [(not (hash? preview-spec)) #f]
+        [(eq? theme 'dark) (hash-ref preview-spec 'dark #f)]
+        [else (hash-remove preview-spec 'dark)]))
+    (define (render theme)
+      (define preview (preview-for-theme theme))
+      (and (hash? preview)
+           (keyboard-preview-svg (hash-set preview 'visible-keys 'all)
+                                 #:geometry 'skin-proportional)))
+    (for/hash ([theme (in-list '(light dark))]
+               #:do [(define svg (render theme))]
+               #:when svg)
+      (values theme svg))))
+
 (define (keyboard-layout-preview-svg layout-id [theme 'light])
   (for/or ([item (in-list keyboard-layout-items)]
            #:when (equal? layout-id (hash-ref item 'id)))
     (define preview-svgs (hash-ref item 'preview-svgs))
+    (hash-ref preview-svgs theme #f)))
+
+(define (keyboard-layout-skin-preview-svg layout-id [theme 'light])
+  (for/or ([item (in-list keyboard-layout-items)]
+           #:when (equal? layout-id (hash-ref item 'id)))
+    (define preview-svgs (hash-ref item 'skin-preview-svgs))
     (hash-ref preview-svgs theme #f)))
 
 (define (list-static-schemas)
@@ -94,7 +120,8 @@
           'name (keyboard-layout-module-ref layout-module 'chinese-name (lambda () ""))
           'names (hash 'en (keyboard-layout-module-ref layout-module 'english-name (lambda () ""))
                        'zh-Hant (keyboard-layout-module-ref layout-module 'chinese-name (lambda () "")))
-          'preview-svgs (keyboard-layout-preview-svgs layout-module))))
+          'preview-svgs (keyboard-layout-preview-svgs layout-module)
+          'skin-preview-svgs (keyboard-layout-skin-preview-svgs layout-module))))
 
 (define skin-items
   (for/list ([layout (in-list keyboard-layout-items)])
@@ -216,6 +243,19 @@
           404 #"Not Found" (current-seconds) #"text/plain; charset=utf-8" '()
           (list #"Preview SVG not found")))]))
 
+(define (handle-keyboard-layout-skin-preview-svg req layout-id [theme 'light])
+  (cond
+    [(not (valid-id? layout-id))
+     (json-error "Invalid keyboard layout id")]
+    [else
+     (define svg (or (keyboard-layout-skin-preview-svg layout-id theme)
+                     (keyboard-layout-skin-preview-svg layout-id 'light)))
+     (if svg
+         (svg-response svg)
+         (response/full
+          404 #"Not Found" (current-seconds) #"text/plain; charset=utf-8" '()
+          (list #"Preview SVG not found")))]))
+
 (define (handle-build req)
   (define body-bytes (request-post-data/raw req))
   (define data
@@ -268,10 +308,10 @@
     (lambda (req layout-id)
       (handle-keyboard-layout-preview-svg req layout-id 'dark))]
    [("layouts" (string-arg) "demo.png") handle-keyboard-layout-demo]
-   [("skins" (string-arg) "preview.svg") handle-keyboard-layout-preview-svg]
+   [("skins" (string-arg) "preview.svg") handle-keyboard-layout-skin-preview-svg]
    [("skins" (string-arg) "preview-dark.svg")
     (lambda (req layout-id)
-      (handle-keyboard-layout-preview-svg req layout-id 'dark))]
+      (handle-keyboard-layout-skin-preview-svg req layout-id 'dark))]
    [("skins" (string-arg) "demo.png") handle-keyboard-layout-demo]
    [("build") #:method "post" handle-build]))
 

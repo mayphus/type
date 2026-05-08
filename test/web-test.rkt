@@ -66,10 +66,12 @@
       (define layout-id (hash-ref item 'id))
       (define names (hash-ref item 'names))
       (define preview-svgs (hash-ref item 'preview-svgs))
+      (define skin-preview-svgs (hash-ref item 'skin-preview-svgs))
       (check-true (hash-has-key? names 'en))
       (check-true (hash-has-key? names 'zh-Hant))
       (for ([theme (in-list '(light dark))])
         (define svg (hash-ref preview-svgs theme #f))
+        (define skin-svg (hash-ref skin-preview-svgs theme #f))
         (define expected-background
           (case theme
             [(light) "fill=\"#f6f7f9\""]
@@ -81,4 +83,18 @@
         (check-true
          (and (string? svg)
               (regexp-match? (regexp-quote expected-background) svg))
-         (format "~a preview ~a should use neutral diagram colors" layout-id theme))))))
+         (format "~a preview ~a should use neutral diagram colors" layout-id theme))
+        (check-true
+         (and (string? skin-svg)
+              (regexp-match? #rx"^<svg[^>]+Keyboard preview" skin-svg))
+         (format "~a skin preview ~a should be an SVG" layout-id theme)))))
+
+  (test-case "skin preview routes include non typing Yuanshu keys"
+    (define skin-svg
+      (response-body (canonical-dispatch (req "/skins/flypy/preview.svg" "rime.mayphus.org"))))
+    (define layout-svg
+      (response-body (canonical-dispatch (req "/layouts/flypy/preview.svg" "rime.mayphus.org"))))
+    (check-true (regexp-match? #rx"^<svg[^>]+Keyboard preview" skin-svg))
+    (check-true (regexp-match? #rx">123<" skin-svg))
+    (check-true (regexp-match? #rx"fill=\"#e9edf2\"" skin-svg))
+    (check-false (regexp-match? #rx">123<" layout-svg))))

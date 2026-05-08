@@ -46,7 +46,8 @@
                     ,(artifact-form locale
                                     schema
                                     (schema-artifact-variant-items schema schemas artifacts)
-                                    artifacts))
+                                    artifacts
+                                    layouts))
            (section ((class "rime-section rime-exhibit-section"))
                     (h2 ((class "rime-section-title")) ,(t locale 'layouts))
                     (div ((class "rime-layout-grid"))
