@@ -62,6 +62,12 @@
   (define match (regexp-match #rx"<svg[^>]+height=\"([0-9.]+)\"" svg))
   (and match (string->number (cadr match))))
 
+(define (svg-text? svg text)
+  (regexp-match? (regexp (format ">~a</text>" (regexp-quote text))) svg))
+
+(define (svg-key-rect-count svg)
+  (length (regexp-match* #rx"<rect[^>]+rx=\"6.00\"" svg)))
+
 (module+ test
   (test-case "flypy shared config emits desktop schema YAML"
     (define yaml (generated-file flypy:config-files "flypy.schema.yaml"))
@@ -235,6 +241,19 @@
                     standard-key-side)
       (check-equal? (svg-height (keyboard-preview-svg compact-preview))
                     standard-svg-height)))
+
+  (test-case "web preview hides controls but demo image SVG includes real control keys"
+    (define files (make-flypy-phone-files standard-phone-base-for-test))
+    (define preview (preview-spec-from-files files))
+    (define web-svg (keyboard-preview-svg preview))
+    (define demo-svg (demo-preview-svg "Flypy" preview))
+    (check-false (svg-text? web-svg "space"))
+    (check-false (svg-text? web-svg "123"))
+    (check-true (svg-text? demo-svg "123"))
+    (check-true (> (svg-key-rect-count demo-svg)
+                   (svg-key-rect-count web-svg)))
+    (check-true (> (svg-height demo-svg)
+                   (svg-height web-svg))))
 
   (test-case "DSL note positions expand to square-key regions"
     (define flypy-page (generated-json (make-flypy-phone-files standard-phone-base-for-test)

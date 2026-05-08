@@ -379,8 +379,7 @@
   (apply
    string-append
    (for*/list ([row (in-list layout)]
-               [item (in-list row)]
-               #:when (preview-key-visible? (hash-get item 'key #f)))
+               [item (in-list row)])
      (key-svg (hash-get item 'key (hash))
               (hash-get item 'x 0)
               (+ (hash-get item 'y 0) y-offset)
@@ -391,8 +390,7 @@
   (apply
    string-append
    (for*/list ([row (in-list layout)]
-               [item (in-list row)]
-               #:when (preview-key-visible? (hash-get item 'key #f)))
+               [item (in-list row)])
      (diagram-key-svg (hash-get item 'key (hash))
                       (hash-get item 'x 0)
                       (+ (hash-get item 'y 0) y-offset)
@@ -415,6 +413,7 @@
           (keyboard-diagram-body-svg layout colors y-offset)))
 
 (define (demo-preview-svg title preview)
+  (define demo-preview (hash-set preview 'visible-keys 'all))
   (define panel-x 92)
   (define panel-y 150)
   (define panel-width 812)
@@ -423,10 +422,10 @@
   (define keyboard-y (+ panel-y 84))
   (define keyboard-width (- panel-width 68))
   (define keyboard-height (- panel-height 116))
-  (define size (hash-get preview 'size (hash)))
+  (define size (hash-get demo-preview 'size (hash)))
   (define logical-width (numberish (hash-get size 'width 375) 375))
   (define-values (_compact-width logical-height _y-offset _layout)
-    (compact-layout-metrics preview))
+    (compact-layout-metrics demo-preview))
   (define scale (* demo-keyboard-scale
                    (min (/ keyboard-width logical-width)
                         (/ keyboard-height logical-height))))
@@ -450,7 +449,7 @@
           (real->decimal-string offset-x 2)
           (real->decimal-string offset-y 2)
           (real->decimal-string scale 4)
-          (keyboard-preview-svg preview)))
+          (keyboard-preview-svg demo-preview)))
 
 (define (preview-spec->svgs preview-spec)
   (cond
