@@ -9,7 +9,6 @@
   (variant flypy_ice
     (name "小鶴雙拼-霧凇")
     (dictionary ice)
-    (artifacts yuanshu)
     (keyboard-layouts flypy))
 
   (keyboard-layout flypy
@@ -23,11 +22,11 @@
     (ipad-layout
       (layers abc flypy)
       (size "1.1/16")
-      (centers
-        [abc          0.5  0.28]
-        [flypy-single 0.5  0.56]
-        [flypy-top    0.5  0.47]
-        [flypy-bottom 0.5  0.63])
+      (positions
+        [abc          top]
+        [flypy-single bottom]
+        [flypy-top    center]
+        [flypy-bottom bottom])
       (fonts
         [abc          11   #:secondary]
         [flypy-single 18.5 #:weight bold]
@@ -43,13 +42,13 @@
         "Standard iPad pinyin, numeric, and symbolic pages"))
     (phone-layout
       (layers abc cangjie flypy symbol)
-      (centers
-        [abc          0.72 0.40]
-        [cangjie      0.37 0.34]
-        [flypy-single 0.5  0.74]
-        [flypy-top    0.5  0.68]
-        [flypy-bottom 0.5  0.79]
-        [symbol       0.73 0.24])
+      (positions
+        [abc          right]
+        [cangjie      top-left]
+        [flypy-single bottom]
+        [flypy-top    center]
+        [flypy-bottom bottom]
+        [symbol       top-right])
       (fonts
         [abc           10.5 #:secondary]
         [cangjie       15.5]

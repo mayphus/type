@@ -14,7 +14,8 @@
          form-profile
          form-request?)
 
-(define app-css-href "/app.css?v=20260508-museum")
+(define app-css-href "/app.css?v=20260508-variants")
+(define preview-svg-version "20260508-noteplaces")
 
 (define copy
   (hash
@@ -28,6 +29,7 @@
     'no-dependencies "No extra schema dependencies."
     'rime "Rime"
     'yuanshu "Yuanshu"
+    'dictionary "Dictionary"
     'download-rime "Download Rime package"
     'download-yuanshu "Download Yuanshu package"
     'missing "Exhibit not found."
@@ -44,6 +46,7 @@
     'no-dependencies "沒有額外方案依賴。"
     'rime "Rime"
     'yuanshu "元書"
+    'dictionary "詞庫"
     'download-rime "下載 Rime 套件"
     'download-yuanshu "下載元書套件"
     'missing "找不到這個展品。"
@@ -174,6 +177,18 @@
               #:when (equal? id (schema-id schema)))
     schema))
 
+(define (primary-schema? schema)
+  (equal? (schema-id schema)
+          (schema-source-id (schema-id schema))))
+
+(define (schema-variant-items schema schemas artifact)
+  (filter
+   (lambda (candidate)
+     (and (equal? (schema-source-id (schema-id candidate))
+                  (schema-id schema))
+          (member artifact (schema-artifacts candidate))))
+   schemas))
+
 (define (layout-id layout)
   (hash-ref layout 'id))
 
@@ -198,7 +213,8 @@
    (lambda (catalog-id)
      (define items
        (filter (lambda (schema)
-                 (equal? (schema-id->catalog-id (schema-id schema)) catalog-id))
+                 (and (primary-schema? schema)
+                      (equal? (schema-id->catalog-id (schema-id schema)) catalog-id)))
                schemas))
      (and (pair? items) (cons catalog-id items)))
    schema-catalog-order))
@@ -220,10 +236,14 @@
   `(div ((class "rime-layout-preview keyboard-preview keyboard-preview-svg-wrap"))
         (picture
          (source ((media "(prefers-color-scheme: dark)")
-                  (srcset ,(format "/layouts/~a/preview-dark.svg" (layout-id layout)))))
+                  (srcset ,(format "/layouts/~a/preview-dark.svg?v=~a"
+                                   (layout-id layout)
+                                   preview-svg-version))))
          (img ((class "keyboard-preview-svg")
                (loading "lazy")
-               (src ,(format "/layouts/~a/preview.svg" (layout-id layout)))
+               (src ,(format "/layouts/~a/preview.svg?v=~a"
+                             (layout-id layout)
+                             preview-svg-version))
                (alt ,(layout-name locale layout)))))))
 
 (define (schema-card locale schema layouts)
@@ -299,11 +319,24 @@
            ,@(for/list ([dep (in-list deps)])
                `(li (code ,dep))))))
 
-(define (artifact-form locale schema artifact)
+(define (schema-select locale schema variants)
+  (if (> (length variants) 1)
+      `(label ((class "rime-variant-control"))
+              (span ((class "rime-variant-label")) ,(t locale 'dictionary))
+              (select ((class "rime-variant-select") (name "schemas"))
+                      ,@(for/list ([variant (in-list variants)])
+                          `(option ((value ,(schema-id variant))
+                                    ,@(if (equal? (schema-id variant) (schema-id schema))
+                                          '((selected "selected"))
+                                          '()))
+                                   ,(schema-name locale variant)))))
+      `(input ((type "hidden") (name "schemas") (value ,(schema-id schema))))))
+
+(define (artifact-form locale schema variants artifact)
   `(form ((class "rime-artifact-form")
           (method "post")
           (action "/build"))
-         (input ((type "hidden") (name "schemas") (value ,(schema-id schema))))
+         ,(schema-select locale schema variants)
          (input ((type "hidden") (name "artifact") (value ,artifact)))
          (button ((class ,(classes "rime-build-button"
                                    (and (equal? artifact "yuanshu")
@@ -319,8 +352,11 @@
 
 (define (exhibit-page req schemas layouts schema-id*)
   (define locale (request-locale req))
-  (define schema (schema-by-id schemas schema-id*))
-  (define current-path (format "/exhibits/~a" schema-id*))
+  (define requested-schema (schema-by-id schemas schema-id*))
+  (define schema
+    (and requested-schema
+         (schema-by-id schemas (schema-source-id (schema-id requested-schema)))))
+  (define current-path (format "/exhibits/~a" (if schema (schema-id schema) schema-id*)))
   (page-xexpr
    locale
    current-path
@@ -336,7 +372,10 @@
                              ,(schema-description locale schema)))))
            (section ((class "rime-exhibit-actions"))
                     ,@(for/list ([artifact (in-list artifacts)])
-                        (artifact-form locale schema artifact)))
+                        (artifact-form locale
+                                       schema
+                                       (schema-variant-items schema schemas artifact)
+                                       artifact)))
            (section ((class "rime-section rime-exhibit-section"))
                     (h2 ((class "rime-section-title")) ,(t locale 'layouts))
                     (div ((class "rime-layout-grid"))

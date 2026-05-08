@@ -5,6 +5,7 @@
          "base-page.rkt"
          "../core/dsl.rkt"
          "../core/builders.rkt"
+         "../core/visual-policy.rkt"
          "../keysets/pinyin-common.rkt"
          "standard-ipad-page.rkt")
 
@@ -36,24 +37,19 @@
   (object ["width" "113.5/1125"]))
 
 (define legend-main-center
-  (object ["x" (json-number "0.5")]
-          ["y" (json-number "0.5")]))
+  (key-note-position 'center))
 
 (define legend-top-center
-  (object ["x" (json-number "0.5")]
-          ["y" (json-number "0.22")]))
+  (key-note-position 'top))
 
 (define legend-left-center
-  (object ["x" (json-number "0.23999999999999999")]
-          ["y" (json-number "0.5")]))
+  (key-note-position 'left))
 
 (define legend-right-center
-  (object ["x" (json-number "0.76000000000000001")]
-          ["y" (json-number "0.5")]))
+  (key-note-position 'right))
 
 (define legend-final-center
-  (object ["x" (json-number "0.5")]
-          ["y" (json-number "0.77000000000000002")]))
+  (key-note-position 'bottom))
 
 (define shuffle17-button-specs
   (list

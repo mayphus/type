@@ -1,7 +1,8 @@
 #lang racket/base
 
 (require racket/hash
-         "../core/dsl.rkt")
+         "../core/dsl.rkt"
+         "../core/visual-policy.rkt")
 
 (provide make-phone-base-page
          make-ipad-base-page
@@ -50,7 +51,7 @@
 ;; Geometry background style builder
 (define (geometry-style highlight normal insets)
   (object ["buttonStyleType" "geometry"]
-          ["cornerRadius" (json-number "8.5")]
+          ["cornerRadius" square-key-corner-radius]
           ["highlightColor" highlight]
           ["insets" insets]
           ["normalColor" normal]))

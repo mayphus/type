@@ -9,6 +9,7 @@
          (prefix-in luna_pinyin: "../schema/luna_pinyin.rkt")
          (prefix-in terra_pinyin: "../schema/terra_pinyin.rkt")
          (prefix-in jyut6ping3: "../schema/jyut6ping3.rkt")
+         "../build.rkt"
          "../schema/lib/mobile/core/preview.rkt"
          "../schema/lib/mobile/layouts/bopomofo-page.rkt"
          (prefix-in flypy14-layout: "../schema/lib/mobile/layouts/flypy-14-page.rkt")
@@ -71,7 +72,9 @@
     (check-not-false (string-contains? yaml "schema_id: flypy_ice"))
     (check-not-false (string-contains? yaml "name: \"小鶴雙拼-霧凇\""))
     (check-not-false (string-contains? yaml "dictionary: rime_ice"))
-    (check-not-false (string-contains? yaml "prism: flypy_ice")))
+    (check-not-false (string-contains? yaml "prism: flypy_ice"))
+    (check-equal? (read-schema-artifacts "flypy_ice") '("rime" "yuanshu"))
+    (check-equal? (read-schema-keyboard-layouts "flypy_ice") '("flypy")))
 
   (test-case "luna pinyin emits desktop schema YAML"
     (define yaml (generated-file luna_pinyin:config-files "luna_pinyin.schema.yaml"))
@@ -120,6 +123,13 @@
     (check-equal? (button-width page "strokeZButton") "113.5/1125")
     (check-equal? (button-width page "spaceButton") "267.5/1125"))
 
+  (test-case "shuffle_17 preview hides punctuation control row"
+    (define preview (preview-spec-from-files shuffle-17-pinyin-files))
+    (check-equal? (length (hash-ref preview 'rows)) 4)
+    (check-equal? (length (filter preview-key-visible?
+                                  (list-ref (hash-ref preview 'rows) 3)))
+                  0))
+
   (test-case "only shuffle_17 and bopomofo keep custom phone last rows"
     (define standard-last-row
       '("numericButton" "emojiButton" "spaceButton" "semicolonButton" "enterButton"))
@@ -163,8 +173,7 @@
         (check-equal? (button-width page button-id) "225/1125"))
       (define preview (preview-spec-from-files files))
       (check-equal? (visible-preview-row-ids preview 2)
-                    '("zx14Button" "cv14Button" "bn14Button" "m14Button"
-                      "backspaceButton"))))
+                    '("zx14Button" "cv14Button" "bn14Button" "m14Button"))))
 
   (test-case "full pinyin 14-key keyboard layout leaves bottom detail labels blank"
     (define page (generated-json pinyin14-layout:pinyin-14-iphone-pinyin-files
@@ -177,7 +186,7 @@
     (check-equal? (hash-ref (hash-ref flypy-page 'qw14ButtonDetailForegroundStyle) 'text)
                   "iu ei ia ua")
     (check-equal? (hash-ref (hash-ref (hash-ref flypy-page 'qw14ButtonMainForegroundStyle) 'center) 'y)
-                  0.46))
+                  0.5))
 
   (test-case "standard phone middle row keeps real key widths"
     (define files (make-flypy-phone-files standard-phone-base-for-test))
@@ -194,6 +203,50 @@
     (check-false (hash-ref (page-button page "lButton") 'bounds #f))
     (check-equal? (button-width page "middleRowLeftSpacer") "56.25/1125")
     (check-equal? (button-width page "middleRowRightSpacer") "56.25/1125"))
+
+  (test-case "phone skin and preview use square key policy"
+    (define files (make-flypy-phone-files standard-phone-base-for-test))
+    (define page (generated-json files "light/pinyinPortrait.yaml"))
+    (define preview (preview-spec-from-files files))
+    (define standard-key-side
+      (hash-ref (first (first (preview-layout preview))) 'width))
+    (check-equal? (hash-ref preview 'source) 'dsl)
+    (check-equal? (hash-ref preview 'key-shape) 'square)
+    (check-equal? (hash-ref preview 'visible-keys) 'typing)
+    (check-equal? (hash-ref (hash-ref page 'alphabeticButtonBackgroundStyle)
+                            'cornerRadius)
+                  6)
+    (for* ([row (in-list (preview-layout preview))]
+           [item (in-list row)])
+      (check-equal? (hash-ref item 'width)
+                    (hash-ref item 'height)))
+    (for ([compact-preview
+           (in-list (list (preview-spec-from-files flypy14-layout:flypy-14-iphone-pinyin-files)
+                          (preview-spec-from-files flypy18-layout:flypy-18-iphone-pinyin-files)
+                          (preview-spec-from-files shuffle-17-pinyin-files)))])
+      (check-equal? (hash-ref (first (first (preview-layout compact-preview))) 'width)
+                    standard-key-side)))
+
+  (test-case "DSL note positions expand to square-key regions"
+    (define flypy-page (generated-json (make-flypy-phone-files standard-phone-base-for-test)
+                                       "light/pinyinPortrait.yaml"))
+    (define luna-layout-module
+      (schema-keyboard-layout-module-path "luna_pinyin" '("luna_pinyin")))
+    (define luna-page (generated-json (keyboard-layout-module-ref luna-layout-module
+                                                                  'keyboard-layout-files)
+                                      "light/pinyinPortrait.yaml"))
+    (check-equal? (hash-ref (hash-ref (hash-ref flypy-page 'qButtonAbcForegroundStyle)
+                                      'center)
+                            'y)
+                  0.24)
+    (check-equal? (hash-ref (hash-ref (hash-ref flypy-page 'qButtonFlypyBottomForegroundStyle)
+                                      'center)
+                            'y)
+                  0.76)
+    (check-equal? (hash-ref (hash-ref (hash-ref luna-page 'qButtonAbcForegroundStyle)
+                                      'center)
+                            'y)
+                  0.5))
 
   (test-case "phone preview hides middle row layout spacers"
     (define files (make-flypy-phone-files standard-phone-base-for-test))

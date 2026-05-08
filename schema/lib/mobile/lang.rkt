@@ -34,7 +34,9 @@
 ;;   custom legend layers, positions, or font sizes:
 ;;     (phone-layout
 ;;       (layers <layer-id> ...)          ; e.g. abc flypy cangjie symbol
-;;       (centers                          ; optional: override legend positions
+;;       (positions                        ; optional: named square-key positions
+;;         [<layer-id> <center|top|bottom|left|right|top-left|...>] ...)
+;;       (centers                          ; optional: numeric fallback
 ;;         [<layer-id> <x> <y>] ...)
 ;;       (fonts                            ; optional: override font sizes/styles
 ;;         [<layer-id> <size> <#:primary|#:secondary>? <#:weight bold>?] ...))
@@ -56,7 +58,9 @@
 ;;     (ipad-layout
 ;;       (layers <layer-id> ...)           ; legend layers to render
 ;;       (size "<fraction-string>")        ; button width, e.g. "1.1/16"
-;;       (centers                          ; optional: override legend positions
+;;       (positions                        ; optional: named square-key positions
+;;         [<layer-id> <center|top|bottom|left|right|top-left|...>] ...)
+;;       (centers                          ; optional: numeric fallback
 ;;         [<layer-id> <x> <y>] ...)
 ;;       (fonts                            ; optional: override font sizes/styles
 ;;         [<layer-id> <size> <#:primary|#:secondary>? <#:weight bold>?] ...))
@@ -75,6 +79,7 @@
          "core/docs.rkt"
          "core/preview.rkt"
          "core/preview-svg.rkt"
+         "core/visual-policy.rkt"
          "presets/standard.rkt"
          "keysets/pinyin-common.rkt"
          "layouts/base-page.rkt"
@@ -104,6 +109,7 @@
                        "core/docs.rkt"
                        "core/preview.rkt"
                        "core/preview-svg.rkt"
+                       "core/visual-policy.rkt"
                        "presets/standard.rkt"
                        "keysets/pinyin-common.rkt"
                        "layouts/base-page.rkt"
@@ -158,16 +164,25 @@
                   (number->string (if (exact? n) (exact->inexact n) n))))
     (quasisyntax/loc n-stx (json-number #,s)))
 
-  ;; Expand (centers [layer x y] ...) → list of k-v syntax pairs
+  ;; Expand (positions [layer pos] ...) or (centers [layer x y] ...)
+  ;; → list of k-v syntax pairs.
   (define (expand-centers-kvs centers-stx)
     (define entries (cdr (syntax->list centers-stx)))
     (apply append
            (for/list ([entry entries])
              (syntax-parse entry
+               [[layer:id position:id]
+                (define position-sym (syntax->datum #'position))
+                (list #`'layer
+                      #`(key-note-position '#,position-sym))]
                [[layer:id cx:number cy:number]
                 (list #`'layer
                       #`(object ["x" #,(num->jn #'cx)]
                                 ["y" #,(num->jn #'cy)]))]))))
+
+  (define (find-position-clause clauses)
+    (or (find-clause clauses 'positions)
+        (find-clause clauses 'centers)))
 
   ;; Expand (fonts [layer size opts...] ...) → flat kv list for `hash`
   (define (expand-font-kvs fonts-stx)
@@ -298,7 +313,7 @@
                 #:detail-font-size #,detail-font-size))
            (let ()
              (define layers-cl  (find-clause sub 'layers))
-             (define centers-cl (find-clause sub 'centers))
+             (define centers-cl (find-position-clause sub))
              (define fonts-cl   (find-clause sub 'fonts))
              (define layer-syms (if layers-cl (cdr (syntax->list layers-cl)) '(abc flypy)))
              (define centers-expr
@@ -362,7 +377,7 @@
         (let ()
           (define layers-cl  (find-clause sub 'layers))
           (define size-cl    (find-clause sub 'size))
-          (define centers-cl (find-clause sub 'centers))
+          (define centers-cl (find-position-clause sub))
           (define fonts-cl   (find-clause sub 'fonts))
           (define layer-syms (if layers-cl (cdr (syntax->list layers-cl)) '()))
           (define size-str   (if size-cl (cadr (syntax->list size-cl)) #'"1/1"))
@@ -443,7 +458,10 @@
                    [-ipad-  #,ipad-expr])
                #,preview-bundle-expr)))
      (define keyboard-layout-preview-spec-expr
-       #`(preview-spec-from-files keyboard-layout-preview-files))
+       #`(preview-spec-from-files keyboard-layout-preview-files
+                                  #:source 'dsl
+                                  #:key-shape 'square
+                                  #:visible-keys 'typing))
      (define make-keyboard-layout-files-expr
        (if theme-cl
            #`(let ([-phone- #,phone-expr]

@@ -42,6 +42,11 @@
     (check-equal? (response-code response) 302)
     (check-equal? (response-location response) "/"))
 
+  (test-case "schema variant detail routes redirect to their base exhibit"
+    (define response (canonical-dispatch (req "/exhibits/flypy_ice" "rime.mayphus.org")))
+    (check-equal? (response-code response) 302)
+    (check-equal? (response-location response) "/exhibits/flypy"))
+
   (test-case "museum catalog renders localized exhibit metadata"
     (define en-html (response-body (canonical-dispatch (req "/" "rime.mayphus.org"))))
     (define zh-html (response-body (canonical-dispatch (req "/?locale=zh-Hant" "rime.mayphus.org"))))

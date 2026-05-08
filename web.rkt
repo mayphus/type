@@ -142,7 +142,7 @@
 (define (svg-response svg)
   (response/full
    200 #"OK" (current-seconds) #"image/svg+xml"
-   (list (make-header #"Cache-Control" #"public, max-age=300"))
+   (list (make-header #"Cache-Control" #"no-store"))
    (list (string->bytes/utf-8 svg))))
 
 (define (handle-page req)
@@ -150,10 +150,14 @@
                  (remember-locale-headers req)))
 
 (define (handle-exhibit req schema-id)
-  (if (valid-id? schema-id)
-      (html-response (render-exhibit-page req schema-items keyboard-layout-items schema-id)
-                     (remember-locale-headers req))
-      (json-error "Invalid schema id")))
+  (cond
+    [(not (valid-id? schema-id))
+     (json-error "Invalid schema id")]
+    [(not (equal? schema-id (schema-source-id schema-id)))
+     (redirect-response (format "/exhibits/~a" (schema-source-id schema-id)))]
+    [else
+     (html-response (render-exhibit-page req schema-items keyboard-layout-items schema-id)
+                    (remember-locale-headers req))]))
 
 (define (handle-metadata req)
   (response/full

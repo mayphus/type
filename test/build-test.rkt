@@ -2,6 +2,7 @@
 
 (require rackunit
          racket/file
+         racket/string
          racket/system
          "../build.rkt")
 
@@ -116,6 +117,35 @@
         (unzip! zip-path extract-profile)
         (check-false (file-exists? (build-path extract-profile "profile" "pinyin_14.schema.yaml")))
         (check-false (directory-exists? (build-path extract-profile "profile" "skins"))))
+      (lambda ()
+        (delete-directory/files tmp #:must-exist? #f))))
+
+  (test-case "flypy ice download selects the rime-ice dictionary variant"
+    (define tmp (make-temporary-file "rime-config-flypy-ice-~a" 'directory))
+    (dynamic-wind
+      void
+      (lambda ()
+        (define profile-out (build-path tmp "profile"))
+        (define zip-path (build-path tmp "profile.zip"))
+        (define-values (_built-out _built-zip _layout-dir)
+          (build-bundle!
+           (hash 'schemas (list "flypy_ice")
+                 'artifact "rime"
+                 'extra-src-files '("squirrel.custom.yaml"))
+           "test-flypy-ice"
+           profile-out
+           zip-path))
+        (define variant-yaml (file->string (build-path profile-out "flypy_ice.schema.yaml")))
+        (define default-custom (file->string (build-path profile-out "default.custom.yaml")))
+        (check-true (string-contains? variant-yaml "dictionary: rime_ice"))
+        (check-true (string-contains? default-custom "schema: flypy_ice"))
+        (check-false (regexp-match? #rx"schema: flypy\n" default-custom))
+        (check-true (file-exists? (build-path profile-out "rime_ice.dict.yaml")))
+        (check-true (directory-exists? (build-path profile-out "rime_ice_dicts")))
+        (define extract-profile (build-path tmp "extract-flypy-ice-profile"))
+        (unzip! zip-path extract-profile)
+        (check-zip-file extract-profile "profile" "flypy_ice.schema.yaml")
+        (check-zip-file extract-profile "profile" "rime_ice.dict.yaml"))
       (lambda ()
         (delete-directory/files tmp #:must-exist? #f))))
 

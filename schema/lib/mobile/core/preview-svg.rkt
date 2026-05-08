@@ -3,7 +3,8 @@
 (require racket/format
          racket/match
          racket/string
-         "preview.rkt")
+         "preview.rkt"
+         "visual-policy.rkt")
 
 (provide keyboard-preview-svg
          demo-preview-svg
@@ -45,8 +46,8 @@
 (define (hash-get h key fallback)
   (if (hash? h) (hash-ref h key fallback) fallback))
 
-(define (key-corner-radius key)
-  (numberish (hash-get key 'corner-radius 8) 8))
+(define (key-corner-radius _key)
+  square-key-corner-radius)
 
 (define (color-components color)
   (and (string? color)
@@ -117,6 +118,12 @@
     [(and (string? weight) (not (string=? weight ""))) weight]
     [else "400"]))
 
+(define (fitted-font-size text width height requested-size)
+  (define text-length (max 1 (string-length text)))
+  (define width-fit (/ (* width 0.86) (* text-length 0.56)))
+  (define height-fit (* height 0.4))
+  (max 5.5 (min requested-size width-fit height-fit)))
+
 (define (text-layer-svg layer x y width height scale)
   (text-layer-svg* layer x y width height scale (hash-get layer 'color "#111111")))
 
@@ -126,7 +133,8 @@
       ""
       (let* ([lx (+ x (* (numberish (hash-get layer 'x 0.5) 0.5) width))]
              [ly (+ y (* (numberish (hash-get layer 'y 0.5) 0.5) height))]
-             [font-size (max 9 (* scale (numberish (hash-get layer 'font-size 14) 14)))])
+             [requested-size (* scale (numberish (hash-get layer 'font-size 14) 14))]
+             [font-size (fitted-font-size text width height requested-size)])
         (format "<text x=\"~a\" y=\"~a\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"~a\" font-weight=\"~a\" ~a>~a</text>"
                 (real->decimal-string lx 2)
                 (real->decimal-string ly 2)
@@ -252,7 +260,10 @@
             (format "<text x=\"~a\" y=\"~a\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"~a\" font-weight=\"500\" fill=\"~a\">~a</text>"
                     (real->decimal-string (+ x (/ width 2)) 2)
                     (real->decimal-string (+ y (/ height 2)) 2)
-                    (real->decimal-string (if (equal? (hash-get key 'kind "") "numeric") 16 18) 2)
+                    (real->decimal-string
+                     (fitted-font-size label width height
+                                       (if (equal? (hash-get key 'kind "") "numeric") 16 18))
+                     2)
                     (attr-escape color)
                     (text-escape label))))))
 
@@ -316,18 +327,21 @@
            (format "<text x=\"~a\" y=\"~a\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Avenir Next, SF Pro Display, Segoe UI, Noto Sans, PingFang TC, sans-serif\" font-size=\"~a\" font-weight=\"600\" fill=\"~a\">~a</text>"
                    (real->decimal-string (+ x (/ width 2)) 2)
                    (real->decimal-string (+ y (/ height 2)) 2)
-                   (real->decimal-string (if (equal? kind "numeric") 15 17) 2)
+                   (real->decimal-string
+                    (fitted-font-size label width height (if (equal? kind "numeric") 15 17))
+                    2)
                    (attr-escape color)
                    (text-escape label))]))))
 
 (define (diagram-key-svg key x y width height colors)
   (define fill (hash-ref colors (if (special-key? key) 'special 'key)))
   (string-append
-   (format "<rect x=\"~a\" y=\"~a\" width=\"~a\" height=\"~a\" rx=\"6\" fill=\"~a\" stroke=\"~a\" stroke-width=\"1\"/>"
+   (format "<rect x=\"~a\" y=\"~a\" width=\"~a\" height=\"~a\" rx=\"~a\" fill=\"~a\" stroke=\"~a\" stroke-width=\"1\"/>"
            (real->decimal-string x 2)
            (real->decimal-string y 2)
            (real->decimal-string width 2)
            (real->decimal-string height 2)
+           (real->decimal-string square-key-corner-radius 2)
            (attr-escape fill)
            (attr-escape (hash-ref colors 'stroke)))
    (diagram-label-svg key x y width height colors)))

@@ -24,7 +24,16 @@
                                   'zh-Hant "緊湊的元書十四鍵展品。")
               'deps '("flypy")
               'artifacts '("yuanshu")
-              'keyboard-layouts '("flypy_14"))))
+              'keyboard-layouts '("flypy_14"))
+        (hash 'id "flypy_ice"
+              'name "小鶴霧凇"
+              'names (hash 'en "Flypy Ice" 'zh-Hant "小鶴霧凇")
+              'description "Flypy with rime-ice dictionaries."
+              'descriptions (hash 'en "Flypy with rime-ice dictionaries."
+                                  'zh-Hant "使用霧凇詞庫的小鶴。")
+              'deps '("cangjie6")
+              'artifacts '("rime" "yuanshu")
+              'keyboard-layouts '("flypy"))))
 
 (define layouts
   (list (hash 'id "flypy"
@@ -55,6 +64,7 @@
     (check-true (regexp-match? #rx"Explore Chinese input methods from history to hands-on interaction" html))
     (check-true (regexp-match? #rx"href=\"/exhibits/flypy\"" html))
     (check-true (regexp-match? #rx"href=\"/exhibits/flypy_14\"" html))
+    (check-false (regexp-match? #rx"href=\"/exhibits/flypy_ice\"" html))
     (check-true (regexp-match? #rx"/layouts/flypy/preview.svg" html))
     (check-true (regexp-match? #rx"Double Pinyin" html))
     (check-true (regexp-match? #rx"Flypy double pinyin exhibit" html))
@@ -86,6 +96,10 @@
     (check-true (regexp-match? #rx"/layouts/flypy/preview-dark.svg" html))
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"rime\"" html))
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"yuanshu\"" html))
+    (check-true (regexp-match? #rx"<select[^>]+name=\"schemas\"" html))
+    (check-true (regexp-match? #rx"<option[^>]+value=\"flypy\"" html))
+    (check-true (regexp-match? #rx"<option[^>]+value=\"flypy_ice\"" html))
+    (check-true (regexp-match? #rx"Dictionary" html))
     (check-true (regexp-match? #rx"Download Rime package" html))
     (check-true (regexp-match? #rx"Download Yuanshu package" html))
     (check-false (regexp-match? #rx"rime-exhibit-meta" html))
@@ -114,10 +128,10 @@
            #:method #"POST"
            #:headers (list (header #"Content-Type" #"application/x-www-form-urlencoded"))
            #:bindings (list (binding:form #"artifact" #"yuanshu")
-                            (binding:form #"schemas" #"flypy_14"))))
+                            (binding:form #"schemas" #"flypy_ice"))))
     (check-true (form-request? request))
     (check-equal? (form-profile request)
-                  (hash 'schemas '("flypy_14")
+                  (hash 'schemas '("flypy_ice")
                         'artifact "yuanshu")))
 
   (test-case "legacy desktop form posts map to rime and yuanshu artifacts"

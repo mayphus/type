@@ -39,6 +39,6 @@
         "Standard iPad pinyin, numeric, and symbolic pages"))
     (phone-layout
       (layers abc)
-      (centers [abc 0.5 0.5])
+      (positions [abc center])
       (fonts [abc 25 #:primary #:weight bold]))
     (ipad-layout standard-18)))

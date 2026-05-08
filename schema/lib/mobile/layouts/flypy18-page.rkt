@@ -5,6 +5,7 @@
          racket/string
          "../core/dsl.rkt"
          "../core/builders.rkt"
+         "../core/visual-policy.rkt"
          "base-page.rkt"
          "../keysets/pinyin-common.rkt")
 
@@ -36,16 +37,13 @@
           ["width" "160/242.5"]))
 
 (define main-center
-  (object ["x" (json-number "0.5")]
-          ["y" (json-number "0.46000000000000002")]))
+  (key-note-position 'center))
 
 (define hint-center
-  (object ["x" (json-number "0.5")]
-          ["y" (json-number "0.78000000000000003")]))
+  (key-note-position 'bottom))
 
 (define top-center
-  (object ["x" (json-number "0.5")]
-          ["y" (json-number "0.20000000000000001")]))
+  (key-note-position 'top))
 
 (define (label-text-style dark? text center)
   (object ["buttonStyleType" "text"]

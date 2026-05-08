@@ -10,6 +10,7 @@
          preview-key-visible?)
 
 (define preview-logical-width 375)
+(define preview-min-key-columns 10)
 ;; Use the search return-key state so previews match common iOS search fields.
 (define preview-return-key-type 6)
 (define return-key-labels
@@ -178,8 +179,26 @@
   (and (string? cell-id)
        (regexp-match? #rx"Spacer$" cell-id)))
 
+(define hidden-preview-kinds
+  '("backspace" "enter" "numeric" "space" "shift"))
+
+(define hidden-preview-id-pattern
+  #rx"(?i:backspace|delete|dismiss|emoji|enter|numeric|semicolon|shift|space|stroke[HSPNZ]Button)")
+
+(define hidden-preview-labels
+  '(";" "；"))
+
+(define (preview-control-key? key)
+  (or (member (hash-ref key 'kind "") hidden-preview-kinds)
+      (regexp-match? hidden-preview-id-pattern (hash-ref key 'id ""))
+      (member (hash-ref key 'label "") hidden-preview-labels)
+      (member (hash-ref key 'icon "")
+              '("delete.left" "delete.left.fill" "emojis" "face.smiling"
+                "return" "shift" "shift.fill" "space" "space.fill"))))
+
 (define (preview-key-visible? key)
-  (not (hash-ref key 'spacer? #f)))
+  (and (not (hash-ref key 'spacer? #f))
+       (not (preview-control-key? key))))
 
 (define (extract-key-preview page button-id)
   (define button (page-ref page button-id #f))
@@ -243,43 +262,37 @@
                      [cell-id (in-value (page-ref subview 'Cell ""))])
             (extract-key-preview page cell-id))))
 
+(define (preview-visible-row preview row)
+  (case (hash-ref preview 'visible-keys 'typing)
+    [(all) (filter (lambda (key) (not (hash-ref key 'spacer? #f))) row)]
+    [else (filter preview-key-visible? row)]))
+
 (define (preview-layout preview #:pad [pad 8] #:key-gap [key-gap 4] #:row-gap [row-gap 6])
   (define size (hash-ref preview 'size (hash)))
   (define width (parse-numberish (hash-ref size 'width 375)))
   (define height (parse-numberish (hash-ref size 'height 216)))
-  (define rows (hash-ref preview 'rows '()))
+  (define rows
+    (filter pair?
+            (map (lambda (row) (preview-visible-row preview row))
+                 (hash-ref preview 'rows '()))))
   (define row-count (max 1 (length rows)))
   (define key-height (/ (- height (* (+ row-count 1) row-gap)) row-count))
-  (define (row-units row)
-    (apply + (map (lambda (key)
-                    (or (parse-numberish (hash-ref key 'width #f)) 1))
-                  row)))
-  (define letter-rows
-    (filter (lambda (row)
-              (>= (length (filter preview-key-visible? row)) 7))
-            rows))
-  (define reference-units
-    (let ([sum (apply max 1 (map row-units letter-rows))])
-      (if (positive? sum) sum 1)))
-  (define reference-gap-count
-    (apply max 0 (map (lambda (row) (max 0 (sub1 (length row)))) letter-rows)))
-  (define reference-unit-width
-    (/ (- width (* 2 pad) (* reference-gap-count key-gap))
-       reference-units))
+  (define max-columns
+    (max preview-min-key-columns
+         (apply max 1 (map length rows))))
+  (define key-side
+    (max 1
+         (min key-height
+              (/ (- width (* 2 pad) (* (max 0 (sub1 max-columns)) key-gap))
+                 max-columns))))
+  (define grid-height (+ (* row-count key-side)
+                         (* (max 0 (sub1 row-count)) row-gap)))
+  (define start-y (max row-gap (/ (- height grid-height) 2)))
   (for/list ([row (in-list rows)]
              [row-index (in-naturals)])
-    (define y (+ row-gap (* row-index (+ key-height row-gap))))
+    (define y (+ start-y (* row-index (+ key-side row-gap))))
     (define row-gap-count (max 0 (sub1 (length row))))
-    (define units (row-units row))
-    (define centered-letter-row?
-      (and (>= (length (filter preview-key-visible? row)) 7)
-           (< units reference-units)))
-    (define unit-width
-      (if centered-letter-row?
-          reference-unit-width
-          (/ (- width (* 2 pad) (* row-gap-count key-gap))
-             (if (positive? units) units 1))))
-    (define row-width (+ (* units unit-width)
+    (define row-width (+ (* (length row) key-side)
                          (* row-gap-count key-gap)))
     (define start-x (/ (- width row-width) 2))
     (let loop ([keys row] [x start-x] [items '()])
@@ -287,15 +300,13 @@
         [(null? keys) (reverse items)]
         [else
          (define key (car keys))
-         (define key-width (* (or (parse-numberish (hash-ref key 'width #f)) 1)
-                              unit-width))
          (loop (cdr keys)
-               (+ x key-width key-gap)
+               (+ x key-side key-gap)
                (cons (hash 'key key
                            'x x
                            'y y
-                           'width key-width
-                           'height key-height)
+                           'width key-side
+                           'height key-side)
                      items))]))))
 
 (define (preferred-preview-page-path preview-files theme)
@@ -305,7 +316,11 @@
       (findf (lambda (key) (regexp-match? (regexp (format "^~a/.*Portrait\\.yaml$" prefix)) key)) keys)
       (findf (lambda (key) (regexp-match? (regexp (format "^~a/.*\\.yaml$" prefix)) key)) keys)))
 
-(define (preview-spec-from-page preview-files theme)
+(define (preview-spec-from-page preview-files
+                                theme
+                                #:source source
+                                #:key-shape key-shape
+                                #:visible-keys visible-keys)
   (with-handlers ([exn:fail? (lambda (_) #f)])
     (define page-path (preferred-preview-page-path preview-files theme))
     (and page-path
@@ -327,15 +342,27 @@
                                    keyboard-layout)))])
            (and (pair? rows)
                 (hash 'page page-path
+                      'source source
+                      'key-shape key-shape
+                      'visible-keys visible-keys
                       'background (or (and (hash? keyboard-style)
                                            (page-ref keyboard-style 'normalColor #f))
                                       "#ffffff03")
                       'size size
                       'rows rows))))))
 
-(define (preview-spec-from-files preview-files)
-  (define light-preview (preview-spec-from-page preview-files "light"))
-  (define dark-preview (preview-spec-from-page preview-files "dark"))
+(define (preview-spec-from-files preview-files
+                                 #:source [source 'dsl]
+                                 #:key-shape [key-shape 'square]
+                                 #:visible-keys [visible-keys 'typing])
+  (define (extract theme)
+    (preview-spec-from-page preview-files
+                            theme
+                            #:source source
+                            #:key-shape key-shape
+                            #:visible-keys visible-keys))
+  (define light-preview (extract "light"))
+  (define dark-preview (extract "dark"))
   (cond
     [(and light-preview dark-preview)
      (hash-set light-preview 'dark dark-preview)]

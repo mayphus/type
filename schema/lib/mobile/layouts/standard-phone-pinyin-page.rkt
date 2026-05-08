@@ -4,6 +4,7 @@
          racket/list
          racket/string
          "../core/dsl.rkt"
+         "../core/visual-policy.rkt"
          "../keysets/pinyin-common.rkt"
          "base-page.rkt")
 
@@ -89,12 +90,12 @@
                             (object ["Cell" "enterButton"]))])])))
 
 (define phone-legend-centers
-  (hash 'abc          (object ["x" (json-number "0.5")] ["y" (json-number "0.28")])
-        'flypy-single (object ["x" (json-number "0.5")] ["y" (json-number "0.56")])
-        'flypy-top    (object ["x" (json-number "0.5")] ["y" (json-number "0.47")])
-        'flypy-bottom (object ["x" (json-number "0.5")] ["y" (json-number "0.63")])
-        'cangjie      (object ["x" (json-number "0.5")] ["y" (json-number "0.5")])
-        'symbol       (object ["x" (json-number "0.72999999999999998")] ["y" (json-number "0.23999999999999999")])))
+  (hash 'abc (key-note-position 'top)
+        'flypy-single (key-note-position 'bottom)
+        'flypy-top (key-note-position 'center)
+        'flypy-bottom (key-note-position 'bottom)
+        'cangjie (key-note-position 'center)
+        'symbol (key-note-position 'top-right)))
 
 (define (button-size+bounds spec)
   (values normal-button-size #f '()))

@@ -3,6 +3,7 @@
 (require (for-syntax racket/base
                      syntax/parse)
          "../core/dsl.rkt"
+         "../core/visual-policy.rkt"
          "actions.rkt")
 
 (provide hybrid-letter-specs
@@ -37,37 +38,13 @@
 (define (num lexeme)
   (json-number lexeme))
 
-(define abc-center
-  (object ["x" (num "0.71999999999999997")]
-          ["y" (num "0.40000000000000002")]))
-
-(define cangjie-center
-  (object ["x" (num "0.37")]
-          ["y" (num "0.34000000000000002")]))
-
-(define symbol-center
-  (object ["x" (num "0.72999999999999998")]
-          ["y" (num "0.23999999999999999")]))
-
-(define flypy-single-center
-  (object ["x" (num "0.5")]
-          ["y" (num "0.73999999999999999")]))
-
-(define flypy-top-center
-  (object ["x" (num "0.5")]
-          ["y" (num "0.68000000000000005")]))
-
-(define flypy-bottom-center
-  (object ["x" (num "0.5")]
-          ["y" (num "0.79000000000000004")]))
-
 (define default-legend-centers
-  (hash 'abc abc-center
-        'cangjie cangjie-center
-        'symbol symbol-center
-        'flypy-single flypy-single-center
-        'flypy-top flypy-top-center
-        'flypy-bottom flypy-bottom-center))
+  (hash 'abc (key-note-position 'right)
+        'cangjie (key-note-position 'top-left)
+        'symbol (key-note-position 'top-right)
+        'flypy-single (key-note-position 'bottom)
+        'flypy-top (key-note-position 'center)
+        'flypy-bottom (key-note-position 'bottom)))
 
 (define-letter-specs hybrid-letter-specs
   [q #:cangjie "手" #:flypy "iu" #:symbol "1" #:swipe-up (char-action "1")]

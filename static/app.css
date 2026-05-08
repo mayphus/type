@@ -78,7 +78,8 @@ body::before {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -417,11 +418,47 @@ input {
 }
 
 .rime-artifact-form {
+  display: grid;
+  grid-template-columns: minmax(11rem, 1fr) minmax(13rem, auto);
+  gap: 0.5rem;
   margin: 0;
+  align-items: stretch;
 }
 
 .rime-artifact-form .rime-build-button {
   min-width: 13rem;
+}
+
+.rime-variant-control {
+  display: flex;
+  min-width: min(18rem, 100%);
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.44rem 0.58rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: transparent;
+}
+
+.rime-variant-label {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.rime-variant-select {
+  min-width: 0;
+  flex: 1 1 auto;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.rime-variant-select:focus-visible {
+  outline: 2px solid var(--selected-line);
+  outline-offset: 2px;
 }
 
 .rime-sticky-actions {
@@ -622,6 +659,15 @@ input {
     padding: 0.72rem 1rem;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .rime-artifact-form {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .rime-artifact-form .rime-build-button {
+    min-width: 0;
   }
 
 }
