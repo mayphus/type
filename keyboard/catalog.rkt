@@ -1,10 +1,14 @@
 #lang racket/base
 
 (require "models.rkt"
+         "legends.rkt"
          "shapes.rkt")
 
 (provide keyboard-layout-definitions
          keyboard-layout-definition-ref
+         keyboard-legend-definitions
+         keyboard-legend-definition-ref
+         keyboard-legend-text
          keyboard-model-definitions
          keyboard-model-definition-ref
          keyboard-shape-definition-ref)

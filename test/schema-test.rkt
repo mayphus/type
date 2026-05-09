@@ -325,6 +325,11 @@
     (check-equal? (registry:static-schema-keyboard-layouts "quick5") '("cangjie6"))
     (check-equal? (registry:static-schema-keyboard-layouts "cangjie5") '("cangjie6")))
 
+  (test-case "keyboard legends live in root catalog"
+    (check-equal? (keyboard:keyboard-legend-text 'wubi 'q) "金/勹")
+    (check-equal? (keyboard:keyboard-legend-text 'jyutping 'a) "aa/a")
+    (check-equal? (keyboard:keyboard-legend-text 'missing 'q) ""))
+
   (test-case "static upstream schemas resolve dedicated legend keyboard layouts"
     (define (layout-page schema layout)
       (define module (schema-keyboard-layout-module-path layout (list schema)))
