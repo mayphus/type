@@ -28,11 +28,11 @@ jobs:
       contents: read
       packages: write
     env:
-      IMAGE_NAME: ghcr.io/mayphus/rime-config
+      IMAGE_NAME: ghcr.io/mayphus/input-foundry
       IMAGE_TAG: ${{ github.sha }}
       K8S_API_SERVER: https://100.116.247.67:6443
     steps:
-      - name: Checkout rime-config
+      - name: Checkout input-foundry
         uses: actions/checkout@v6.0.2
 
       - name: Setup Racket
@@ -80,7 +80,7 @@ jobs:
         with:
           oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TAILSCALE_OAUTH_SECRET }}
-          hostname: github-actions-rime-config
+          hostname: github-actions-input-foundry
           tags: tag:ci
 
       - name: Setup kubectl
@@ -98,7 +98,7 @@ jobs:
         shell: bash
         run: |
           kubectl apply -f k8s/namespace.yaml
-          kubectl -n rime-config create secret docker-registry ghcr-pull \
+          kubectl -n input-foundry create secret docker-registry ghcr-pull \
             --docker-server=ghcr.io \
             --docker-username=mayphus \
             --docker-password='${{ secrets.GHCR_PULL_TOKEN }}' \
@@ -108,14 +108,14 @@ jobs:
         shell: bash
         run: |
           kubectl apply -k k8s
-          kubectl -n rime-config set image deployment/rime-config app=${IMAGE_NAME}:${IMAGE_TAG}
-          if ! kubectl -n rime-config rollout status deployment/rime-config --timeout=600s; then
-            kubectl -n rime-config get pods -l app=rime-config -o wide
-            for pod in $(kubectl -n rime-config get pods -l app=rime-config -o name); do
-              kubectl -n rime-config logs "$pod" --all-containers=true --tail=200 || true
-              kubectl -n rime-config logs "$pod" --all-containers=true --previous --tail=200 || true
+          kubectl -n input-foundry set image deployment/input-foundry app=${IMAGE_NAME}:${IMAGE_TAG}
+          if ! kubectl -n input-foundry rollout status deployment/input-foundry --timeout=600s; then
+            kubectl -n input-foundry get pods -l app=input-foundry -o wide
+            for pod in $(kubectl -n input-foundry get pods -l app=input-foundry -o name); do
+              kubectl -n input-foundry logs "$pod" --all-containers=true --tail=200 || true
+              kubectl -n input-foundry logs "$pod" --all-containers=true --previous --tail=200 || true
             done
-            kubectl -n rime-config describe deployment/rime-config
-            kubectl -n rime-config describe pods -l app=rime-config
+            kubectl -n input-foundry describe deployment/input-foundry
+            kubectl -n input-foundry describe pods -l app=input-foundry
             exit 1
           fi

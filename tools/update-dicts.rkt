@@ -46,7 +46,7 @@
   (build-path rime-dir (dict-source-local source)))
 
 (define (download-text url)
-  (define headers '("User-Agent: mayphus-rime-config-dict-updater"))
+  (define headers '("User-Agent: mayphus-input-foundry-dict-updater"))
   (call/input-url (string->url url)
                   get-pure-port
                   (lambda (in) (port->string in))

@@ -21,7 +21,7 @@
 (define declared-keyboard-layout-modules (mutable-set))
 
 (define (keyboard-layout-runtime-module-name schema layout)
-  (string->symbol (format "rime-config-keyboard-layout-~a-~a" schema layout)))
+  (string->symbol (format "input-foundry-keyboard-layout-~a-~a" schema layout)))
 
 (define (declare-keyboard-layout-module! mod ns)
   (define name

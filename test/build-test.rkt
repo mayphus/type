@@ -49,7 +49,7 @@
 
 (module+ test
   (test-case "unified output writes one rime root with schema files and skins"
-    (define tmp (make-temporary-file "rime-config-output-~a" 'directory))
+    (define tmp (make-temporary-file "input-foundry-output-~a" 'directory))
     (dynamic-wind
       void
       (lambda ()
@@ -73,7 +73,7 @@
         (delete-directory/files tmp #:must-exist? #f))))
 
   (test-case "yuanshu artifact shares unpacked layout directory and packaged cskin"
-    (define tmp (make-temporary-file "rime-config-bundle-~a" 'directory))
+    (define tmp (make-temporary-file "input-foundry-bundle-~a" 'directory))
     (dynamic-wind
       void
       (lambda ()
@@ -103,7 +103,7 @@
         (delete-directory/files tmp #:must-exist? #f))))
 
   (test-case "all generated upload keyboard layouts include demo assets"
-    (define tmp (make-temporary-file "rime-config-all-skins-~a" 'directory))
+    (define tmp (make-temporary-file "input-foundry-all-skins-~a" 'directory))
     (dynamic-wind
       void
       (lambda ()
@@ -124,7 +124,7 @@
         (delete-directory/files tmp #:must-exist? #f))))
 
   (test-case "rime artifact excludes keyboard layout packages and yuanshu-only schemas"
-    (define tmp (make-temporary-file "rime-config-rime-artifact-~a" 'directory))
+    (define tmp (make-temporary-file "input-foundry-rime-artifact-~a" 'directory))
     (dynamic-wind
       void
       (lambda ()
@@ -148,7 +148,7 @@
         (delete-directory/files tmp #:must-exist? #f))))
 
   (test-case "flypy ice download selects the rime-ice dictionary variant"
-    (define tmp (make-temporary-file "rime-config-flypy-ice-~a" 'directory))
+    (define tmp (make-temporary-file "input-foundry-flypy-ice-~a" 'directory))
     (dynamic-wind
       void
       (lambda ()
@@ -177,7 +177,7 @@
         (delete-directory/files tmp #:must-exist? #f))))
 
   (test-case "static upstream schemas copy their dictionaries and dependency assets"
-    (define tmp (make-temporary-file "rime-config-static-upstream-~a" 'directory))
+    (define tmp (make-temporary-file "input-foundry-static-upstream-~a" 'directory))
     (dynamic-wind
       void
       (lambda ()
@@ -215,7 +215,7 @@
     (check-equal? (read-schema-keyboard-layouts "wubi86") '("luna_pinyin")))
 
   (test-case "legacy desktop flag still maps to yuanshu artifact behavior"
-    (define tmp (make-temporary-file "rime-config-legacy-artifact-~a" 'directory))
+    (define tmp (make-temporary-file "input-foundry-legacy-artifact-~a" 'directory))
     (dynamic-wind
       void
       (lambda ()

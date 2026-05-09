@@ -1,6 +1,6 @@
-# rime-config
+# input-foundry
 
-Chinese input museum and Rime/Yuanshu package builder, served by one Racket app.
+Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served by one Racket app.
 
 ## Layout
 
@@ -132,7 +132,7 @@ on k3s on `pb62`. `k8s.rkt` owns the Kubernetes objects; the YAML files in
 `k8s/` are generated for Kustomize.
 
 The GitHub Actions deploy flow builds the repo root into
-`ghcr.io/mayphus/rime-config`, joins your tailnet with Tailscale OAuth
+`ghcr.io/mayphus/input-foundry`, joins your tailnet with Tailscale OAuth
 credentials, uses `KUBECONFIG_PB62` to reach k3s on `pb62`, applies `k8s/`, and
 updates the image tag.
 

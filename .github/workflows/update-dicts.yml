@@ -17,7 +17,7 @@ jobs:
     name: Update dictionaries
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout rime-config
+      - name: Checkout input-foundry
         uses: actions/checkout@v6.0.2
 
       - name: Setup Racket

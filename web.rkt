@@ -203,7 +203,7 @@
   (response/full
    200 #"OK" (current-seconds) #"application/json" '()
    (list (jsexpr->bytes
-          (hash 'service "rime-config"
+          (hash 'service "input-foundry"
                 'status "ok")))))
 
 (define (handle-app-css req)
@@ -288,7 +288,7 @@
            profile))
 
      (define tmp-dir      (make-temporary-file "rime-web-~a" 'directory))
-     (define profile-name "rime-config")
+     (define profile-name "input-foundry")
      (define profile-out  (build-path tmp-dir profile-name))
      (define zip-path     (build-path tmp-dir (string-append profile-name ".zip")))
 
@@ -305,7 +305,7 @@
         (define zip-bytes (file->bytes zip-path))
         (response/full
          200 #"OK" (current-seconds) #"application/zip"
-         (list (make-header #"Content-Disposition" #"attachment; filename=\"rime-config.zip\""))
+         (list (make-header #"Content-Disposition" #"attachment; filename=\"input-foundry.zip\""))
          (list zip-bytes)))
       (lambda ()
         (delete-directory/files tmp-dir)))]))

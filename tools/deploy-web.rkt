@@ -1,6 +1,6 @@
 #lang racket/base
 
-;;; tools/deploy-web.rkt — Deploy / update the Rime web customizer on a remote Podman host.
+;;; tools/deploy-web.rkt — Deploy / update the Input Foundry web app on a remote Podman host.
 ;;;
 ;;; Usage:
 ;;;   racket tools/deploy-web.rkt [options]
@@ -9,8 +9,8 @@
 ;;;   --host       SSH hostname                      (default: raspberrypi)
 ;;;   --host-port  host port to bind                 (default: 5002)
 ;;;   --cont-port  container internal port / PORT    (default: 8080)
-;;;   --dir        repo path on remote               (default: ~/rime-config)
-;;;   --name       container/image name              (default: rime-config)
+;;;   --dir        repo path on remote               (default: ~/input-foundry)
+;;;   --name       container/image name              (default: input-foundry)
 ;;;
 ;;; What it does:
 ;;;   1. git pull on the remote
@@ -64,14 +64,14 @@
                name)
          " "))
 
-  (printf "\nDone. Web customizer available at http://~a:~a\n\n" host host-port))
+  (printf "\nDone. Input Foundry available at http://~a:~a\n\n" host host-port))
 
 (module+ main
   (define opt-host      (make-parameter "raspberrypi"))
   (define opt-host-port (make-parameter 5002))
   (define opt-cont-port (make-parameter 8080))
-  (define opt-dir       (make-parameter "~/rime-config"))
-  (define opt-name      (make-parameter "rime-config"))
+  (define opt-dir       (make-parameter "~/input-foundry"))
+  (define opt-name      (make-parameter "input-foundry"))
 
   (command-line
    #:program "deploy-web.rkt"
@@ -79,7 +79,7 @@
    [("--host")      h "SSH hostname (default: raspberrypi)"                  (opt-host h)]
    [("--host-port") p "Host port to bind (default: 5002)"                    (opt-host-port (string->number p))]
    [("--cont-port") p "Container internal port / PORT env (default: 8080)"   (opt-cont-port (string->number p))]
-   [("--dir")       d "Repo path on remote (default: ~/rime-config)"         (opt-dir d)]
-   [("--name")      n "Container/image name (default: rime-config)"          (opt-name n)]
+   [("--dir")       d "Repo path on remote (default: ~/input-foundry)"         (opt-dir d)]
+   [("--name")      n "Container/image name (default: input-foundry)"          (opt-name n)]
    #:args ()
    (deploy! (opt-host) (opt-host-port) (opt-cont-port) (opt-dir) (opt-name))))

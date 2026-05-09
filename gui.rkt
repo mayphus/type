@@ -11,7 +11,7 @@
 
 (struct option (id name catalog) #:transparent)
 
-(define app-profile-name "rime-config")
+(define app-profile-name "input-foundry")
 (define mobile-output-name "gui-mobile")
 (define default-wifi-transfer-host "192.168.36.240")
 (define default-schema-ids '("flypy"))
@@ -227,7 +227,7 @@
 (define (start-gui)
   (define frame
     (new frame%
-         [label "Rime Config"]
+         [label "Input Foundry"]
          [width 560]
          [height 400]))
   (define root
