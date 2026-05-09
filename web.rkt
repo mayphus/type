@@ -206,6 +206,17 @@
           (hash 'service "input-foundry"
                 'status "ok")))))
 
+(define (handle-dev-reload-token req)
+  (define token (getenv "INPUT_FOUNDRY_DEV_RELOAD_TOKEN"))
+  (if token
+      (response/full
+       200 #"OK" (current-seconds) #"text/plain; charset=utf-8"
+       (list (make-header #"Cache-Control" #"no-store"))
+       (list (string->bytes/utf-8 token)))
+      (response/full
+       404 #"Not Found" (current-seconds) #"text/plain; charset=utf-8" '()
+       (list #"Dev reload is disabled"))))
+
 (define (handle-app-css req)
   (if (file-exists? app-css-path)
       (response/full
@@ -316,6 +327,7 @@
   (dispatch-rules
    [("") handle-page]
    [("metadata") handle-metadata]
+   [("__dev" "reload-token") handle-dev-reload-token]
    [("desktop") (lambda (req) (redirect-response "/"))]
    [("exhibits" (string-arg)) handle-exhibit]
    [("app.css") handle-app-css]

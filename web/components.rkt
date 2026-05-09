@@ -170,6 +170,23 @@
                       (alt ,(t locale 'support)))))
            ,(language-toggle locale current-path)))
 
+(define dev-reload-script
+  `(script
+    ((type "module"))
+    "const url='/__dev/reload-token';
+let token=null;
+async function check(){
+  try {
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok) return;
+    const next=(await res.text()).trim();
+    if(token===null) token=next;
+    else if(next && next!==token) location.reload();
+  } catch (_) {}
+}
+setInterval(check, 700);
+check();"))
+
 (define (page-xexpr locale current-path body)
   `(html ((lang ,(if (eq? locale 'zh-Hant) "zh-Hant" "en")))
          (head
@@ -181,7 +198,10 @@
           (main ((id "app"))
                 (div ((class "rime-museum-shell"))
                      ,@body
-                     ,(footer locale current-path))))))
+                     ,(footer locale current-path)))
+          ,@(if (getenv "INPUT_FOUNDRY_DEV_RELOAD")
+                (list dev-reload-script)
+                '()))))
 
 (define (dependency-list locale deps)
   (if (null? deps)

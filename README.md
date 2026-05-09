@@ -73,6 +73,16 @@ racket web.rkt
 
 Visit `http://localhost:5001`.
 
+For browser reload during web development, run:
+
+```sh
+racket tools/dev-web.rkt
+```
+
+This restarts the Racket server when web, schema, preview, keyboard, static, or
+library files change. Pages opened in the browser reload after the new server is
+ready.
+
 Run the native GUI when you want to push directly to a local iPhone:
 
 ```sh
