@@ -196,27 +196,32 @@
                  (cond
                    [(null? refs) #f]
                    [else (or (button-icon-size page (car refs))
-                             (loop (cdr refs)))]))])
-         (hash 'id button-id
-               'kind (button-kind button-id button)
-               'spacer? (layout-spacer-cell? button-id)
-               'label (or (and primary-layer (hash-ref primary-layer 'text "")) "")
-               'icon (or icon "")
-               'icon-size (or icon-size 20)
-               'width (or (parse-numberish (page-ref size 'width #f)) 1)
-               'height (parse-numberish (page-ref size 'height #f))
-               'align (or (page-ref bounds 'alignment #f) "center")
-               'background (or (and (hash? background-style) (page-ref background-style 'normalColor #f))
-                               "#ffffff")
-               'highlight-background (or (and (hash? background-style) (page-ref background-style 'highlightColor #f))
-                                         "#e6e6e6")
-               'corner-radius (or (and (hash? background-style)
-                                       (parse-numberish (page-ref background-style 'cornerRadius #f)))
-                                  8)
-               'insets (or (and (hash? background-style)
-                                (preview-insets (page-ref background-style 'insets #f)))
-                           (hash 'top 0 'right 0 'bottom 0 'left 0))
-               'layers sorted-layers))))
+                             (loop (cdr refs)))]))]
+              [kind (button-kind button-id button)]
+              [label (or (and primary-layer (hash-ref primary-layer 'text "")) "")]
+              [icon-text (or icon "")])
+         (define key
+           (hash 'id button-id
+                 'kind kind
+                 'spacer? (layout-spacer-cell? button-id)
+                 'label label
+                 'icon icon-text
+                 'icon-size (or icon-size 20)
+                 'width (or (parse-numberish (page-ref size 'width #f)) 1)
+                 'height (parse-numberish (page-ref size 'height #f))
+                 'align (or (page-ref bounds 'alignment #f) "center")
+                 'background (or (and (hash? background-style) (page-ref background-style 'normalColor #f))
+                                 "#ffffff")
+                 'highlight-background (or (and (hash? background-style) (page-ref background-style 'highlightColor #f))
+                                           "#e6e6e6")
+                 'corner-radius (or (and (hash? background-style)
+                                         (parse-numberish (page-ref background-style 'cornerRadius #f)))
+                                    8)
+                 'insets (or (and (hash? background-style)
+                                  (preview-insets (page-ref background-style 'insets #f)))
+                             (hash 'top 0 'right 0 'bottom 0 'left 0))
+                 'layers sorted-layers))
+         (hash-set key 'role (preview-key-role key)))))
 
 (define (extract-row-preview page row-spec)
   (define hstack (page-ref row-spec 'HStack #f))

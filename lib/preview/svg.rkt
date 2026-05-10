@@ -405,15 +405,19 @@
 (define (keyboard-preview-svg preview #:geometry [geometry 'uniform-square])
   (define-values (width height y-offset layout)
     (compact-layout-metrics preview geometry))
+  (define canvas-width
+    (max width (numberish (hash-get preview 'canvas-width width) width)))
+  (define x-offset (/ (- canvas-width width) 2))
   (define colors (diagram-colors preview))
-  (format "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"~a\" height=\"~a\" viewBox=\"0 0 ~a ~a\" role=\"img\" aria-label=\"Keyboard preview\"><rect width=\"~a\" height=\"~a\" rx=\"12\" fill=\"~a\"/>~a</svg>"
-          (real->decimal-string width 2)
+  (format "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"~a\" height=\"~a\" viewBox=\"0 0 ~a ~a\" role=\"img\" aria-label=\"Keyboard preview\"><rect width=\"~a\" height=\"~a\" rx=\"12\" fill=\"~a\"/><g transform=\"translate(~a 0)\">~a</g></svg>"
+          (real->decimal-string canvas-width 2)
           (real->decimal-string height 2)
-          (real->decimal-string width 2)
+          (real->decimal-string canvas-width 2)
           (real->decimal-string height 2)
-          (real->decimal-string width 2)
+          (real->decimal-string canvas-width 2)
           (real->decimal-string height 2)
           (attr-escape (hash-ref colors 'background))
+          (real->decimal-string x-offset 2)
           (keyboard-diagram-body-svg layout colors y-offset)))
 
 (define (skin-preview-spec preview)

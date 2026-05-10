@@ -128,25 +128,9 @@
 
 (define (schema-card-preview locale schema #:platform [platform #f])
   (define name (schema-name locale schema))
-  (define artifacts (schema-artifacts schema))
-  (define has-yuanshu? (member "yuanshu" artifacts))
-  (cond
-    [(equal? platform "desktop")
-     (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
-                    (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
-                    name)]
-    [(equal? platform "mobile")
-     (preview-image (format "/schemas/~a/skin-preview.svg" (schema-public-ref schema))
-                    (format "/schemas/~a/skin-preview-dark.svg" (schema-public-ref schema))
-                    name)]
-    [has-yuanshu?
-     (preview-image (format "/schemas/~a/skin-preview.svg" (schema-public-ref schema))
-                    (format "/schemas/~a/skin-preview-dark.svg" (schema-public-ref schema))
-                    name)]
-    [else
-     (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
-                    (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
-                    name)]))
+  (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
+                 (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
+                 name))
 
 (define (schema-detail-preview locale schema layouts #:platform [platform #f])
   (define preview-layouts (schema-layout-items schema layouts))

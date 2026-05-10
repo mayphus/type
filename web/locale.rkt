@@ -14,8 +14,8 @@
          request-locale
          remember-locale-headers)
 
-(define app-css-href "/app.css?v=20260510-hyphen-slugs")
-(define preview-svg-version "20260509-zrowgap")
+(define app-css-href "/app.css?v=20260510-card-preview-scale")
+(define preview-svg-version "20260510-preview-canvas")
 
 (define copy
   (hash

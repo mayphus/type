@@ -711,6 +711,12 @@ select {
   height: auto;
 }
 
+.rime-exhibit-card .keyboard-preview-svg {
+  width: auto;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
 .keyboard-preview-svg-wrap {
   width: 100%;
 }

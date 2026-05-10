@@ -5,6 +5,7 @@
 
 (provide parse-numberish
          preview-layout
+         preview-key-role
          preview-key-visible?)
 
 (define preview-min-key-columns 10)
@@ -23,43 +24,74 @@
        [else (string->number value)])]
     [else #f]))
 
-(define hidden-preview-kinds
+(define control-preview-kinds
   '("backspace" "enter" "numeric" "space" "shift"))
 
-(define hidden-preview-id-pattern
+(define control-preview-id-pattern
   #rx"(?i:backspace|delete|dismiss|emoji|enter|numeric|semicolon|shift|space|stroke[HSPNZ]Button)")
 
-(define hidden-preview-labels
+(define control-preview-labels
   '(";" "；"))
 
-(define (preview-control-key? key)
-  (or (member (hash-ref key 'kind "") hidden-preview-kinds)
-      (regexp-match? hidden-preview-id-pattern (hash-ref key 'id ""))
-      (member (hash-ref key 'label "") hidden-preview-labels)
+(define control-preview-icons
+  '("delete.left" "delete.left.fill" "emojis" "face.smiling"
+    "return" "shift" "shift.fill" "space" "space.fill"))
+
+(define (preview-control-like-key? key)
+  (or (member (hash-ref key 'kind "") control-preview-kinds)
+      (regexp-match? control-preview-id-pattern (hash-ref key 'id ""))
+      (member (hash-ref key 'label "") control-preview-labels)
       (member (hash-ref key 'icon "")
-              '("delete.left" "delete.left.fill" "emojis" "face.smiling"
-                "return" "shift" "shift.fill" "space" "space.fill"))))
+              control-preview-icons)))
+
+(define (preview-key-role key)
+  (cond
+    [(hash-ref key 'spacer? #f) 'spacer]
+    [(hash-ref key 'role #f)]
+    [(preview-control-like-key? key) 'control]
+    [else 'input]))
 
 (define (preview-key-visible? key)
-  (and (not (hash-ref key 'spacer? #f))
-       (not (preview-control-key? key))))
+  (eq? (preview-key-role key) 'input))
 
 (define (preview-visible-row preview row)
   (case (hash-ref preview 'visible-keys 'typing)
     [(all) row]
     [else (filter preview-key-visible? row)]))
 
-(define (uniform-square-preview-layout width height rows pad key-gap row-gap)
+(define (row-offsets-for rows raw-offsets)
+  (define offsets
+    (and (list? raw-offsets)
+         (map (lambda (offset) (or (parse-numberish offset) 0)) raw-offsets)))
+  (for/list ([row (in-list rows)]
+             [index (in-naturals)])
+    (if (and offsets (< index (length offsets)))
+        (list-ref offsets index)
+        0)))
+
+(define (uniform-square-key-side width height rows row-offsets pad key-gap row-gap)
   (define row-count (max 1 (length rows)))
   (define key-height (/ (- height (* (+ row-count 1) row-gap)) row-count))
-  (define max-columns
+  (define inner-width (- width (* 2 pad)))
+  (define max-extent
     (max preview-min-key-columns
-         (apply max 1 (map length rows))))
-  (define key-side
-    (max 1
-         (min key-height
-              (/ (- width (* 2 pad) (* (max 0 (sub1 max-columns)) key-gap))
-                 max-columns))))
+         (for/fold ([extent 1])
+                   ([row (in-list rows)]
+                    [offset (in-list row-offsets)])
+           (max extent (+ offset (length row))))))
+  (define max-gap-extent
+    (for/fold ([gap-extent (max 0 (sub1 preview-min-key-columns))])
+              ([row (in-list rows)]
+               [offset (in-list row-offsets)])
+      (max gap-extent (+ offset (max 0 (sub1 (length row)))))))
+  (max 1
+       (min key-height
+            (/ (- inner-width (* max-gap-extent key-gap))
+               max-extent))))
+
+(define (uniform-square-preview-layout width height rows row-offsets pad key-gap row-gap)
+  (define row-count (max 1 (length rows)))
+  (define key-side (uniform-square-key-side width height rows row-offsets pad key-gap row-gap))
   (define grid-height (+ (* row-count key-side)
                          (* (max 0 (sub1 row-count)) row-gap)))
   (define start-y (max row-gap (/ (- height grid-height) 2)))
@@ -69,7 +101,11 @@
     (define row-gap-count (max 0 (sub1 (length row))))
     (define row-width (+ (* (length row) key-side)
                          (* row-gap-count key-gap)))
-    (define start-x (/ (- width row-width) 2))
+    (define row-offset (list-ref row-offsets row-index))
+    (define start-x
+      (if (for/or ([offset (in-list row-offsets)]) (not (zero? offset)))
+          (+ pad (* row-offset (+ key-side key-gap)))
+          (/ (- width row-width) 2)))
     (let loop ([keys row] [x start-x] [items '()])
       (cond
         [(null? keys) (reverse items)]
@@ -127,8 +163,9 @@
     (filter pair?
             (map (lambda (row) (preview-visible-row preview row))
                  (hash-ref preview 'rows '()))))
+  (define row-offsets (row-offsets-for rows (hash-ref preview 'row-offsets '())))
   (case geometry
     [(skin-proportional)
      (skin-proportional-preview-layout width height rows pad key-gap row-gap)]
     [else
-     (uniform-square-preview-layout width height rows pad key-gap row-gap)]))
+     (uniform-square-preview-layout width height rows row-offsets pad key-gap row-gap)]))

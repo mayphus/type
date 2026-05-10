@@ -26,6 +26,23 @@
   ((response-output response) out)
   (bytes->string/utf-8 (get-output-bytes out)))
 
+(define (svg-text-x svg text)
+  (define match
+    (regexp-match (regexp (format "<text x=\"([0-9.]+)\"[^>]*>~a</text>"
+                                  (regexp-quote text)))
+                  svg))
+  (and match (string->number (cadr match))))
+
+(define (first-key-width svg)
+  (define match
+    (regexp-match #rx"<rect x=\"[0-9.]+\" y=\"[0-9.]+\" width=\"([0-9.]+)\" height=\"[0-9.]+\""
+                  svg))
+  (and match (string->number (cadr match))))
+
+(define (svg-width svg)
+  (define match (regexp-match #rx"<svg[^>]+width=\"([0-9.]+)\"" svg))
+  (and match (string->number (cadr match))))
+
 (module+ test
   (test-case "legacy host redirects to canonical rime domain"
     (check-equal? (canonical-redirect-location
@@ -108,15 +125,36 @@
     (check-true (regexp-match? #rx"fill=\"#e9edf2\"" skin-svg))
     (check-false (regexp-match? #rx">123<" layout-svg))))
 
+  (test-case "standard zhuyin typing preview keeps punctuation input keys"
+    (define layout-svg
+      (response-body (canonical-dispatch (req "/layouts/bopomofo_standard/preview.svg" "rime.mayphus.org"))))
+    (define yuanshu-svg
+      (response-body (canonical-dispatch (req "/layouts/bopomofo/preview.svg" "rime.mayphus.org"))))
+    (define one-x (svg-text-x layout-svg "1"))
+    (define q-x (svg-text-x layout-svg "q"))
+    (define a-x (svg-text-x layout-svg "a"))
+    (define z-x (svg-text-x layout-svg "z"))
+    (check-true (regexp-match? #rx"^<svg[^>]+Keyboard preview" layout-svg))
+    (check-= (svg-width layout-svg) (svg-width yuanshu-svg) 0.01)
+    (check-= (first-key-width layout-svg) (first-key-width yuanshu-svg) 0.01)
+    (check-true (< one-x q-x a-x z-x))
+    (check-true (regexp-match? #rx">;<" layout-svg))
+    (check-true (regexp-match? #rx">,</text>" layout-svg))
+    (check-true (regexp-match? #rx">/</text>" layout-svg))
+    (check-true (regexp-match? #rx">ㄤ<" layout-svg)))
+
   (test-case "schema preview routes preserve schema identity over shared layouts"
     (define flypy-ice-response
       (canonical-dispatch (req "/schemas/flypy-ice/preview.svg" "rime.mayphus.org")))
     (define mobile-only-svg
       (response-body (canonical-dispatch (req "/schemas/double-pinyin-flypy-14/preview.svg" "rime.mayphus.org"))))
+    (define mobile-only-skin-svg
+      (response-body (canonical-dispatch (req "/schemas/double-pinyin-flypy-14/skin-preview.svg" "rime.mayphus.org"))))
     (define luna-skin-svg
       (response-body (canonical-dispatch (req "/schemas/luna-pinyin/skin-preview.svg" "rime.mayphus.org"))))
     (check-equal? (response-code flypy-ice-response) 404)
     (check-true (regexp-match? #rx"^<svg[^>]+Keyboard preview" mobile-only-svg))
-    (check-true (regexp-match? #rx">123<" mobile-only-svg))
+    (check-false (regexp-match? #rx">123<" mobile-only-svg))
+    (check-true (regexp-match? #rx">123<" mobile-only-skin-svg))
     (check-true (regexp-match? #rx"^<svg[^>]+Keyboard preview" luna-skin-svg))
     (check-true (regexp-match? #rx">123<" luna-skin-svg)))

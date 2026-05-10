@@ -51,9 +51,24 @@
                      (string-append layout-id "/demo.png")))
           (get-output-bytes out)))))
 
+(define preview-canvas-width 3363/8)
+
+(define (normalize-preview-canvas preview-spec)
+  (cond
+    [(not (hash? preview-spec)) preview-spec]
+    [else
+     (define normalized
+       (hash-set preview-spec 'canvas-width preview-canvas-width))
+     (define dark-preview (hash-ref preview-spec 'dark #f))
+     (if (hash? dark-preview)
+         (hash-set normalized 'dark (normalize-preview-canvas dark-preview))
+         normalized)]))
+
 (define (keyboard-layout-preview-svgs layout-module)
   (with-handlers ([exn:fail? (lambda (_) (hash))])
-    (keyboard-layout-module-ref layout-module 'keyboard-layout-preview-svgs)))
+    (define preview-spec
+      (keyboard-layout-module-ref layout-module 'keyboard-layout-preview-spec))
+    (preview-spec->svgs (normalize-preview-canvas preview-spec))))
 
 (define (keyboard-layout-skin-preview-svgs layout-module)
   (with-handlers ([exn:fail? (lambda (_) (hash))])
@@ -88,16 +103,12 @@
 (define (schema-preview-svg schema-id [theme 'light] #:skin? [skin? #f])
   (define schema
     (schema-item-by-ref schema-id))
-  (define artifacts (if schema (hash-ref schema 'artifacts '()) '()))
-  (define mobile-only?
-    (and (member "yuanshu" artifacts)
-         (not (member "rime" artifacts))))
   (define layout-id
     (and schema
          (let ([layouts (hash-ref schema 'keyboard-layouts '())])
            (and (pair? layouts) (car layouts)))))
   (and layout-id
-       (if (or skin? mobile-only?)
+       (if skin?
            (or (keyboard-layout-skin-preview-svg layout-id theme)
                (keyboard-layout-skin-preview-svg layout-id 'light))
            (or (keyboard-layout-preview-svg layout-id theme)
@@ -151,6 +162,7 @@
   (define label (hash-ref standard-zhuyin-key-labels key (symbol->string key)))
   (define zhuyin (keymap-text 'zhuyin-standard key))
   (hash 'id (format "~aKey" key)
+        'role 'input
         'label label
         'layers
         (filter values
@@ -172,9 +184,13 @@
       (standard-zhuyin-key key))))
 
 (define standard-zhuyin-preview
-  (hash 'size (hash 'width 520 'height 220)
+  (hash 'size (hash 'width 3363/8 'height 216)
+        'canvas-width preview-canvas-width
+        'row-offsets '(0 1/2 3/4 5/4)
         'background "#f6f7f9"
-        'dark (hash 'size (hash 'width 520 'height 220)
+        'dark (hash 'size (hash 'width 3363/8 'height 216)
+                    'canvas-width preview-canvas-width
+                    'row-offsets '(0 1/2 3/4 5/4)
                     'background "#111418"
                     'source 'static
                     'key-shape 'square
