@@ -11,7 +11,14 @@
          input-method-schema-entries
          input-method-schema-entry-ref
          input-method-schema-entry-ids
+         schema-slug
+         schema-display-names
+         schema-display-descriptions
+         schema-name
+         schema-description
+         input-method-id?
          schema-category-order
+         schema-id->category-id
          schema-category-label
          schema-category-summary)
 
@@ -70,6 +77,29 @@
 
 (define input-method-schema-entry-ref schema-entry-ref)
 
+(define (schema-slug schema)
+  (define definition (schema-entry-ref schema #f))
+  (if definition
+      (schema-entry-slug definition)
+      schema))
+
+(define (schema-display-names schema)
+  (define definition (schema-entry-ref schema #f))
+  (and definition (schema-entry-names definition)))
+
+(define (schema-display-descriptions schema)
+  (define definition (schema-entry-ref schema #f))
+  (and definition (schema-entry-descriptions definition)))
+
+(define (schema-name schema [locale 'zh-Hant])
+  (localized-schema-value (schema-display-names schema) locale))
+
+(define (schema-description schema [locale 'en])
+  (localized-schema-value (schema-display-descriptions schema) locale))
+
+(define (input-method-id? id)
+  (and (member id (input-method-schema-entry-ids)) #t))
+
 (define schema-category-order
   '("double-pinyin" "full-pinyin" "shape" "phonetic" "other"))
 
@@ -105,3 +135,9 @@
                            locale
                            (localized-schema-value (hash-ref category-summaries "other")
                                                     locale)))
+
+(define (schema-id->category-id id)
+  (define definition (schema-entry-ref id #f))
+  (if definition
+      (schema-entry-category definition)
+      "other"))

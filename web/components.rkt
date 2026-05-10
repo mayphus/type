@@ -2,7 +2,7 @@
 
 (require racket/list
          racket/string
-         (except-in "../input-method/registry.rkt" schema-slug)
+         "../input-method/schema.rkt"
          "locale.rkt")
 
 (provide schema-id

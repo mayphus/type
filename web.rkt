@@ -16,7 +16,7 @@
          "web/forms.rkt"
          "web/locale.rkt"
          "build.rkt"
-         (except-in "input-method/registry.rkt" generated-config-ids))
+         "input-method/schema.rkt")
 
 (provide keyboard-layout-items
          skin-items

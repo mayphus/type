@@ -6,7 +6,7 @@
          racket/set
          racket/string
          "../default-profile.rkt"
-         "../input-method/registry.rkt"
+         "../rime/registry.rkt"
          "keyboard.rkt"
          "paths.rkt"
          "schema.rkt"
@@ -28,7 +28,7 @@
   (define needed
     (list->set
      (cons "yuanshu_shared.rkt"
-           (map (lambda (s) (string-append (schema-source-id s) ".rkt")) schemas))))
+           (map (lambda (s) (string-append (rime-schema-source-id s) ".rkt")) schemas))))
   (define entrypoints
     (sort
      (filter (lambda (p)
@@ -44,13 +44,13 @@
       [(hash? schema-config-files)
        (for ([schema (in-list schemas)]
              #:when (equal? (path->string (file-name-from-path f))
-                            (string-append (schema-source-id schema) ".rkt")))
+                            (string-append (rime-schema-source-id schema) ".rkt")))
          (define files
            (hash-ref schema-config-files schema
                      (lambda ()
-                       (hash-ref schema-config-files (schema-config-id schema)
+                       (hash-ref schema-config-files (rime-schema-config-id schema)
                                  (lambda ()
-                                   (hash-ref schema-config-files (schema-source-id schema)
+                                   (hash-ref schema-config-files (rime-schema-source-id schema)
                                              (lambda ()
                                                (error 'build-schemas!
                                                       "~a: missing generated config for ~a"
@@ -166,7 +166,7 @@
             (displayln "patch:" out)
             (displayln "  schema_list:" out)
             (for ([s display-schemas])
-              (fprintf out "    - schema: ~a\n" (schema-config-id s))))))
+              (fprintf out "    - schema: ~a\n" (rime-schema-config-id s))))))
       (delete-file* default-custom))
 
   (define tmp-layout-dir #f)

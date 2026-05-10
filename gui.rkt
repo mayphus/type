@@ -4,7 +4,8 @@
          racket/gui/base
          racket/list
          racket/string
-         "input-method/registry.rkt"
+         "input-method/schema.rkt"
+         "rime/registry.rkt"
          "build.rkt")
 
 (provide start-gui)

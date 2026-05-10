@@ -9,7 +9,7 @@
          (prefix-in schema-index: "../input-method/schema.rkt")
          (prefix-in model: "../input-method/model.rkt")
          (prefix-in recipes: "../input-method/recipes.rkt")
-         (prefix-in registry: "../input-method/registry.rkt")
+         (prefix-in rime-registry: "../rime/registry.rkt")
          (prefix-in flypy: "../rime/flypy.rkt")
          (prefix-in flypy_14: "../rime/flypy_14.rkt")
          (prefix-in luna_pinyin: "../rime/luna_pinyin.rkt")
@@ -124,22 +124,22 @@
     (check-false (keyboard:keyboard-layout-definition-ref "missing-layout")))
 
   (test-case "generated schema entries point at Rime source module files"
-    (for ([id (in-list registry:generated-config-ids)])
+    (for ([id (in-list rime-registry:generated-config-ids)])
       (check-true
        (file-exists?
         (build-path rime-source-dir
-                    (string-append (registry:schema-source-id id)
+                    (string-append (rime-registry:rime-schema-source-id id)
                                    ".rkt")))
        id)))
 
   (test-case "schema index keeps variant and dependency metadata"
-    (check-equal? (registry:schema-source-id "flypy-ice") "flypy")
-    (check-equal? (registry:static-schema-deps "double-pinyin") '("stroke"))
-    (check-equal? (registry:static-schema-extra-files "wubi-pinyin") '("wubi86.dict.yaml"))
-    (check-equal? (registry:static-schema-artifacts "double-pinyin") '("rime" "yuanshu"))
-    (check-equal? (registry:static-schema-artifacts "bopomofo") '("yuanshu"))
-    (check-equal? (registry:schema-id->category-id "cangjie6") "shape")
-    (check-equal? (registry:schema-category-label "double-pinyin" 'zh-Hant) "雙拼"))
+    (check-equal? (rime-registry:rime-schema-source-id "flypy-ice") "flypy")
+    (check-equal? (rime-registry:rime-schema-deps "double-pinyin") '("stroke"))
+    (check-equal? (rime-registry:rime-schema-extra-files "wubi-pinyin") '("wubi86.dict.yaml"))
+    (check-equal? (rime-registry:rime-schema-artifacts "double-pinyin") '("rime" "yuanshu"))
+    (check-equal? (rime-registry:rime-schema-artifacts "bopomofo") '("yuanshu"))
+    (check-equal? (schema-index:schema-id->category-id "cangjie6") "shape")
+    (check-equal? (schema-index:schema-category-label "double-pinyin" 'zh-Hant) "雙拼"))
 
   (test-case "flypy shared config emits desktop schema YAML"
     (define yaml (generated-file flypy:config-files "flypy.schema.yaml"))
@@ -151,7 +151,7 @@
 
   (test-case "flypy skin preview includes flypy legends"
     (define flypy-layout-module
-      (for/first ([item (in-list (list-keyboard-layout-items registry:generated-config-ids))]
+      (for/first ([item (in-list (list-keyboard-layout-items rime-registry:generated-config-ids))]
                   #:when (equal? (cadr item) "flypy"))
         (caddr item)))
     (define preview
@@ -163,7 +163,7 @@
        (equal? (hash-ref layer 'text) "iu"))))
 
   (test-case "generated Yuanshu layouts do not emit swipe-down actions"
-    (for* ([item (in-list (list-keyboard-layout-items registry:generated-config-ids))]
+    (for* ([item (in-list (list-keyboard-layout-items rime-registry:generated-config-ids))]
            [files (in-value ((keyboard-layout-module-ref (caddr item)
                                                          'keyboard-layout-files-with-docs)))]
            [(path content) (in-hash files)]
@@ -337,8 +337,8 @@
     (check-equal?
      (hash-ref (hash-ref cangjie-ipad 'aButtonCangjieForegroundStyle) 'fontWeight #f)
      #f)
-    (check-equal? (registry:static-schema-keyboard-layouts "quick5") '("cangjie6"))
-    (check-equal? (registry:static-schema-keyboard-layouts "cangjie5") '("cangjie6")))
+    (check-equal? (rime-registry:rime-schema-keyboard-layouts "quick5") '("cangjie6"))
+    (check-equal? (rime-registry:rime-schema-keyboard-layouts "cangjie5") '("cangjie6")))
 
   (test-case "keyboard legends live in root catalog"
     (check-equal? (keyboard:keyboard-legend-text 'wubi 'q) "金/勹")

@@ -4,7 +4,7 @@
          racket/list
          racket/set
          "../keyboard/registry.rkt"
-         "../input-method/registry.rkt"
+         "../rime/registry.rkt"
          "paths.rkt")
 
 (provide keyboard-layout-module?
@@ -59,10 +59,10 @@
 (define skin-module-ref keyboard-layout-module-ref)
 
 (define (schema-module-path schema)
-  (build-path rime-source-dir (string-append (schema-source-id schema) ".rkt")))
+  (build-path rime-source-dir (string-append (rime-schema-source-id schema) ".rkt")))
 
 (define (schema-module-ref schema prop [default #f])
-  (define source (schema-source-id schema))
+  (define source (rime-schema-source-id schema))
   (define rkt (schema-module-path schema))
   (if (file-exists? rkt)
       (if (equal? source schema)
@@ -70,7 +70,7 @@
           (let ([meta (dynamic-require rkt 'schema-meta (lambda () #f))])
             (if (hash? meta)
                 (hash-ref (hash-ref meta schema
-                                    (hash-ref meta (schema-config-id schema) (hash)))
+                                    (hash-ref meta (rime-schema-config-id schema) (hash)))
                           prop
                           (lambda ()
                             (dynamic-require rkt prop (lambda () default))))
@@ -80,7 +80,7 @@
 (define (read-schema-keyboard-layouts schema)
   (define layouts (schema-module-ref schema 'keyboard-layouts
                                      (schema-module-ref schema 'mobile-skins
-                                                        (static-schema-keyboard-layouts schema))))
+                                                        (rime-schema-keyboard-layouts schema))))
   (cond
     [(not layouts) '()]
     [(list? layouts) layouts]
