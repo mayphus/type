@@ -14,7 +14,7 @@
          request-locale
          remember-locale-headers)
 
-(define app-css-href "/app.css?v=20260510-card-preview-scale")
+(define app-css-href "/app.css?v=20260510-vertical-catalog")
 (define preview-svg-version "20260510-preview-canvas")
 
 (define copy
