@@ -6,7 +6,7 @@
          racket/runtime-path
          racket/string
          (prefix-in keyboard: "../input-method/keyboard/catalog.rkt")
-         (prefix-in schema-index: "../input-method/schema-registry.rkt")
+         (prefix-in schema-index: "../input-method/schema.rkt")
          (prefix-in model: "../input-method/model.rkt")
          (prefix-in recipes: "../input-method/recipes.rkt")
          (prefix-in registry: "../input-method/registry.rkt")

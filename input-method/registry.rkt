@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "schema-registry.rkt"
+(require "schema.rkt"
          "model.rkt"
          "../rime/registry.rkt")
 
