@@ -1,6 +1,14 @@
 #lang racket/base
 
+(require racket/list)
+
 (provide (struct-out input-method-recipe)
+         (struct-out keyboard-dimension)
+         (struct-out input-method-dimension)
+         input-method-keyboards
+         keyboard-dimensions
+         input-method-dimensions
+         calculate-input-method-recipes
          input-method-recipes
          input-method-recipe-ref
          input-method-recipe-layouts)
@@ -17,110 +25,197 @@
    keyboard-layouts)
   #:transparent)
 
-(define (recipe id
+(struct keyboard-dimension
+  (id
+   skeleton
+   projection
+   interactions
+   target)
+  #:transparent)
+
+(struct input-method-keyboard
+  (recipe-id
+   keyboard-id
+   layout-id
+   placement)
+  #:transparent)
+
+(struct input-method-dimension
+  (id
+   schema
+   legends
+   keyboards)
+  #:transparent)
+
+(define keyboard-dimensions
+  (list
+   (keyboard-dimension 'standard-26
+                       'standard-26
+                       'identity-26
+                       '(standard-mobile no-swipe-down)
+                       'yuanshu)
+   (keyboard-dimension 'compact-14
+                       'compact-14
+                       'adjacent-qwerty-14
+                       '(compact-mobile no-swipe-down)
+                       'yuanshu)
+   (keyboard-dimension 'compact-18
+                       'compact-18
+                       'adjacent-qwerty-18
+                       '(compact-mobile no-swipe-down)
+                       'yuanshu)
+   (keyboard-dimension 'shuffle-17
+                       'compact-17
+                       'shuffle-17
+                       '(custom-mobile-pages no-swipe-down)
+                       'yuanshu)
+   (keyboard-dimension 'zhuyin
+                       'zhuyin
+                       'zhuyin-direct
+                       '(zhuyin-mobile custom-mobile-pages no-swipe-down)
+                       'yuanshu)))
+
+(define keyboard-dimension-by-id
+  (for/hash ([dimension (in-list keyboard-dimensions)])
+    (values (keyboard-dimension-id dimension) dimension)))
+
+(define (keyboard-dimension-ref id)
+  (hash-ref keyboard-dimension-by-id
+            id
+            (lambda ()
+              (error 'keyboard-dimension-ref "unknown keyboard dimension: ~a" id))))
+
+(define (keyboard recipe-id keyboard-id layout-id placement)
+  (input-method-keyboard recipe-id keyboard-id layout-id placement))
+
+(define (method id
                 #:schema [schema id]
-                #:skeleton skeleton
-                #:projection projection
                 #:legends [legends '()]
-                #:placement placement
-                #:interactions [interactions '(standard-mobile no-swipe-down)]
-                #:target [target 'yuanshu]
-                #:keyboard-layouts [keyboard-layouts (list id)])
-  (input-method-recipe id
-                       schema
-                       skeleton
-                       projection
-                       legends
-                       placement
-                       interactions
-                       target
-                       keyboard-layouts))
+                #:keyboards keyboards)
+  (input-method-dimension id schema legends keyboards))
+
+(define input-method-dimensions
+  (list
+   (method "flypy"
+           #:legends '(abc flypy)
+           #:keyboards
+           (list
+            (keyboard "flypy" 'standard-26 "flypy" 'split-flypy)
+            (keyboard "flypy_14" 'compact-14 "flypy_14" 'compact-center)
+            (keyboard "flypy_18" 'compact-18 "flypy_18" 'compact-center)
+            (keyboard "shuffle_17" 'shuffle-17 "shuffle_17" 'compact-center)))
+   (method "luna_pinyin"
+           #:legends '(abc)
+           #:keyboards
+           (list
+            (keyboard "luna_pinyin" 'standard-26 "luna_pinyin" 'standard-center)
+            (keyboard "pinyin_14" 'compact-14 "pinyin_14" 'compact-center)))
+   (method "terra_pinyin"
+           #:legends '(abc)
+           #:keyboards
+           (list
+            (keyboard "terra_pinyin" 'standard-26 "terra_pinyin" 'standard-center)))
+   (method "cangjie6"
+           #:legends '(cangjie)
+           #:keyboards
+           (list
+            (keyboard "cangjie6" 'standard-26 "cangjie6" 'standard-center)
+            (keyboard "cangjie5" 'standard-26 "cangjie6" 'standard-center)
+            (keyboard "cangjie5_express" 'standard-26 "cangjie6" 'standard-center)
+            (keyboard "quick5" 'standard-26 "cangjie6" 'standard-center)))
+   (method "jyut6ping3"
+           #:legends '(abc jyutping)
+           #:keyboards
+           (list
+            (keyboard "jyut6ping3" 'standard-26 "jyut6ping3" 'standard-top-center)))
+   (method "bopomofo"
+           #:legends '(zhuyin)
+           #:keyboards
+           (list
+            (keyboard "bopomofo" 'zhuyin "bopomofo" 'standard-center)))
+   (method "double_pinyin"
+           #:legends '(abc zrm)
+           #:keyboards
+           (list
+            (keyboard "double_pinyin" 'standard-26 "double_pinyin_zrm" 'double-pinyin-center)))
+   (method "double_pinyin_abc"
+           #:legends '(abc abc-dp)
+           #:keyboards
+           (list
+            (keyboard "double_pinyin_abc" 'standard-26 "double_pinyin_abc" 'double-pinyin-center)))
+   (method "double_pinyin_flypy"
+           #:schema "flypy"
+           #:legends '(abc flypy)
+           #:keyboards
+           (list
+            (keyboard "double_pinyin_flypy" 'standard-26 "flypy" 'split-flypy)))
+   (method "double_pinyin_mspy"
+           #:legends '(abc mspy)
+           #:keyboards
+           (list
+            (keyboard "double_pinyin_mspy" 'standard-26 "double_pinyin_mspy" 'double-pinyin-center)))
+   (method "double_pinyin_pyjj"
+           #:legends '(abc pyjj)
+           #:keyboards
+           (list
+            (keyboard "double_pinyin_pyjj" 'standard-26 "double_pinyin_pyjj" 'double-pinyin-center)))
+   (method "double_pinyin_st"
+           #:legends '(abc st)
+           #:keyboards
+           (list
+            (keyboard "double_pinyin_st" 'standard-26 "double_pinyin_st" 'double-pinyin-center)))
+   (method "wubi86"
+           #:legends '(abc wubi)
+           #:keyboards
+           (list
+            (keyboard "wubi86" 'standard-26 "wubi86" 'standard-top-center)
+            (keyboard "wubi_pinyin" 'standard-26 "wubi86" 'standard-top-center)
+            (keyboard "wubi_trad" 'standard-26 "wubi86" 'standard-top-center)))
+   (method "stroke"
+           #:legends '(abc stroke)
+           #:keyboards
+           (list
+            (keyboard "stroke" 'standard-26 "stroke" 'standard-top-center)))
+   (method "pinyin_simp"
+           #:schema "luna_pinyin"
+           #:legends '(abc)
+           #:keyboards
+           (list
+            (keyboard "pinyin_simp" 'standard-26 "luna_pinyin" 'standard-center)))
+   (method "luna_quanpin"
+           #:schema "luna_pinyin"
+           #:legends '(abc)
+           #:keyboards
+           (list
+            (keyboard "luna_quanpin" 'standard-26 "luna_pinyin" 'standard-center)))))
+
+(define input-method-keyboards
+  (append-map input-method-dimension-keyboards input-method-dimensions))
+
+(define (input-method-keyboard->recipe method-dimension method-keyboard)
+  (define keyboard-dimension
+    (keyboard-dimension-ref (input-method-keyboard-keyboard-id method-keyboard)))
+  (input-method-recipe
+   (input-method-keyboard-recipe-id method-keyboard)
+   (input-method-dimension-schema method-dimension)
+   (keyboard-dimension-skeleton keyboard-dimension)
+   (keyboard-dimension-projection keyboard-dimension)
+   (input-method-dimension-legends method-dimension)
+   (input-method-keyboard-placement method-keyboard)
+   (keyboard-dimension-interactions keyboard-dimension)
+   (keyboard-dimension-target keyboard-dimension)
+   (list (input-method-keyboard-layout-id method-keyboard))))
+
+(define (calculate-input-method-recipes)
+  (append-map
+   (lambda (method-dimension)
+     (map (lambda (method-keyboard)
+            (input-method-keyboard->recipe method-dimension method-keyboard))
+          (input-method-dimension-keyboards method-dimension)))
+   input-method-dimensions))
 
 (define input-method-recipes
-  (list
-   (recipe "flypy" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc flypy) #:placement 'split-flypy
-           #:keyboard-layouts '("flypy"))
-   (recipe "flypy_ice" #:schema "flypy" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc flypy) #:placement 'split-flypy
-           #:keyboard-layouts '("flypy"))
-   (recipe "flypy_14" #:skeleton 'compact-14 #:projection 'adjacent-qwerty-14
-           #:legends '(flypy) #:placement 'compact-center
-           #:interactions '(compact-mobile no-swipe-down)
-           #:keyboard-layouts '("flypy_14"))
-   (recipe "flypy_18" #:skeleton 'compact-18 #:projection 'adjacent-qwerty-18
-           #:legends '(flypy) #:placement 'compact-center
-           #:interactions '(compact-mobile no-swipe-down)
-           #:keyboard-layouts '("flypy_18"))
-   (recipe "shuffle_17" #:skeleton 'compact-17 #:projection 'shuffle-17
-           #:legends '(flypy) #:placement 'compact-center
-           #:interactions '(custom-mobile-pages no-swipe-down)
-           #:keyboard-layouts '("shuffle_17"))
-   (recipe "luna_pinyin" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc) #:placement 'standard-center
-           #:keyboard-layouts '("luna_pinyin"))
-   (recipe "terra_pinyin" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc) #:placement 'standard-center
-           #:keyboard-layouts '("terra_pinyin"))
-   (recipe "pinyin_14" #:skeleton 'compact-14 #:projection 'adjacent-qwerty-14
-           #:legends '(abc) #:placement 'compact-center
-           #:interactions '(compact-mobile no-swipe-down)
-           #:keyboard-layouts '("pinyin_14"))
-   (recipe "cangjie6" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(cangjie) #:placement 'standard-center
-           #:keyboard-layouts '("cangjie6"))
-   (recipe "jyut6ping3" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc jyutping) #:placement 'standard-top-center
-           #:keyboard-layouts '("jyut6ping3"))
-   (recipe "bopomofo" #:skeleton 'zhuyin #:projection 'zhuyin-direct
-           #:legends '(zhuyin) #:placement 'standard-center
-           #:interactions '(zhuyin-mobile custom-mobile-pages no-swipe-down)
-           #:keyboard-layouts '("bopomofo"))
-   (recipe "double_pinyin" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc zrm) #:placement 'double-pinyin-center
-           #:keyboard-layouts '("double_pinyin_zrm"))
-   (recipe "double_pinyin_abc" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc abc-dp) #:placement 'double-pinyin-center
-           #:keyboard-layouts '("double_pinyin_abc"))
-   (recipe "double_pinyin_flypy" #:schema "flypy" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc flypy) #:placement 'split-flypy
-           #:keyboard-layouts '("flypy"))
-   (recipe "double_pinyin_mspy" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc mspy) #:placement 'double-pinyin-center
-           #:keyboard-layouts '("double_pinyin_mspy"))
-   (recipe "double_pinyin_pyjj" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc pyjj) #:placement 'double-pinyin-center
-           #:keyboard-layouts '("double_pinyin_pyjj"))
-   (recipe "double_pinyin_st" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc st) #:placement 'double-pinyin-center
-           #:keyboard-layouts '("double_pinyin_st"))
-   (recipe "cangjie5" #:schema "cangjie6" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(cangjie) #:placement 'standard-center
-           #:keyboard-layouts '("cangjie6"))
-   (recipe "cangjie5_express" #:schema "cangjie6" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(cangjie) #:placement 'standard-center
-           #:keyboard-layouts '("cangjie6"))
-   (recipe "quick5" #:schema "cangjie6" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(cangjie) #:placement 'standard-center
-           #:keyboard-layouts '("cangjie6"))
-   (recipe "wubi86" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc wubi) #:placement 'standard-top-center
-           #:keyboard-layouts '("wubi86"))
-   (recipe "wubi_pinyin" #:schema "wubi86" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc wubi) #:placement 'standard-top-center
-           #:keyboard-layouts '("wubi86"))
-   (recipe "wubi_trad" #:schema "wubi86" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc wubi) #:placement 'standard-top-center
-           #:keyboard-layouts '("wubi86"))
-   (recipe "stroke" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc stroke) #:placement 'standard-top-center
-           #:keyboard-layouts '("stroke"))
-   (recipe "pinyin_simp" #:schema "luna_pinyin" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc) #:placement 'standard-center
-           #:keyboard-layouts '("luna_pinyin"))
-   (recipe "luna_quanpin" #:schema "luna_pinyin" #:skeleton 'standard-26 #:projection 'identity-26
-           #:legends '(abc) #:placement 'standard-center
-           #:keyboard-layouts '("luna_pinyin"))))
+  (calculate-input-method-recipes))
 
 (define input-method-recipe-by-id
   (for/hash ([recipe (in-list input-method-recipes)])

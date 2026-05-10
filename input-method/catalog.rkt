@@ -83,6 +83,7 @@
            #:source-id "flypy"
            #:kind 'variant
            #:catalog "double-pinyin"
+           #:keyboard-layouts '("flypy")
            #:en-name "Flypy Ice"
            #:zh-name "小鶴-霧凇"
            #:en-description "Flypy double pinyin backed by rime-ice dictionaries, packaged for Yuanshu."
@@ -308,8 +309,14 @@
 (define (schema-definition-ids)
   (map schema-definition-id schema-definitions))
 
-(define input-method-definitions schema-definitions)
-(define input-method-definition-ids schema-definition-ids)
+(define (input-method-definition-ids)
+  (map input-method-recipe-id input-method-recipes))
+
+(define input-method-definitions
+  (filter (lambda (definition)
+            (member (schema-definition-id definition)
+                    (input-method-definition-ids)))
+          schema-definitions))
 
 (define schema-definition-by-id
   (for/hash ([definition (in-list schema-definitions)])

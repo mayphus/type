@@ -98,8 +98,11 @@
     (check-equal? (length ids) (length (remove-duplicates ids))))
 
   (test-case "input-method catalog exposes recipe-backed definitions"
-    (check-equal? (catalog:input-method-definition-ids)
-                  (catalog:schema-definition-ids))
+    (define recipe-ids
+      (map recipes:input-method-recipe-id recipes:input-method-recipes))
+    (check-equal? (catalog:input-method-definition-ids) recipe-ids)
+    (check-not-false (member "flypy" (catalog:input-method-definition-ids)))
+    (check-false (member "flypy_ice" (catalog:input-method-definition-ids)))
     (for ([id (in-list (catalog:input-method-definition-ids))])
       (check-true (model:input-method-definition?
                    (catalog:input-method-definition-ref id))
