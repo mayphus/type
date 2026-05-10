@@ -10,13 +10,19 @@ on:
       - main
     paths:
       - "*.rkt"
+      - "build/**"
+      - "input-method/**"
+      - "keyboard/**"
+      - "lib/**"
       - "rime/**"
-      - "schema/**"
       - "static/**"
       - "tools/**"
+      - "web/**"
+      - "yuanshu/**"
       - "Dockerfile"
       - ".dockerignore"
       - "k8s.rkt"
+      - "k8s/**"
       - ".github/workflows/deploy-k3s.yml"
   workflow_dispatch:
 
