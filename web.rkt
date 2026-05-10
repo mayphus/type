@@ -15,7 +15,7 @@
          "web/forms.rkt"
          "web/locale.rkt"
          "build.rkt"
-         "schema/registry.rkt")
+         "input-method/registry.rkt")
 
 (provide keyboard-layout-items
          skin-items

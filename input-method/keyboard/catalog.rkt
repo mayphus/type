@@ -1,6 +1,9 @@
 #lang racket/base
 
-(require "models.rkt"
+(require "skeletons.rkt"
+         "projections.rkt"
+         "placements.rkt"
+         "interactions.rkt"
          "legends.rkt"
          "shapes.rkt")
 
@@ -9,8 +12,16 @@
          keyboard-legend-definitions
          keyboard-legend-definition-ref
          keyboard-legend-text
+         keyboard-skeleton-definitions
+         keyboard-skeleton-definition-ref
          keyboard-model-definitions
          keyboard-model-definition-ref
+         keyboard-projection-definitions
+         keyboard-projection-definition-ref
+         keyboard-placement-definitions
+         keyboard-placement-definition-ref
+         keyboard-interaction-definitions
+         keyboard-interaction-definition-ref
          keyboard-shape-definition-ref)
 
 ;; Static upstream schemas do not have schema modules, so their reusable printed

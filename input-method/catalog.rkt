@@ -1,11 +1,15 @@
 #lang racket/base
 
 (require racket/list
-         "model.rkt")
+         "model.rkt"
+         "recipes.rkt")
 
 (provide schema-definitions
          schema-definition-ref
          schema-definition-ids
+         input-method-definitions
+         input-method-definition-ref
+         input-method-definition-ids
          generated-schema-ids
          generated-custom-ids
          generated-config-ids
@@ -22,7 +26,7 @@
                 #:deps [deps '()]
                 #:static-files [static-files '()]
                 #:static-dirs [static-dirs '()]
-                #:keyboard-layouts [keyboard-layouts '()]
+                #:keyboard-layouts [keyboard-layouts (input-method-recipe-layouts id)]
                 #:en-name en-name
                 #:zh-name zh-name
                 #:en-description en-description
@@ -295,12 +299,17 @@
 (define (schema-definition-ids)
   (map schema-definition-id schema-definitions))
 
+(define input-method-definitions schema-definitions)
+(define input-method-definition-ids schema-definition-ids)
+
 (define schema-definition-by-id
   (for/hash ([definition (in-list schema-definitions)])
     (values (schema-definition-id definition) definition)))
 
 (define (schema-definition-ref id [default #f])
   (hash-ref schema-definition-by-id id default))
+
+(define input-method-definition-ref schema-definition-ref)
 
 (define schema-catalog-order
   '("double-pinyin" "full-pinyin" "shape" "phonetic" "other"))

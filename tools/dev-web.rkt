@@ -16,8 +16,7 @@
   '("web.rkt"
     "build.rkt"
     "web"
-    "schema"
-    "keyboard"
+    "input-method"
     "preview"
     "static"
     "lib"))

@@ -5,16 +5,17 @@
          racket/list
          racket/runtime-path
          racket/string
-         (prefix-in keyboard: "../keyboard/catalog.rkt")
-         (prefix-in catalog: "../schema/catalog.rkt")
-         (prefix-in model: "../schema/model.rkt")
-         (prefix-in registry: "../schema/registry.rkt")
-         (prefix-in flypy: "../schema/flypy.rkt")
-         (prefix-in flypy_14: "../schema/flypy_14.rkt")
-         (prefix-in luna_pinyin: "../schema/luna_pinyin.rkt")
-         (prefix-in pinyin_14: "../schema/pinyin_14.rkt")
-         (prefix-in terra_pinyin: "../schema/terra_pinyin.rkt")
-         (prefix-in jyut6ping3: "../schema/jyut6ping3.rkt")
+         (prefix-in keyboard: "../input-method/keyboard/catalog.rkt")
+         (prefix-in catalog: "../input-method/catalog.rkt")
+         (prefix-in model: "../input-method/model.rkt")
+         (prefix-in recipes: "../input-method/recipes.rkt")
+         (prefix-in registry: "../input-method/registry.rkt")
+         (prefix-in flypy: "../input-method/schema/flypy.rkt")
+         (prefix-in flypy_14: "../input-method/schema/flypy_14.rkt")
+         (prefix-in luna_pinyin: "../input-method/schema/luna_pinyin.rkt")
+         (prefix-in pinyin_14: "../input-method/schema/pinyin_14.rkt")
+         (prefix-in terra_pinyin: "../input-method/schema/terra_pinyin.rkt")
+         (prefix-in jyut6ping3: "../input-method/schema/jyut6ping3.rkt")
          "../build.rkt"
          "../preview/svg.rkt"
          "../yuanshu/skin/core/preview.rkt"
@@ -27,7 +28,7 @@
          (prefix-in zrm18-layout: "../yuanshu/skin/layouts/zrm-18-page.rkt")
          (prefix-in zrm18-aux-layout: "../yuanshu/skin/layouts/zrm-18-aux-page.rkt"))
 
-(define-runtime-path schema-dir "../schema")
+(define-runtime-path schema-dir "../input-method/schema")
 
 (define (generated-file files path)
   (hash-ref files path (lambda () (error 'generated-file "missing ~a" path))))
@@ -96,12 +97,26 @@
     (define ids (catalog:schema-definition-ids))
     (check-equal? (length ids) (length (remove-duplicates ids))))
 
-  (test-case "keyboard catalog owns reusable keyboard models"
+  (test-case "input-method catalog exposes recipe-backed definitions"
+    (check-equal? (catalog:input-method-definition-ids)
+                  (catalog:schema-definition-ids))
+    (for ([id (in-list (catalog:input-method-definition-ids))])
+      (check-true (model:input-method-definition?
+                   (catalog:input-method-definition-ref id))
+                  id)
+      (check-not-false (recipes:input-method-recipe-ref id #f) id)))
+
+  (test-case "keyboard catalog owns reusable keyboard dimensions"
+    (check-not-false (keyboard:keyboard-skeleton-definition-ref "standard-26"))
     (check-not-false (keyboard:keyboard-model-definition-ref "standard-26"))
     (check-not-false (keyboard:keyboard-model-definition-ref "compact-14"))
     (check-not-false (keyboard:keyboard-model-definition-ref "compact-18"))
     (check-not-false (keyboard:keyboard-model-definition-ref "compact-17"))
     (check-not-false (keyboard:keyboard-model-definition-ref "zhuyin"))
+    (check-not-false (keyboard:keyboard-projection-definition-ref "identity-26"))
+    (check-not-false (keyboard:keyboard-projection-definition-ref "adjacent-qwerty-14"))
+    (check-not-false (keyboard:keyboard-placement-definition-ref "compact-center"))
+    (check-not-false (keyboard:keyboard-interaction-definition-ref "compact-mobile"))
     (check-false (keyboard:keyboard-layout-definition-ref "flypy"))
     (check-not-false (keyboard:keyboard-shape-definition-ref "compact-14"))
     (check-false (keyboard:keyboard-layout-definition-ref "missing-layout")))

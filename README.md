@@ -9,13 +9,11 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `build.rkt` is the callable build facade; focused build modules live in `build/`.
 - `web/` contains server-rendered UI pages, components, locale handling, and form parsing.
 - `k8s.rkt` generates and checks the Kubernetes YAML.
-- `assets/rime/` holds native Rime YAML and dictionaries; `schema/` holds this project's DSL source.
-- `schema/lib/lang.rkt` is the public schema DSL language.
-- `keyboard/` contains reusable keyboard models shared by schemas:
-  `models.rkt` for keyboard geometry and print-slot defaults,
-  `shapes.rkt` for blank keyboard geometry, and `catalog.rkt` as the public
-  resolver. Schema modules own schema-specific printed labels and layout
-  binding.
+- `assets/rime/` holds native Rime YAML and dictionaries.
+- `input-method/` is the canonical source for generated input method
+  definitions. `input-method/schema/` holds pure Rime schema logic and the
+  schema DSL language; `input-method/keyboard/` holds skeletons, projections,
+  legends, placements, interactions, and the public keyboard resolver.
 - `preview/` contains shared preview layout and SVG rendering code used by the
   web app and Yuanshu build outputs.
 - `lib/yaml/` contains the internal YAML renderer.
@@ -25,10 +23,11 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `k8s/` is ignored generated deploy output from `k8s.rkt`.
 
 Generated schema modules use `#lang s-exp "lib/lang.rkt"` and declare their
-artifact support in the schema itself. Reusable keyboard models live in
-`keyboard/catalog.rkt`; schema modules define what gets printed on those
-keyboards. Inline `(keyboard-layout ...)` clauses are schema-local Yuanshu skin
-definitions:
+artifact support in the schema itself. Reusable keyboard dimensions live under
+`input-method/keyboard/`; input method recipes compose schema logic, keyboard
+skeletons, projections, legends, placements, and target-specific mobile
+behavior. Inline `(keyboard-layout ...)` clauses remain the generated Yuanshu
+skin definition surface:
 
 ```racket
 (rime-schema flypy_14

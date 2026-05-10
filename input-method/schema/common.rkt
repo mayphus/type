@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "../lib/yaml/dsl.rkt")
+(require "../../lib/yaml/dsl.rkt")
 
 (provide common-schema-processors
          common-schema-segmentors

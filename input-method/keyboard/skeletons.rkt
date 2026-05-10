@@ -1,6 +1,8 @@
 #lang racket/base
 
-(provide keyboard-model-definitions
+(provide keyboard-skeleton-definitions
+         keyboard-skeleton-definition-ref
+         keyboard-model-definitions
          keyboard-model-definition-ref)
 
 (define standard-key-slots
@@ -14,7 +16,7 @@
     (bottom-left #:font-size 10 #:role secondary)
     (bottom-right #:font-size 10 #:role secondary)))
 
-(define keyboard-model-definitions
+(define keyboard-skeleton-definitions
   `((standard-26
      (columns 10)
      (rows
@@ -57,14 +59,18 @@
      (row-offsets 0 0 0 0)
      (slots ,standard-key-slots))))
 
-(define (keyboard-model-definition-ref model [default #f])
+(define keyboard-model-definitions keyboard-skeleton-definitions)
+
+(define (keyboard-skeleton-definition-ref skeleton [default #f])
   (define model-symbol
     (cond
-      [(symbol? model) model]
-      [(string? model) (string->symbol model)]
-      [else model]))
+      [(symbol? skeleton) skeleton]
+      [(string? skeleton) (string->symbol skeleton)]
+      [else skeleton]))
   (define entry
-    (for/first ([definition (in-list keyboard-model-definitions)]
+    (for/first ([definition (in-list keyboard-skeleton-definitions)]
                 #:when (eq? (car definition) model-symbol))
       (cdr definition)))
   (or entry default))
+
+(define keyboard-model-definition-ref keyboard-skeleton-definition-ref)

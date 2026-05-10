@@ -30,8 +30,8 @@
 ;;       (ipad-layout standard-18)))
 
 (require "../common.rkt"
-         "../../yuanshu/patches.rkt"
-         "../../lib/yaml/dsl.rkt"
+         "../../../yuanshu/patches.rkt"
+         "../../../lib/yaml/dsl.rkt"
          (for-syntax racket/base
                      racket/list
                      syntax/parse))
@@ -39,7 +39,7 @@
 (provide (except-out (all-from-out racket/base) #%module-begin)
          #%datum
          (all-from-out "../common.rkt")
-         (all-from-out "../../yuanshu/patches.rkt")
+         (all-from-out "../../../yuanshu/patches.rkt")
          (rename-out [rime-schema-module-begin #%module-begin])
          rime-schema
          keyboard

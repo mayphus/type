@@ -6,7 +6,7 @@
          racket/set
          racket/string
          "../default-profile.rkt"
-         "../schema/registry.rkt"
+         "../input-method/registry.rkt"
          "keyboard.rkt"
          "paths.rkt"
          "schema.rkt"

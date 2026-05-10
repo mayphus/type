@@ -3,7 +3,7 @@
 (require racket/list
          racket/string
          xml
-         "../schema/registry.rkt"
+         "../input-method/registry.rkt"
          "locale.rkt")
 
 (provide schema-id

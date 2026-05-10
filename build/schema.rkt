@@ -3,7 +3,7 @@
 (require racket/list
          racket/string
          "../default-profile.rkt"
-         "../schema/registry.rkt"
+         "../input-method/registry.rkt"
          "paths.rkt")
 
 (provide generated-config-ids
