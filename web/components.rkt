@@ -17,8 +17,6 @@
          cataloged-schemas
          page-xexpr
          catalog-section
-         schema-yuanshu-preview
-         dependency-list
          artifact-form
          layout-detail-card)
 
@@ -126,11 +124,15 @@
                              preview-svg-version))
                (alt ,(layout-name locale layout)))))))
 
-(define (schema-yuanshu-preview locale schema layouts)
+(define (schema-artifact-preview locale schema layouts artifact)
   (define preview-layouts (schema-layout-items schema layouts))
   (and (pair? preview-layouts)
        `(div ((class "rime-download-preview"))
-             ,(layout-preview locale (car preview-layouts) #:base-path "skins"))))
+             ,(layout-preview locale
+                              (car preview-layouts)
+                              #:base-path (if (equal? artifact "yuanshu")
+                                             "skins"
+                                             "layouts")))))
 
 (define (schema-card locale schema layouts)
   (define preview-layouts (schema-layout-items schema layouts))
@@ -203,13 +205,6 @@ check();"))
                 (list dev-reload-script)
                 '()))))
 
-(define (dependency-list locale deps)
-  (if (null? deps)
-      `(p ((class "rime-empty-state")) ,(t locale 'no-dependencies))
-      `(ul ((class "rime-dependency-list"))
-           ,@(for/list ([dep (in-list deps)])
-               `(li (code ,dep))))))
-
 (define (schema-select locale schema variants)
   (if (> (length variants) 1)
       `(label ((class "rime-variant-control"))
@@ -234,16 +229,20 @@ check();"))
                 (t locale 'download-yuanshu)
                 (t locale 'download-rime))))
 
+(define (artifact-action locale schema layouts artifact)
+  `(div ((class "rime-artifact-action"))
+        ,@(let ([preview (schema-artifact-preview locale schema layouts artifact)])
+            (if preview (list preview) '()))
+        ,(artifact-button locale artifact)))
+
 (define (artifact-form locale schema variants artifacts layouts)
   `(form ((class "rime-artifact-form")
           (method "post")
           (action "/build"))
          ,(schema-select locale schema variants)
-         ,@(let ([preview (schema-yuanshu-preview locale schema layouts)])
-             (if preview (list preview) '()))
          (div ((class "rime-artifact-buttons"))
-              ,@(for/list ([artifact (in-list artifacts)])
-                  (artifact-button locale artifact)))))
+             ,@(for/list ([artifact (in-list artifacts)])
+                  (artifact-action locale schema layouts artifact)))))
 
 (define (layout-detail-card locale layout)
   `(article ((class "rime-layout-card"))

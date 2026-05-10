@@ -45,10 +45,7 @@
                                          schema
                                          (schema-artifact-variant-items schema schemas artifacts)
                                          artifacts
-                                         layouts)))
-           (section ((class "rime-section rime-exhibit-section rime-deps-section"))
-                    (h2 ((class "rime-section-title")) ,(t locale 'dependencies))
-                    ,(dependency-list locale (schema-deps schema)))))
+                                         layouts)))))
        `((section ((class "rime-hero-card"))
                   (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
                   (h1 ((class "page-title")) ,(t locale 'missing)))))))

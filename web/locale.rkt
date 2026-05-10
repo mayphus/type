@@ -14,7 +14,7 @@
          request-locale
          remember-locale-headers)
 
-(define app-css-href "/app.css?v=20260509-zrowgap")
+(define app-css-href "/app.css?v=20260510-artifacts")
 (define preview-svg-version "20260509-zrowgap")
 
 (define copy

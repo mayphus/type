@@ -166,7 +166,6 @@ select {
   gap: 0.9rem 1.4rem;
   align-items: start;
   padding: 0 0 1.1rem;
-  border-bottom: 1px solid var(--line);
 }
 
 .rime-exhibit-copy {
@@ -435,7 +434,7 @@ select {
 
 .rime-artifact-form {
   display: grid;
-  grid-template-columns: minmax(11rem, 18rem) minmax(18rem, 28rem) minmax(0, auto);
+  grid-template-columns: minmax(11rem, 18rem) minmax(0, 1fr);
   gap: 0.65rem;
   margin: 0;
   align-items: start;
@@ -450,36 +449,26 @@ select {
 }
 
 .rime-artifact-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 0.65rem;
+  align-items: start;
 }
 
-.rime-artifact-buttons .rime-build-button {
-  min-width: 13rem;
+.rime-artifact-action {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
 }
 
 .rime-exhibit-download .rime-artifact-form {
-  grid-template-columns: minmax(16rem, 23rem) minmax(18rem, 28rem);
+  grid-template-columns: minmax(16rem, 23rem) minmax(0, 1fr);
   gap: 0.65rem 1.4rem;
-  align-items: end;
-}
-
-.rime-exhibit-download .rime-download-preview {
-  grid-column: 2;
-  grid-row: 1 / 3;
   align-self: start;
-  justify-self: end;
-  width: min(100%, 28rem);
-}
-
-.rime-exhibit-download .rime-artifact-buttons {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.55rem;
 }
 
 .rime-exhibit-download .rime-artifact-buttons .rime-build-button {
+  width: 100%;
   min-width: 0;
 }
 
@@ -747,7 +736,6 @@ select {
   }
 
   .rime-artifact-buttons {
-    display: grid;
     grid-template-columns: 1fr;
   }
 
