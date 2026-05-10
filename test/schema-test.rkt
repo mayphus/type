@@ -149,6 +149,8 @@
     (check-equal? (rime-registry:rime-schema-artifacts "double-pinyin") '("rime" "yuanshu"))
     (check-equal? (rime-registry:rime-schema-artifacts "bopomofo") '("yuanshu"))
     (check-equal? (schema-index:schema-id->category-id "cangjie6") "shape")
+    (check-equal? (schema-index:schema-id->category-id "bopomofo") "zhuyin")
+    (check-equal? (schema-index:schema-category-label "full-pinyin" 'en) "Full Pinyin")
     (check-equal? (schema-index:schema-category-label "double-pinyin" 'zh-Hant) "雙拼"))
 
   (test-case "flypy shared config emits desktop schema YAML"

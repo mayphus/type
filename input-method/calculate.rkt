@@ -135,14 +135,14 @@
            #:keyboards
            (list
             (keyboard "bopomofo-standard" 'standard-zhuyin "bopomofo_standard" 'standard-center
-                      #:en-name "Bopomofo Standard"
+                      #:en-name "Zhuyin Standard"
                       #:zh-name "標準注音"
-                      #:en-description "Bopomofo input on the standard Da-Chien physical keyboard."
+                      #:en-description "Zhuyin input on the standard Da-Chien physical keyboard."
                       #:zh-description "使用標準大千式實體鍵盤排列的注音輸入法。")
             (keyboard "bopomofo" 'zhuyin "bopomofo" 'standard-center
-                      #:en-name "Bopomofo Yuanshu"
+                      #:en-name "Zhuyin Yuanshu"
                       #:zh-name "元書注音"
-                      #:en-description "Bopomofo input arranged for the custom Yuanshu mobile keyboard."
+                      #:en-description "Zhuyin input arranged for the custom Yuanshu mobile keyboard."
                       #:zh-description "配置為元書自訂手機鍵盤的注音輸入法。")))
    (method "double-pinyin"
            #:schema "double-pinyin"
