@@ -263,7 +263,7 @@
   (test-case "flypy_14 schema DSL emits stable schema YAML"
     (define yaml (generated-file flypy_14:config-files "flypy_14.schema.yaml"))
     (check-not-false (string-contains? yaml "schema_id: flypy_14"))
-    (check-not-false (string-contains? yaml "name: \"小鶴雙拼-14鍵\""))
+    (check-not-false (string-contains? yaml "name: \"小鶴雙拼 14鍵\""))
     (check-not-false (string-contains? yaml "dependencies:\n    - cangjie6"))
     (check-not-false (string-contains? yaml "alphabet: qetuoadgjlzcbm"))
     (check-not-false (string-contains? yaml "dictionary: luna_pinyin"))

@@ -7,7 +7,7 @@
   (keyboard flypy
     (model standard-26)
     (meta
-     (name "Flypy" "小鶴")
+     (name "Flypy" "小鶴雙拼")
      (summary "A Yuanshu keyboard layout for Flypy double pinyin with dedicated phone and iPad layouts.")
      (features
       "Flypy legends on both phone and iPad"

@@ -1,12 +1,12 @@
 #lang s-exp "lib/lang.rkt"
 
 (rime-schema flypy_14
-  (name "小鶴雙拼-14鍵")
+  (name "小鶴雙拼 14鍵")
   (artifacts yuanshu)
   (keyboard flypy_14
     (model compact-14)
     (meta
-     (name "Flypy-14 Key" "小鶴-14鍵")
+     (name "Flypy 14 Key" "小鶴雙拼 14鍵")
      (summary "A compact Yuanshu keyboard layout for the Flypy 14-key layout.")
      (features
       "14-key phone layout"

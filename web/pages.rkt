@@ -25,11 +25,12 @@
   (define requested-schema (or (schema-by-slug schemas schema-ref)
                                (schema-by-id schemas schema-ref)))
   (define schema requested-schema)
-  (define platform (request-value req "platform" "mobile"))
+  (define platform (request-value req "platform" #f))
   (define artifact
     (cond
       [(equal? platform "desktop") "rime"]
-      [else "yuanshu"]))
+      [(equal? platform "mobile") "yuanshu"]
+      [else #f]))
   (define current-path (format "/exhibits/~a" (if schema (schema-slug schema) schema-ref)))
   (page-xexpr
    locale
@@ -48,7 +49,7 @@
                          ,(artifact-form locale
                                          schema
                                          (list schema)
-                                         (if (member artifact artifacts)
+                                         (if (and artifact (member artifact artifacts))
                                              (list artifact)
                                              artifacts)
                                          layouts))

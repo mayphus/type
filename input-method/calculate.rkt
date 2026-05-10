@@ -82,17 +82,17 @@
             (keyboard "double-pinyin-flypy" 'standard-26 "flypy" 'split-flypy)
             (keyboard "double-pinyin-flypy-14" 'compact-14 "flypy_14" 'compact-center
                       #:en-name "Flypy 14"
-                      #:zh-name "小鶴-14鍵"
+                      #:zh-name "小鶴雙拼 14鍵"
                       #:en-description "A 14-key Flypy double pinyin input method for Yuanshu, grouping adjacent QWERTY keys."
                       #:zh-description "14 鍵小鶴元書輸入法，按相鄰 QWERTY 鍵位分組。")
             (keyboard "double-pinyin-flypy-18" 'compact-18 "flypy_18" 'compact-center
                       #:en-name "Flypy 18"
-                      #:zh-name "小鶴-18鍵"
+                      #:zh-name "小鶴雙拼 18鍵"
                       #:en-description "An 18-key Flypy double pinyin input method for Yuanshu, adapted from a compact phone layout."
                       #:zh-description "18 鍵小鶴元書輸入法，改編自緊湊手機鍵盤佈局。")
             (keyboard "double-pinyin-flypy-shuffle-17" 'shuffle-17 "shuffle_17" 'compact-center
                       #:en-name "Flypy Shuffle 17"
-                      #:zh-name "小鶴-亂序17鍵"
+                      #:zh-name "小鶴雙拼亂序 17鍵"
                       #:en-description "An experimental 17-key shuffled Flypy input method for Yuanshu."
                       #:zh-description "實驗性的 17 鍵亂序小鶴元書輸入法。")))
    (method "luna-pinyin"

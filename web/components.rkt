@@ -120,12 +120,6 @@
                (src ,(format "~a?v=~a" light-path preview-svg-version))
                (alt ,alt-text))))))
 
-(define (schema-platforms schema)
-  (define artifacts (schema-artifacts schema))
-  (filter values
-          (list (and (member "rime" artifacts) "desktop")
-                (and (member "yuanshu" artifacts) "mobile"))))
-
 (define (schema-card-preview locale schema #:platform [platform #f])
   (define name (schema-name locale schema))
   (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
@@ -141,9 +135,13 @@
                  (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
                                 (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
                                 (schema-name locale schema))]
-                [else
+                [(equal? platform "mobile")
                  (preview-image (format "/schemas/~a/skin-preview.svg" (schema-public-ref schema))
                                 (format "/schemas/~a/skin-preview-dark.svg" (schema-public-ref schema))
+                                (schema-name locale schema))]
+                [else
+                 (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
+                                (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
                                 (schema-name locale schema))]))))
 
 (define (schema-definition-panel schema)
@@ -177,11 +175,7 @@
             '())))
 
 (define (schema-cards locale schema layouts)
-  (define platforms (schema-platforms schema))
-  (if (> (length platforms) 1)
-      (for/list ([platform (in-list platforms)])
-        (schema-card locale schema layouts #:platform platform))
-      (list (schema-card locale schema layouts))))
+  (list (schema-card locale schema layouts)))
 
 (define (schema-category-section locale layouts category)
   (define category-id (car category))

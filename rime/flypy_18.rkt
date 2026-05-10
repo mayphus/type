@@ -1,12 +1,12 @@
 #lang s-exp "lib/lang.rkt"
 
 (rime-schema flypy_18
-  (name "小鶴雙拼-18鍵")
+  (name "小鶴雙拼 18鍵")
   (artifacts yuanshu)
   (keyboard flypy_18
     (model compact-18)
     (meta
-     (name "Flypy-18 Key" "小鶴-18鍵")
+     (name "Flypy 18 Key" "小鶴雙拼 18鍵")
      (summary "A compact Yuanshu keyboard layout for the Flypy 18-key layout.")
      (features
       "18-key phone layout"
