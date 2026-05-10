@@ -439,7 +439,6 @@ select {
   width: min(100%, 76rem);
   min-width: 0;
   padding-top: 0.9rem;
-  border-top: 1px solid var(--line);
 }
 
 .rime-definition-code {
@@ -448,8 +447,6 @@ select {
   max-height: 24rem;
   margin: 0;
   padding: 0.85rem 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
   color: var(--ink);
   font-family: "SFMono-Regular", "SF Mono", Consolas, monospace;
   font-size: 0.82rem;
@@ -488,7 +485,7 @@ select {
 
 .rime-detail-preview .keyboard-preview-svg-wrap {
   display: flex;
-  height: clamp(11.5rem, 24vw, 16.5rem);
+  height: clamp(14rem, 28vw, 22rem);
   align-items: center;
   justify-content: center;
   margin-top: 0.35rem;
@@ -497,8 +494,7 @@ select {
 
 .rime-detail-preview .keyboard-preview-svg {
   width: 100%;
-  height: auto;
-  max-height: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
@@ -642,10 +638,9 @@ select {
 }
 
 .rime-footer {
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: flex-end;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   gap: 0.75rem 1rem;
   padding-top: 0.65rem;
   border-top: 1px solid var(--line);
@@ -707,6 +702,20 @@ select {
   text-decoration: none;
 }
 
+.rime-footer-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.rime-footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-start;
+}
+
 .rime-deps-section {
   padding-top: 0.95rem;
 }
@@ -715,7 +724,8 @@ select {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-left: auto;
+  justify-content: flex-end;
+  text-align: right;
 }
 
 .rime-footer-support-image {
@@ -795,6 +805,20 @@ select {
 }
 
 @media (max-width: 640px) {
+  .rime-footer {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.75rem;
+  }
+
+  .rime-footer-support {
+    justify-content: flex-end;
+    text-align: right;
+  }
+
+  .rime-footer-support-image {
+    width: clamp(4.25rem, 22vw, 5.6rem);
+  }
+
   .rime-schema-category {
     display: flex;
     flex-direction: column;

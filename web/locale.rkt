@@ -14,7 +14,7 @@
          request-locale
          remember-locale-headers)
 
-(define app-css-href "/app.css?v=20260511-safari-preview-height")
+(define app-css-href "/app.css?v=20260511-footer-mobile-columns")
 (define preview-svg-version "20260510-preview-canvas")
 
 (define copy
