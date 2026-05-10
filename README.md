@@ -14,8 +14,8 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
   definitions. `input-method/schema/` holds pure Rime schema logic and the
   schema DSL language; `input-method/keyboard/` holds skeletons, projections,
   legends, placements, interactions, and the public keyboard resolver.
-- `preview/` contains shared preview layout and SVG rendering code used by the
-  web app and Yuanshu build outputs.
+- `lib/preview/` contains shared preview layout and SVG rendering code used by
+  the web app and Yuanshu build outputs.
 - `lib/yaml/` contains the internal YAML renderer.
 - `yuanshu/skin/` is the Yuanshu skin compiler and adapts generated Yuanshu
   page files into shared preview specs.

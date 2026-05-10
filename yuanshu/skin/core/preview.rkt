@@ -4,10 +4,10 @@
          racket/list
          racket/string
          json
-         "../../../preview/spec.rkt")
+         "../../../lib/preview/spec.rkt")
 
 (provide preview-spec-from-files
-         (all-from-out "../../../preview/spec.rkt"))
+         (all-from-out "../../../lib/preview/spec.rkt"))
 
 (define preview-logical-width 375)
 ;; Use the search return-key state so previews match common iOS search fields.

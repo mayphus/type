@@ -17,7 +17,7 @@
          (prefix-in terra_pinyin: "../input-method/schema/terra_pinyin.rkt")
          (prefix-in jyut6ping3: "../input-method/schema/jyut6ping3.rkt")
          "../build.rkt"
-         "../preview/svg.rkt"
+         "../lib/preview/svg.rkt"
          "../yuanshu/skin/core/preview.rkt"
          "../yuanshu/skin/layouts/bopomofo-page.rkt"
          (prefix-in flypy14-layout: "../yuanshu/skin/layouts/flypy-14-page.rkt")

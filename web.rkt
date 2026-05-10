@@ -11,7 +11,7 @@
          racket/system
          net/url
          json
-         "preview/svg.rkt"
+         "lib/preview/svg.rkt"
          "web/pages.rkt"
          "web/forms.rkt"
          "web/locale.rkt"
