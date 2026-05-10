@@ -14,7 +14,7 @@
          request-locale
          remember-locale-headers)
 
-(define app-css-href "/app.css?v=20260510-vertical-catalog")
+(define app-css-href "/app.css?v=20260511-safari-preview-height")
 (define preview-svg-version "20260510-preview-canvas")
 
 (define copy
@@ -35,6 +35,7 @@
     'download-rime "Download Rime package"
     'download-yuanshu "Download Yuanshu package"
     'download "Download package"
+    'add-to-bundle "Add to bundle"
     'missing "Exhibit not found."
     'support "Support"
     'footer-credit "Powered by Racket on pb62"
@@ -55,6 +56,7 @@
     'download-rime "下載 Rime 套件"
     'download-yuanshu "下載元書套件"
     'download "下載套件"
+    'add-to-bundle "加入套件"
     'missing "找不到這個展品。"
     'support "支持"
     'footer-credit "Powered by Racket on pb62"

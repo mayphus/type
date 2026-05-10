@@ -168,7 +168,7 @@ select {
 }
 
 .rime-exhibit-copy {
-  width: min(100%, 46rem);
+  width: 100%;
   min-width: 0;
 }
 
@@ -224,6 +224,7 @@ select {
 }
 
 .rime-language-toggle {
+  flex: 0 0 auto;
   appearance: none;
   display: inline-flex;
   min-width: 2.7rem;
@@ -435,43 +436,10 @@ select {
 .rime-definition-panel {
   display: grid;
   gap: 0.75rem;
-  width: min(100%, 58rem);
+  width: min(100%, 76rem);
   min-width: 0;
   padding-top: 0.9rem;
   border-top: 1px solid var(--line);
-}
-
-.rime-definition-title {
-  font-family: inherit;
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.rime-definition-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
-  gap: 0.55rem;
-  min-width: 0;
-}
-
-.rime-definition-meta-item {
-  display: grid;
-  gap: 0.2rem;
-  min-width: 0;
-}
-
-.rime-definition-meta-label {
-  color: var(--muted);
-  font-size: 0.76rem;
-  font-weight: 600;
-}
-
-.rime-definition-meta code {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  color: var(--ink);
-  font-family: "SFMono-Regular", "SF Mono", Consolas, monospace;
-  font-size: 0.82rem;
 }
 
 .rime-definition-code {
@@ -490,12 +458,82 @@ select {
 }
 
 .rime-detail-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+  gap: 0.75rem;
   min-width: 0;
-  width: min(100%, 58rem);
+  width: 100%;
+}
+
+.rime-target-preview {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: color-mix(in oklab, var(--surface), transparent 20%);
+}
+
+.rime-target-preview-title {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .rime-detail-preview .keyboard-preview-svg-wrap {
+  display: flex;
+  height: clamp(11.5rem, 24vw, 16.5rem);
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.35rem;
   width: 100%;
+}
+
+.rime-detail-preview .keyboard-preview-svg {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.rime-target-download-form {
+  display: flex;
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  margin: 0;
+}
+
+.rime-target-add-button {
+  display: inline-flex;
+  width: 2.05rem;
+  height: 2.05rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  appearance: none;
+  background: color-mix(in oklab, var(--surface), transparent 8%);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.rime-target-add-button:hover {
+  border-color: var(--selected-line);
+  background: var(--accent-soft);
+}
+
+.rime-target-add-button-secondary {
+  border-color: var(--selected-line);
 }
 
 .rime-artifact-form {
@@ -687,14 +725,6 @@ select {
   border: 1px solid var(--line);
   border-radius: 0.6rem;
   background: var(--qr-frame-bg);
-}
-
-.rime-footer-language {
-  min-height: auto;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--accent);
 }
 
 .keyboard-preview {

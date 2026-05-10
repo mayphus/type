@@ -16,6 +16,7 @@
          schema-detail-preview
          schema-definition-panel
          categorized-schemas
+         language-toggle
          page-xexpr
          schema-category-section
          artifact-form
@@ -79,16 +80,34 @@
           (for/list ([layout-id (in-list (schema-keyboard-layouts schema))])
             (layout-by-id layouts layout-id))))
 
+(define (schema-catalog-key schema)
+  (list (hash-ref schema 'schema-id (schema-id schema))
+        (hash-ref schema 'keyboard #f)
+        (hash-ref schema 'keymap #f)
+        (schema-keyboard-layouts schema)))
+
+(define (dedupe-catalog-schemas schemas)
+  (define-values (items _seen)
+    (for/fold ([items '()]
+               [seen '()])
+              ([schema (in-list schemas)])
+      (define key (schema-catalog-key schema))
+      (if (member key seen)
+          (values items seen)
+          (values (cons schema items) (cons key seen)))))
+  (reverse items))
+
 (define (categorized-schemas schemas)
   (filter-map
    (lambda (category-id)
      (define items
-       (filter (lambda (schema)
-                 (and (schema-input-method? schema)
-                      (equal? (schema-id->category-id
-                               (hash-ref schema 'schema-id (schema-id schema)))
-                              category-id)))
-               schemas))
+       (dedupe-catalog-schemas
+        (filter (lambda (schema)
+                  (and (schema-input-method? schema)
+                       (equal? (schema-id->category-id
+                                (hash-ref schema 'schema-id (schema-id schema)))
+                               category-id)))
+                schemas)))
      (and (pair? items) (cons category-id items)))
    schema-category-order))
 
@@ -96,7 +115,7 @@
   (string-join (filter (lambda (part) part) parts) " "))
 
 (define (language-toggle locale current-path)
-  `(a ((class "rime-language-toggle rime-footer-language")
+  `(a ((class "rime-language-toggle")
        (href ,(format "~a?locale=~a"
                       current-path
                       (symbol->string (next-locale locale)))))
@@ -126,38 +145,76 @@
                  (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
                  name))
 
+(define (target-add-button locale artifact title)
+  `(button ((class ,(classes "rime-target-add-button"
+                             (and (equal? artifact "yuanshu")
+                                  "rime-target-add-button-secondary")))
+            (type "submit")
+            (name "artifact")
+            (value ,artifact)
+            (title ,(format "~a: ~a" (t locale 'add-to-bundle) title))
+            (aria-label ,(format "~a: ~a" (t locale 'add-to-bundle) title)))
+           (span ((aria-hidden "true")) "+")))
+
+(define (target-download-form locale schema artifact title)
+  `(form ((class "rime-target-download-form")
+          (method "post")
+          (action "/build"))
+         ,(schema-select locale schema (list schema))
+         ,(target-add-button locale artifact title)))
+
+(define (target-preview locale schema class title light-path dark-path artifact)
+  `(figure ((class ,(classes "rime-target-preview" class)))
+           (figcaption ((class "rime-target-preview-title")) ,title)
+           ,(preview-image light-path
+                           dark-path
+                           (format "~a ~a" (schema-name locale schema) title))
+           ,(target-download-form locale schema artifact title)))
+
 (define (schema-detail-preview locale schema layouts #:platform [platform #f])
   (define preview-layouts (schema-layout-items schema layouts))
+  (define artifacts (schema-artifacts schema))
+  (define desktop-preview?
+    (and (member "rime" artifacts)
+         (member (hash-ref schema 'keyboard #f) '(standard-26 standard-41 standard-zhuyin))))
+  (define mobile-preview? (member "yuanshu" artifacts))
+  (define previews
+    (filter values
+            (list
+             (and desktop-preview?
+                  (target-preview locale
+                                  schema
+                                  "rime-target-preview-desktop"
+                                  (t locale 'desktop)
+                                  (format "/schemas/~a/desktop-preview.svg" (schema-public-ref schema))
+                                  (format "/schemas/~a/desktop-preview-dark.svg" (schema-public-ref schema))
+                                  "rime"))
+             (and mobile-preview?
+                  (target-preview locale
+                                  schema
+                                  "rime-target-preview-mobile"
+                                  (t locale 'mobile)
+                                  (format "/schemas/~a/skin-preview.svg" (schema-public-ref schema))
+                                  (format "/schemas/~a/skin-preview-dark.svg" (schema-public-ref schema))
+                                  "yuanshu")))))
   (and (pair? preview-layouts)
        `(div ((class "rime-detail-preview"))
-             ,(cond
-                [(equal? platform "desktop")
-                 (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
-                                (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
-                                (schema-name locale schema))]
-                [(equal? platform "mobile")
-                 (preview-image (format "/schemas/~a/skin-preview.svg" (schema-public-ref schema))
-                                (format "/schemas/~a/skin-preview-dark.svg" (schema-public-ref schema))
-                                (schema-name locale schema))]
-                [else
-                 (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
-                                (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
-                                (schema-name locale schema))]))))
+             ,@(if (pair? previews)
+                   previews
+                   (list
+                    (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
+                                   (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
+                                   (schema-name locale schema)))))))
+
+(define (display-definition-lisp schema)
+  (regexp-replace #rx"^\\(define-input-method\n(?:  \"[^\"]+\"\n)?  #:schema "
+                  (hash-ref schema 'definition-lisp "")
+                  "(define-input-method #:schema "))
 
 (define (schema-definition-panel schema)
-  (define (meta label key)
-    `(div ((class "rime-definition-meta-item"))
-          (span ((class "rime-definition-meta-label")) ,label)
-          (code ,(format "~a" (hash-ref schema key "")))))
   `(section ((class "rime-definition-panel"))
-            (h2 ((class "rime-section-title rime-definition-title")) "Definition")
-            (div ((class "rime-definition-meta"))
-                 ,(meta "schema" 'schema-id)
-                 ,(meta "keymap" 'keymap)
-                 ,(meta "keyboard" 'keyboard)
-                 ,(meta "layout" 'layout))
             (pre ((class "rime-definition-code"))
-                 (code ,(hash-ref schema 'definition-lisp "")))))
+                 (code ,(display-definition-lisp schema)))))
 
 (define (schema-card locale schema layouts #:platform [platform #f])
   (define preview-layouts (schema-layout-items schema layouts))
@@ -196,8 +253,7 @@
                 (span ((class "rime-footer-support-label")) ,(t locale 'support))
                 (img ((class "rime-footer-support-image")
                       (src "/support-8f6d2b.svg")
-                      (alt ,(t locale 'support)))))
-           ,(language-toggle locale current-path)))
+                      (alt ,(t locale 'support)))))))
 
 (define dev-reload-script
   `(script

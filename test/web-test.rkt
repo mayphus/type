@@ -81,6 +81,13 @@
     (check-true (regexp-match? #rx"Full Pinyin" en-html))
     (check-true (regexp-match? #rx"Zhuyin" en-html))
     (check-true (regexp-match? #rx"Jyutping" en-html))
+    (check-true (regexp-match? #rx"Cangjie" en-html))
+    (check-true (regexp-match? #rx"Wubi" en-html))
+    (check-true (regexp-match? #rx"Luna" en-html))
+    (check-equal? (length (regexp-match* #rx"href=\"/exhibits/cangjie6\"" en-html)) 1)
+    (check-equal? (length (regexp-match* #rx"href=\"/exhibits/wubi86\"" en-html)) 1)
+    (check-false (regexp-match? #rx"href=\"/exhibits/cangjie5\"" en-html))
+    (check-false (regexp-match? #rx"href=\"/exhibits/wubi-pinyin\"" en-html))
     (check-false (regexp-match? #rx"<h2[^>]*>Cantonese</h2>" en-html))
     (check-false (regexp-match? #rx"小鶴方案，提供 Rime 設定" zh-html))
     (check-true (regexp-match? #rx"小鶴雙拼" zh-html))
@@ -144,6 +151,27 @@
     (check-true (regexp-match? #rx">,</text>" layout-svg))
     (check-true (regexp-match? #rx">/</text>" layout-svg))
     (check-true (regexp-match? #rx">ㄤ<" layout-svg)))
+
+  (test-case "desktop detail preview includes physical keyboard controls"
+    (define desktop-svg
+      (response-body (canonical-dispatch (req "/schemas/double-pinyin-flypy/desktop-preview.svg" "rime.mayphus.org"))))
+    (check-true (regexp-match? #rx"^<svg[^>]+Keyboard preview" desktop-svg))
+    (check-true (regexp-match? #rx">Esc</text>" desktop-svg))
+    (check-true (regexp-match? #rx">Tab</text>" desktop-svg))
+    (check-true (regexp-match? #rx">Control</text>" desktop-svg))
+    (check-true (regexp-match? #rx">Shift</text>" desktop-svg))
+    (check-true (regexp-match? #rx">Option</text>" desktop-svg))
+    (check-true (regexp-match? #rx">Command</text>" desktop-svg))
+    (check-true (regexp-match? #rx">Fn</text>" desktop-svg))
+    (check-true (regexp-match? #rx">Enter</text>" desktop-svg))
+    (check-true (regexp-match? #rx">Del</text>" desktop-svg))
+    (check-true (regexp-match? #rx">1</text>" desktop-svg))
+    (check-true (regexp-match? #rx">=</text>" desktop-svg))
+    (check-true (regexp-match? #rx">\\[</text>" desktop-svg))
+    (check-true (regexp-match? #rx">\\\\</text>" desktop-svg))
+    (check-true (regexp-match? #rx">;</text>" desktop-svg))
+    (check-true (regexp-match? #rx"width=\"44\\.80\" height=\"44\\.80\"" desktop-svg))
+    (check-false (regexp-match? #rx">123<" desktop-svg)))
 
   (test-case "schema preview routes preserve schema identity over shared layouts"
     (define flypy-ice-response

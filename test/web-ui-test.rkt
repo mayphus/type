@@ -39,7 +39,39 @@
               'definition-lisp "(define-input-method\n  \"double-pinyin-flypy-14\"\n  #:schema \"double-pinyin-flypy\"\n  #:keymap 'flypy\n  #:keyboard 'compact-14\n  #:layout \"flypy_14\")"
               'deps '("cangjie6")
               'artifacts '("yuanshu")
-              'keyboard-layouts '("double-pinyin-flypy-14"))))
+              'keyboard-layouts '("double-pinyin-flypy-14"))
+        (hash 'id "cangjie6"
+              'slug "cangjie6"
+              'name "Cangjie 6"
+              'names (hash 'en "Cangjie 6" 'zh-Hant "倉頡六代")
+              'description "Static Cangjie support schema."
+              'descriptions (hash 'en "Static Cangjie support schema."
+                                  'zh-Hant "倉頡支援方案。")
+              'input-method? #t
+              'schema-id "cangjie6"
+              'keymap 'cangjie
+              'keyboard 'standard-26
+              'layout "cangjie6"
+              'definition-lisp "(define-input-method\n  \"cangjie6\")"
+              'deps '()
+              'artifacts '("rime")
+              'keyboard-layouts '("cangjie6"))
+        (hash 'id "cangjie5"
+              'slug "cangjie5"
+              'name "Cangjie 6"
+              'names (hash 'en "Cangjie 6" 'zh-Hant "倉頡六代")
+              'description "Static Cangjie support schema."
+              'descriptions (hash 'en "Static Cangjie support schema."
+                                  'zh-Hant "倉頡支援方案。")
+              'input-method? #t
+              'schema-id "cangjie6"
+              'keymap 'cangjie
+              'keyboard 'standard-26
+              'layout "cangjie6"
+              'definition-lisp "(define-input-method\n  \"cangjie5\")"
+              'deps '()
+              'artifacts '("rime")
+              'keyboard-layouts '("cangjie6"))))
 
 (define layouts
   (list (hash 'id "double-pinyin-flypy"
@@ -52,6 +84,12 @@
               'schemas '("double-pinyin-flypy-14")
               'name "小鶴十四鍵"
               'names (hash 'en "Flypy 14-Key" 'zh-Hant "小鶴十四鍵")
+              'preview-svgs (hash 'light "<svg/>")
+              'skin-preview-svgs (hash 'light "<svg/>"))
+        (hash 'id "cangjie6"
+              'schemas '("cangjie6")
+              'name "Cangjie 6"
+              'names (hash 'en "Cangjie 6" 'zh-Hant "倉頡六代")
               'preview-svgs (hash 'light "<svg/>")
               'skin-preview-svgs (hash 'light "<svg/>"))))
 
@@ -78,6 +116,9 @@
     (check-false (regexp-match? #rx"href=\"/exhibits/double-pinyin-flypy\\?platform=mobile\"" html))
     (check-equal? (match-count #rx"href=\"/exhibits/double-pinyin-flypy\"" html) 1)
     (check-true (regexp-match? #rx"href=\"/exhibits/double-pinyin-flypy-14\"" html))
+    (check-true (regexp-match? #rx"href=\"/exhibits/cangjie6\"" html))
+    (check-equal? (match-count #rx"href=\"/exhibits/cangjie6\"" html) 1)
+    (check-false (regexp-match? #rx"href=\"/exhibits/cangjie5\"" html))
     (check-false (regexp-match? #rx"id=\"filter-desktop\"" html))
     (check-false (regexp-match? #rx"id=\"filter-mobile\"" html))
     (check-false (regexp-match? #rx"rime-category-filter" html))
@@ -118,36 +159,49 @@
     (check-false (regexp-match? #rx"小鶴展品" html))
     (check-true (regexp-match? #rx">EN</a>" html)))
 
-  (test-case "exhibit page shows one detailed preview and selected artifact action"
+  (test-case "exhibit page shows target previews with related artifact actions"
     (define html (render-exhibit-page (req "/exhibits/double-pinyin-flypy") schemas layouts "double-pinyin-flypy"))
-    (check-true (regexp-match? #rx"Flypy double pinyin exhibit" html))
+    (check-false (regexp-match? #rx"Flypy double pinyin exhibit" html))
+    (check-false (regexp-match? #rx"rime-hero-copy" html))
     (check-false (regexp-match? #rx"<code>cangjie6</code>" html))
     (check-false (regexp-match? #rx"Dependencies" html))
-    (check-true (regexp-match? #rx"/schemas/double-pinyin-flypy/preview-dark.svg" html))
+    (check-true (regexp-match? #rx"/schemas/double-pinyin-flypy/desktop-preview-dark.svg" html))
     (check-false (regexp-match? #rx"Keyboard layouts" html))
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"yuanshu\"" html))
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"rime\"" html))
     (check-false (regexp-match? #rx"<select[^>]+name=\"schemas\"" html))
     (check-true (regexp-match? #rx"type=\"hidden\" name=\"schemas\" value=\"double-pinyin-flypy\"" html))
     (check-false (regexp-match? #rx"Dictionary" html))
-    (check-true (regexp-match? #rx"Download package" html))
-    (check-equal? (match-count #rx"Download package" html) 2)
-    (check-true (regexp-match? #rx"/schemas/double-pinyin-flypy/preview.svg" html))
-    (check-false (regexp-match? #rx"/schemas/double-pinyin-flypy/skin-preview.svg" html))
+    (check-false (regexp-match? #rx"Download package" html))
+    (check-equal? (match-count #rx"rime-target-add-button[\" ]" html) 2)
+    (check-true (regexp-match? #rx"Add to bundle: Desktop" html))
+    (check-true (regexp-match? #rx"Add to bundle: Mobile" html))
+    (check-equal? (match-count #rx"rime-target-download-form" html) 2)
+    (check-false (regexp-match? #rx"rime-exhibit-download" html))
+    (check-true (regexp-match? #rx"/schemas/double-pinyin-flypy/desktop-preview.svg" html))
+    (check-true (regexp-match? #rx"/schemas/double-pinyin-flypy/skin-preview.svg" html))
+    (check-true (regexp-match? #rx"rime-target-preview-desktop" html))
+    (check-true (regexp-match? #rx"rime-target-preview-mobile" html))
     (check-true (regexp-match? #rx"rime-definition-panel" html))
+    (check-false (regexp-match? #rx"Definition" html))
+    (check-false (regexp-match? #rx"rime-definition-meta" html))
     (check-true (regexp-match? #rx"define-input-method" html))
+    (check-true (regexp-match? #rx"\\(define-input-method #:schema" html))
     (check-true (regexp-match? #rx"#:schema" html))
     (check-true (regexp-match? #rx"double-pinyin-flypy" html))
+    (check-false (regexp-match? #rx"  &quot;double-pinyin-flypy&quot;" html))
     (check-true (regexp-match? #rx"#:keyboard 'standard-26" html))
     (check-false (regexp-match? #rx"rime-exhibit-meta" html))
     (check-false (regexp-match? #rx"rime-layout-title" html))
     (check-false (regexp-match? #rx"<span class=\"rime-option-id\">flypy" html)))
 
-  (test-case "desktop exhibit page shows desktop artifact action"
+  (test-case "desktop query still shows all target previews"
     (define html (render-exhibit-page (req "/exhibits/double-pinyin-flypy?platform=desktop") schemas layouts "double-pinyin-flypy"))
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"rime\"" html))
-    (check-false (regexp-match? #rx"name=\"artifact\" value=\"yuanshu\"" html))
-    (check-true (regexp-match? #rx"Download package" html)))
+    (check-true (regexp-match? #rx"name=\"artifact\" value=\"yuanshu\"" html))
+    (check-true (regexp-match? #rx"/schemas/double-pinyin-flypy/desktop-preview.svg" html))
+    (check-true (regexp-match? #rx"/schemas/double-pinyin-flypy/skin-preview.svg" html))
+    (check-true (regexp-match? #rx"rime-target-add-button" html)))
 
   (test-case "yuanshu-only exhibit omits Rime download"
     (define html (render-exhibit-page (req "/exhibits/double-pinyin-flypy-14") schemas layouts "double-pinyin-flypy-14"))

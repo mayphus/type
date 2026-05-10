@@ -153,30 +153,88 @@
     (a s d f g h j k l semicolon)
     (z x c v b n m comma period slash)))
 
+(define desktop-physical-rows
+  '((esc one two three four five six seven eight nine zero minus equal backslash grave)
+    ((tab 1.5) q w e r t y u i o p bracket-left bracket-right (delete 1.5))
+    ((control 1.75) a s d f g h j k l semicolon quote (enter 2.25))
+    ((shift-left 2.25) z x c v b n m comma period slash (shift-right 1.75) fn)
+    ((option-left 1.5) (command-left 1.5) (space 7) (command-right 1.5) (option-right 1.5))))
+
 (define standard-zhuyin-key-labels
   (hash 'one "1" 'two "2" 'three "3" 'four "4" 'five "5"
         'six "6" 'seven "7" 'eight "8" 'nine "9" 'zero "0"
         'minus "-" 'semicolon ";" 'comma "," 'period "." 'slash "/"))
 
+(define desktop-key-labels
+  (hash 'esc "Esc" 'grave "`" 'one "1" 'two "2" 'three "3" 'four "4" 'five "5"
+        'six "6" 'seven "7" 'eight "8" 'nine "9" 'zero "0"
+        'minus "-" 'equal "=" 'bracket-left "[" 'bracket-right "]"
+        'backslash "\\" 'delete "Del" 'tab "Tab" 'semicolon ";" 'quote "'"
+        'enter "Enter" 'shift-left "Shift" 'shift-right "Shift"
+        'control "Control" 'control-right "Control" 'fn "Fn"
+        'option-left "Option" 'option-right "Option"
+        'command-left "Command" 'command-right "Command"
+        'space "" 'comma "," 'period "." 'slash "/"))
+
+(define (physical-key-label key)
+  (hash-ref desktop-key-labels
+            key
+            (hash-ref standard-zhuyin-key-labels key (symbol->string key))))
+
+(define (key-spec-id key-spec)
+  (if (pair? key-spec) (car key-spec) key-spec))
+
+(define (key-spec-width key-spec)
+  (and (pair? key-spec) (cadr key-spec)))
+
+(define (preview-key key-spec legend-layer)
+  (define key (key-spec-id key-spec))
+  (define width (key-spec-width key-spec))
+  (define label (physical-key-label key))
+  (define legend (and legend-layer (keymap-text legend-layer key)))
+  (define key-hash
+    (hash 'id (format "~aKey" key)
+          'role 'input
+          'label label
+          'layers
+          (filter values
+                  (list (hash 'text label
+                              'x 0.5
+                              'y (if (and legend (not (string=? legend ""))) 0.24 0.5)
+                              'font-size (if (> (string-length label) 3) 8 10)
+                              'font-weight "500")
+                        (and legend
+                             (not (string=? legend ""))
+                             (hash 'text legend
+                                   'x 0.5
+                                   'y 0.62
+                                   'font-size 18
+                                   'font-weight "500"))))))
+  (if width
+      (hash-set key-hash 'width width)
+      key-hash))
+
 (define (standard-zhuyin-key key)
-  (define label (hash-ref standard-zhuyin-key-labels key (symbol->string key)))
-  (define zhuyin (keymap-text 'zhuyin-standard key))
-  (hash 'id (format "~aKey" key)
-        'role 'input
-        'label label
-        'layers
-        (filter values
-                (list (hash 'text label
-                            'x 0.5
-                            'y 0.24
-                            'font-size 10
-                            'font-weight "500")
-                      (and (not (string=? zhuyin ""))
-                           (hash 'text zhuyin
-                                 'x 0.5
-                                 'y 0.62
-                                 'font-size 19
-                                 'font-weight "500"))))))
+  (preview-key key 'zhuyin-standard))
+
+(define (preview-rows rows legend-layer)
+  (for/list ([row (in-list rows)])
+    (for/list ([key (in-list row)])
+      (preview-key key legend-layer))))
+
+(define (desktop-preview-spec legend-layer
+                              #:width [width 760]
+                              #:height [height 260]
+                              #:rows [rows desktop-physical-rows]
+                              #:row-offsets [row-offsets '(0 1/2 3/4 5/4)]
+                              #:background [background "#f6f7f9"])
+  (hash 'size (hash 'width width 'height height)
+        'row-offsets row-offsets
+        'background background
+        'source 'static
+        'key-shape 'square
+        'visible-keys 'typing
+        'rows (preview-rows rows legend-layer)))
 
 (define standard-zhuyin-preview-rows
   (for/list ([row (in-list standard-zhuyin-rows)])
@@ -200,6 +258,23 @@
         'key-shape 'square
         'visible-keys 'typing
         'rows standard-zhuyin-preview-rows))
+
+(define (schema-desktop-preview-svg schema-id [theme 'light])
+  (define schema (schema-item-by-ref schema-id))
+  (and schema
+       (let ([keyboard (hash-ref schema 'keyboard #f)])
+         (cond
+           [(equal? keyboard 'standard-zhuyin)
+            (define spec
+              (desktop-preview-spec 'zhuyin-standard
+                                    #:background (if (eq? theme 'dark) "#111418" "#f6f7f9")))
+            (keyboard-preview-svg spec #:geometry 'physical-square)]
+           [(member keyboard '(standard-26 standard-41))
+            (define spec
+              (desktop-preview-spec (hash-ref schema 'keymap #f)
+                                    #:background (if (eq? theme 'dark) "#111418" "#f6f7f9")))
+            (keyboard-preview-svg spec #:geometry 'physical-square)]
+           [else #f]))))
 
 (define standard-zhuyin-layout-item
   (hash 'id "bopomofo_standard"
@@ -467,6 +542,28 @@
              404 #"Not Found" (current-seconds) #"text/plain; charset=utf-8" '()
              (list #"Preview SVG not found")))])]))
 
+(define (handle-schema-desktop-preview-svg req schema-id [theme 'light])
+  (cond
+    [(not (valid-id? schema-id))
+     (json-error "Invalid schema id")]
+    [else
+     (define schema (schema-item-by-ref schema-id))
+     (cond
+       [(and schema (not (equal? schema-id (schema-public-ref schema))))
+        (redirect-response
+         (schema-asset-location schema
+                                (if (eq? theme 'dark)
+                                    "desktop-preview-dark.svg"
+                                    "desktop-preview.svg"))
+         301)]
+       [else
+        (define svg (schema-desktop-preview-svg schema-id theme))
+        (if svg
+            (svg-response svg)
+            (response/full
+             404 #"Not Found" (current-seconds) #"text/plain; charset=utf-8" '()
+             (list #"Preview SVG not found")))])]))
+
 (define (handle-schema-skin-preview-svg req schema-id [theme 'light])
   (cond
     [(not (valid-id? schema-id))
@@ -557,6 +654,10 @@
    [("schemas" (string-arg) "preview-dark.svg")
     (lambda (req schema-id)
       (handle-schema-preview-svg req schema-id 'dark))]
+   [("schemas" (string-arg) "desktop-preview.svg") handle-schema-desktop-preview-svg]
+   [("schemas" (string-arg) "desktop-preview-dark.svg")
+    (lambda (req schema-id)
+      (handle-schema-desktop-preview-svg req schema-id 'dark))]
    [("schemas" (string-arg) "skin-preview.svg") handle-schema-skin-preview-svg]
    [("schemas" (string-arg) "skin-preview-dark.svg")
     (lambda (req schema-id)

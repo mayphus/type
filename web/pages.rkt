@@ -15,7 +15,8 @@
      `((section ((class "rime-hero-card"))
               (div ((class "rime-hero-head"))
                    (div
-                    (h1 ((class "page-title")) ,(t locale 'title)))))
+                    (h1 ((class "page-title")) ,(t locale 'title)))
+                   ,(language-toggle locale "/")))
      (div ((class "rime-schema-categories"))
           ,@(for/list ([category (in-list (categorized-schemas schemas))])
               (schema-category-section locale layouts category))))))
@@ -26,33 +27,21 @@
                                (schema-by-id schemas schema-ref)))
   (define schema requested-schema)
   (define platform (request-value req "platform" #f))
-  (define artifact
-    (cond
-      [(equal? platform "desktop") "rime"]
-      [(equal? platform "mobile") "yuanshu"]
-      [else #f]))
   (define current-path (format "/exhibits/~a" (if schema (schema-slug schema) schema-ref)))
   (page-xexpr
    locale
    current-path
    (if schema
-       (let ([artifacts (schema-artifacts schema)])
+       (let ()
          `((section ((class "rime-exhibit-overview"))
                     (div ((class "rime-exhibit-copy"))
-                         (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
-                         (h1 ((class "page-title")) ,(schema-name locale schema))
-                         (p ((class "rime-section-copy rime-hero-copy"))
-                            ,(schema-description locale schema)))
+                         (div ((class "rime-hero-head"))
+                              (div
+                               (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
+                               (h1 ((class "page-title")) ,(schema-name locale schema)))
+                              ,(language-toggle locale current-path)))
                     ,@(let ([preview (schema-detail-preview locale schema layouts #:platform platform)])
                         (if preview (list preview) '()))
-                    (div ((class "rime-exhibit-download"))
-                         ,(artifact-form locale
-                                         schema
-                                         (list schema)
-                                         (if (and artifact (member artifact artifacts))
-                                             (list artifact)
-                                             artifacts)
-                                         layouts))
                     ,(schema-definition-panel schema))))
        `((section ((class "rime-hero-card"))
                   (a ((class "rime-back-link") (href "/")) ,(t locale 'back))

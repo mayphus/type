@@ -120,19 +120,66 @@
                            'height key-side)
                      items))]))))
 
+(define (preview-key-width-units key)
+  (or (parse-numberish (hash-ref key 'width #f)) 1))
+
+(define (preview-row-units row)
+  (apply + (map preview-key-width-units row)))
+
+(define (physical-square-key-side width height rows pad key-gap row-gap)
+  (define row-count (max 1 (length rows)))
+  (define key-height (/ (- height (* (+ row-count 1) row-gap)) row-count))
+  (define inner-width (- width (* 2 pad)))
+  (define max-units
+    (for/fold ([units preview-min-key-columns])
+              ([row (in-list rows)])
+      (max units (preview-row-units row))))
+  (define max-gap-count
+    (for/fold ([gap-count (max 0 (sub1 preview-min-key-columns))])
+              ([row (in-list rows)])
+      (max gap-count (max 0 (sub1 (length row))))))
+  (max 1
+       (min key-height
+            (/ (- inner-width (* max-gap-count key-gap))
+               max-units))))
+
+(define (physical-square-preview-layout width height rows pad key-gap row-gap)
+  (define row-count (max 1 (length rows)))
+  (define key-side (physical-square-key-side width height rows pad key-gap row-gap))
+  (define grid-height (+ (* row-count key-side)
+                         (* (max 0 (sub1 row-count)) row-gap)))
+  (define start-y (max row-gap (/ (- height grid-height) 2)))
+  (for/list ([row (in-list rows)]
+             [row-index (in-naturals)])
+    (define y (+ start-y (* row-index (+ key-side row-gap))))
+    (define row-gap-count (max 0 (sub1 (length row))))
+    (define row-width (+ (* (preview-row-units row) key-side)
+                         (* row-gap-count key-gap)))
+    (define start-x (/ (- width row-width) 2))
+    (let loop ([keys row] [x start-x] [items '()])
+      (cond
+        [(null? keys) (reverse items)]
+        [else
+         (define key (car keys))
+         (define key-width (* (preview-key-width-units key) key-side))
+         (loop (cdr keys)
+               (+ x key-width key-gap)
+               (cons (hash 'key key
+                           'x x
+                           'y y
+                           'width key-width
+                           'height key-side)
+                     items))]))))
+
 (define (skin-proportional-preview-layout width height rows pad key-gap row-gap)
   (define row-count (max 1 (length rows)))
   (define key-height (/ (- height (* (+ row-count 1) row-gap)) row-count))
   (define inner-width (- width (* 2 pad)))
-  (define (row-units row)
-    (apply + (map (lambda (key)
-                    (or (parse-numberish (hash-ref key 'width #f)) 1))
-                  row)))
   (for/list ([row (in-list rows)]
              [row-index (in-naturals)])
     (define y (+ row-gap (* row-index (+ key-height row-gap))))
     (define row-gap-count (max 0 (sub1 (length row))))
-    (define row-total-units (row-units row))
+    (define row-total-units (preview-row-units row))
     (define units (if (positive? row-total-units) row-total-units 1))
     (define unit-width (/ (- inner-width (* row-gap-count key-gap)) units))
     (let loop ([keys row] [x pad] [items '()])
@@ -140,7 +187,7 @@
         [(null? keys) (reverse items)]
         [else
          (define key (car keys))
-         (define width-units (or (parse-numberish (hash-ref key 'width #f)) 1))
+         (define width-units (preview-key-width-units key))
          (define key-width (* width-units unit-width))
          (loop (cdr keys)
                (+ x key-width key-gap)
@@ -167,5 +214,7 @@
   (case geometry
     [(skin-proportional)
      (skin-proportional-preview-layout width height rows pad key-gap row-gap)]
+    [(physical-square)
+     (physical-square-preview-layout width height rows pad key-gap row-gap)]
     [else
      (uniform-square-preview-layout width height rows row-offsets pad key-gap row-gap)]))
