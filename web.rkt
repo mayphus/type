@@ -133,18 +133,23 @@
     [else (format "~s" value)]))
 
 (define (recipe-definition-lisp recipe)
+  (define id (input-method-recipe-id recipe))
+  (define schema (input-method-recipe-schema recipe))
+  (define schema-line
+    (and (not (equal? id schema))
+         (format "  #:schema ~a" (lisp-atom schema))))
   (string-join
-   (list
-    "(define-input-method"
-    (format "  ~a" (lisp-atom (input-method-recipe-id recipe)))
-    (format "  #:schema ~a" (lisp-atom (input-method-recipe-schema recipe)))
-    (format "  #:keymap ~a" (lisp-atom (input-method-recipe-keymap recipe)))
-    (format "  #:keyboard ~a" (lisp-atom (input-method-recipe-keyboard recipe)))
-    (format "  #:layout ~a" (lisp-atom (car (input-method-recipe-keyboard-layouts recipe))))
-    (format "  #:placement ~a" (lisp-atom (input-method-recipe-placement recipe)))
-    (format "  #:skeleton ~a" (lisp-atom (input-method-recipe-skeleton recipe)))
-    (format "  #:projection ~a" (lisp-atom (input-method-recipe-projection recipe)))
-    (format "  #:interactions ~a)" (lisp-atom (input-method-recipe-interactions recipe))))
+   (filter values
+           (list
+            (format "(define-input-method ~a" (lisp-atom id))
+            schema-line
+            (format "  #:keymap ~a" (lisp-atom (input-method-recipe-keymap recipe)))
+            (format "  #:keyboard ~a" (lisp-atom (input-method-recipe-keyboard recipe)))
+            (format "  #:layout ~a" (lisp-atom (car (input-method-recipe-keyboard-layouts recipe))))
+            (format "  #:placement ~a" (lisp-atom (input-method-recipe-placement recipe)))
+            (format "  #:skeleton ~a" (lisp-atom (input-method-recipe-skeleton recipe)))
+            (format "  #:projection ~a" (lisp-atom (input-method-recipe-projection recipe)))
+            (format "  #:interactions ~a)" (lisp-atom (input-method-recipe-interactions recipe)))))
    "\n"))
 
 (define standard-zhuyin-rows

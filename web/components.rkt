@@ -207,9 +207,9 @@
                                    (schema-name locale schema)))))))
 
 (define (display-definition-lisp schema)
-  (regexp-replace #rx"^\\(define-input-method\n(?:  \"[^\"]+\"\n)?  #:schema "
+  (regexp-replace #rx"^\\(define-input-method\n  (\"[^\"]+\")\n  #:schema \"[^\"]+\"\n"
                   (hash-ref schema 'definition-lisp "")
-                  "(define-input-method #:schema "))
+                  "(define-input-method \\1\n"))
 
 (define (schema-definition-panel schema)
   `(section ((class "rime-definition-panel"))
