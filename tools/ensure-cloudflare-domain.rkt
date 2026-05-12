@@ -49,8 +49,7 @@
   (define command
     (append
      (list (path->string curl)
-           "-fsS"
-           "--fail-with-body"
+           "-sS"
            "-X" method
            (string-append "https://api.cloudflare.com" path)
            "-H" (authorization-header api-token)
