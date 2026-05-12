@@ -35,7 +35,11 @@
   (regexp-replace* #rx"[[:space:]]+" without-quotes ""))
 
 (define (authorization-header token)
-  (format "Authorization: Bearer ~a" (normalized-api-token token)))
+  (define normalized (normalized-api-token token))
+  (printf "Cloudflare token normalized length: ~a; token-safe chars: ~a\n"
+          (string-length normalized)
+          (and (regexp-match? #rx"^[A-Za-z0-9_-]+$" normalized) #t))
+  (format "Authorization: Bearer ~a" normalized))
 
 (define (cloudflare-request method path [payload #f])
   (define body-bytes
