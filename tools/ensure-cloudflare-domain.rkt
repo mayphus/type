@@ -22,10 +22,16 @@
 (define api-token (env! "CLOUDFLARE_API_TOKEN"))
 (define account-id (env! "CLOUDFLARE_ACCOUNT_ID"))
 
+(define (normalized-api-token token)
+  (define trimmed (string-trim token))
+  (define without-header
+    (regexp-replace #rx"(?i:^authorization:[[:space:]]*)" trimmed ""))
+  (define without-bearer
+    (regexp-replace #rx"(?i:^bearer[[:space:]]+)" (string-trim without-header) ""))
+  (string-trim without-bearer))
+
 (define (authorization-header token)
-  (if (regexp-match? #rx"(?i:^bearer[[:space:]]+)" token)
-      (format "Authorization: ~a" token)
-      (format "Authorization: Bearer ~a" token)))
+  (format "Authorization: Bearer ~a" (normalized-api-token token)))
 
 (define (cloudflare-request method path [payload #f])
   (define body-bytes
