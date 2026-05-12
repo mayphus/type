@@ -61,6 +61,12 @@ jobs:
       - name: Validate generated profiles
         run: racket -e '(require "build.rkt") (build-profile! "desktop") (build-profile! "all")'
 
+      - name: Ensure Cloudflare domain
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: racket tools/ensure-cloudflare-domain.rkt
+
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v4
 
