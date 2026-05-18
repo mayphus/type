@@ -16,6 +16,7 @@
 (define image-name "ghcr.io/mayphus/input-foundry")
 (define http-port 80)
 (define container-port 8080)
+(define node-port 32080)
 (define hosts '("type.mayphus.org" "rime.mayphus.org" "rime-config.mayphus.org"))
 
 (define (label-map)
@@ -113,13 +114,15 @@
    (kv "metadata" (metadata))
    (kv "spec"
        (mapping
+        (kv "type" "NodePort")
         (kv "selector" (label-map))
         (kv "ports"
             (sequence
              (mapping
               (kv "name" "http")
               (kv "port" http-port)
-              (kv "targetPort" "http"))))))))
+              (kv "targetPort" "http")
+              (kv "nodePort" node-port))))))))
 
 (define (host-tls host)
   (mapping
