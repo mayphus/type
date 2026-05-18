@@ -11,7 +11,9 @@
          racket/system
          net/url
          json
+         style/main
          "lib/preview/svg.rkt"
+         "web/app-style.rkt"
          "web/pages.rkt"
          "web/forms.rkt"
          "web/locale.rkt"
@@ -28,7 +30,6 @@
 
 ;; ---- Helpers ---------------------------------------------------------------
 
-(define-runtime-path app-css-path "static/app.css")
 (define-runtime-path support-svg-path "static/support-8f6d2b.svg")
 
 (define (valid-id? s)
@@ -465,14 +466,10 @@
        (list #"Dev reload is disabled"))))
 
 (define (handle-app-css req)
-  (if (file-exists? app-css-path)
-      (response/full
-       200 #"OK" (current-seconds) #"text/css; charset=utf-8"
-       (list (make-header #"Cache-Control" #"no-store"))
-       (list (file->bytes app-css-path)))
-      (response/full
-       404 #"Not Found" (current-seconds) #"text/plain; charset=utf-8" '()
-       (list #"CSS not found"))))
+  (response/full
+   200 #"OK" (current-seconds) #"text/css; charset=utf-8"
+   (list (make-header #"Cache-Control" #"no-store"))
+   (list (string->bytes/utf-8 (string-append css-text "\n" app-css-text)))))
 
 (define (handle-support-svg req)
   (if (file-exists? support-svg-path)

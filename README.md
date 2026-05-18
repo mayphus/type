@@ -7,7 +7,8 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `web.rkt` serves the public museum HTML, keyboard layout previews, and ZIP builds.
 - `gui.rkt` opens a native Racket GUI for local Yuanshu builds and iPhone pushes.
 - `build.rkt` is the callable build facade; focused build modules live in `build/`.
-- `web/` contains server-rendered UI pages, components, locale handling, and form parsing.
+- `web/` contains server-rendered UI pages, components, locale handling, form
+  parsing, and the app-specific style DSL.
 - `k8s.rkt` generates and checks the Kubernetes YAML.
 - `assets/rime/` holds native Rime YAML and dictionaries.
 - `rime/` holds Rime/Yuanshu generation logic, including the `rime-schema`
@@ -73,6 +74,14 @@ Legacy hostnames redirect permanently to the main domain:
 - `rime-config.mayphus.org`
 
 ## Local development
+
+This app uses the sibling `style` Racket package for the shared Mayphus CSS
+base and its style DSL. Link it once on a local machine:
+
+```sh
+cd ../style
+raco pkg install --auto --link .
+```
 
 ```sh
 racket web.rkt

@@ -1,0 +1,102 @@
+# encoding: utf-8
+patch:
+  style/color_scheme: wechat
+  style/horizontal_gap: 2
+  style/vertical_gap: 4
+  style/key_height: 53
+  style/keyboard_height: 286
+  style/round_corner: 9
+  style/keyboards: [default, letter, number, symbols]
+  style/keyboard: default
+  style/ascii_keyboard: letter
+  preset_keyboards/default:
+    name: 微信 / wechat
+    ascii_mode: 0
+    ascii_keyboard: letter
+    width: 10
+    height: 55
+    lock: false
+    key_symbol_offset_x: 0
+    key_symbol_offset_y: 0
+    key_text_offset_x: 0
+    key_text_offset_y: 0
+    keys:
+      - {click: q, swipe_up: 1, long_click: Q}
+      - {click: w, swipe_up: 2, long_click: W}
+      - {click: e, swipe_up: 3, long_click: E}
+      - {click: r, swipe_up: 4, long_click: R}
+      - {click: t, swipe_up: 5, long_click: T}
+      - {click: y, swipe_up: 6, long_click: Y}
+      - {click: u, swipe_up: 7, long_click: U}
+      - {click: i, swipe_up: 8, long_click: I}
+      - {click: o, swipe_up: 9, long_click: O}
+      - {click: p, swipe_up: 0, long_click: P}
+
+      - {width: 5}
+      - {click: a, long_click: A}
+      - {click: s, long_click: S}
+      - {click: d, long_click: D}
+      - {click: f, long_click: F}
+      - {click: g, long_click: G}
+      - {click: h, long_click: H}
+      - {click: j, long_click: J}
+      - {click: k, long_click: K}
+      - {click: l, long_click: L}
+      - {width: 5}
+
+      - {click: Shift_L, width: 15}
+      - {click: z, long_click: Z}
+      - {click: x, long_click: X}
+      - {click: c, long_click: C}
+      - {click: v, long_click: V}
+      - {click: b, long_click: B}
+      - {click: n, long_click: N}
+      - {click: m, long_click: M}
+      - {click: BackSpace, width: 15}
+
+      - {click: Keyboard_number, width: 14}
+      - {click: "，", ascii: ",", width: 10}
+      - {click: "@", width: 10}
+      - {click: space, width: 45}
+      - {click: Return, label: 回车, composing: Return1, width: 21}
+  preset_keyboards/letter:
+    __include: /preset_keyboards/default
+    name: 微信 / wechat ABC
+    ascii_mode: 1
+    reset_ascii_mode: true
+
+  preset_color_schemes/wechat:
+    name: 微信
+    author: Mayphus
+    back_color: 0xffffff
+    border_color: 0x9a9c9a
+    candidate_separator_color: 0xffffff
+    candidate_text_color: 0x000000
+    comment_text_color: 0x000000
+    hilited_candidate_text_color: 0x82b31f
+    hilited_comment_text_color: 0x82b31f
+    hilited_candidate_back_color: 0xffffff
+    hilited_label_color: 0x82b31f
+    hilited_back_color: 0xffffff
+    text_color: 0x000000
+    hilited_text_color: 0x82b31f
+    label_color: 0x55000000
+    key_back_color: 0xffffff
+    key_border_color: 0x9a9c9a
+    key_text_color: 0x000000
+    key_symbol_color: 0x55000000
+    hilited_key_back_color: 0xbab0ab
+    hilited_key_text_color: 0x000000
+    hilited_key_symbol_color: 0x55000000
+    off_key_back_color: 0xaf9f97
+    off_key_text_color: 0x000000
+    on_key_back_color: 0x94c823
+    on_key_text_color: 0x000000
+    preview_back_color: 0xffffff
+    preview_text_color: 0x000000
+    keyboard_back_color: 0xdad3d0
+    candidate_background: 0xffffff
+    root_background: 0xdad3d0
+    text_back_color: 0xffffff
+    long_text_back_color: 0xffffff
+    shadow_color: 0x9a9c9a
