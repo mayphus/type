@@ -218,7 +218,7 @@
    " && apt-get install -y --no-install-recommends \\\n"
    (string-join
     (for/list ([package (in-list dockerfile-packages)])
-      (format "    ~a \\\\" package))
+      (format "    ~a ~a" package "\\"))
     "\n")
    "\n && rm -rf /var/lib/apt/lists/*\n"
    "\n"
