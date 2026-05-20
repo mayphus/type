@@ -17,7 +17,6 @@
           #:generated? #t
           #:custom? #t)
     (layout "double-pinyin-flypy"
-      #:keyboard 'standard-26
       #:skin "flypy"
       #:placement 'split-flypy)
     (layout "double-pinyin-flypy-14"
@@ -54,9 +53,7 @@
     #:legends '(abc)
     (rime #:source "luna-pinyin" #:generated? #t)
     (layout "luna-pinyin"
-      #:keyboard 'standard-26
-      #:skin "luna-pinyin"
-      #:placement 'standard-center)
+      #:skin "luna-pinyin")
     (layout "pinyin-14"
       #:keyboard 'compact-14
       #:skin "pinyin-14"
@@ -75,9 +72,7 @@
     #:legends '(abc)
     (rime #:source "terra-pinyin" #:generated? #t)
     (layout "terra-pinyin"
-      #:keyboard 'standard-26
-      #:skin "terra-pinyin"
-      #:placement 'standard-center))
+      #:skin "terra-pinyin"))
 
   (input-method "cangjie6"
     #:category "shape"
@@ -90,9 +85,7 @@
           #:custom? #t
           #:deps '("double-pinyin-flypy"))
     (layout "cangjie6"
-      #:keyboard 'standard-26
-      #:skin "cangjie6"
-      #:placement 'standard-center))
+      #:skin "cangjie6"))
 
   (input-method "cangjie5"
     #:method-schema "cangjie6"
@@ -105,9 +98,7 @@
     (rime #:deps '("luna-pinyin")
           #:extra-files '("cangjie5.dict.yaml"))
     (layout "cangjie5"
-      #:keyboard 'standard-26
-      #:skin "cangjie6"
-      #:placement 'standard-center))
+      #:skin "cangjie6"))
 
   (input-method "cangjie5-express"
     #:method-schema "cangjie6"
@@ -121,9 +112,7 @@
           #:deps '("luna-pinyin")
           #:extra-files '("cangjie5.dict.yaml"))
     (layout "cangjie5-express"
-      #:keyboard 'standard-26
-      #:skin "cangjie6"
-      #:placement 'standard-center))
+      #:skin "cangjie6"))
 
   (input-method "quick5"
     #:method-schema "cangjie6"
@@ -136,9 +125,7 @@
     (rime #:deps '("luna-pinyin")
           #:extra-files '("quick5.dict.yaml"))
     (layout "quick5"
-      #:keyboard 'standard-26
-      #:skin "cangjie6"
-      #:placement 'standard-center))
+      #:skin "cangjie6"))
 
   (input-method "jyut6ping3"
     #:category "full-pinyin"
@@ -151,7 +138,6 @@
           #:custom? #t
           #:deps '("double-pinyin-flypy" "cangjie6"))
     (layout "jyut6ping3"
-      #:keyboard 'standard-26
       #:skin "jyut6ping3"
       #:placement 'standard-top-center))
 
@@ -165,7 +151,6 @@
     (layout "bopomofo-standard"
       #:keyboard 'standard-zhuyin
       #:skin "bopomofo-standard"
-      #:placement 'standard-center
       #:name '("Bopomofo Standard" "標準注音")
       #:description '("Zhuyin input on the standard Da-Chien physical keyboard."
                       "使用標準大千式實體鍵盤排列的注音輸入法。")
@@ -176,7 +161,6 @@
     (layout "bopomofo"
       #:keyboard 'zhuyin
       #:skin "bopomofo"
-      #:placement 'standard-center
       #:name '("Ortholinear Bopomofo" "正交注音")
       #:description '("Zhuyin input arranged on an ortholinear mobile keyboard."
                       "配置為正交手機鍵盤的注音輸入法。")
@@ -193,7 +177,6 @@
     #:legends '(abc zrm)
     (rime #:source "double-pinyin" #:deps '("stroke"))
     (layout "double-pinyin"
-      #:keyboard 'standard-26
       #:skin "double-pinyin-zrm"
       #:placement 'double-pinyin-center))
 
@@ -206,7 +189,6 @@
     #:legends '(abc abc-dp)
     (rime #:source "double-pinyin-abc" #:deps '("stroke"))
     (layout "double-pinyin-abc"
-      #:keyboard 'standard-26
       #:skin "double-pinyin-abc"
       #:placement 'double-pinyin-center))
 
@@ -219,7 +201,6 @@
     #:legends '(abc mspy)
     (rime #:source "double-pinyin-mspy" #:deps '("stroke"))
     (layout "double-pinyin-mspy"
-      #:keyboard 'standard-26
       #:skin "double-pinyin-mspy"
       #:placement 'double-pinyin-center))
 
@@ -232,7 +213,6 @@
     #:legends '(abc pyjj)
     (rime #:source "double-pinyin-pyjj" #:deps '("stroke"))
     (layout "double-pinyin-pyjj"
-      #:keyboard 'standard-26
       #:skin "double-pinyin-pyjj"
       #:placement 'double-pinyin-center))
 
@@ -245,7 +225,6 @@
     #:legends '(abc st)
     (rime #:source "double-pinyin-st" #:deps '("stroke"))
     (layout "double-pinyin-st"
-      #:keyboard 'standard-26
       #:skin "double-pinyin-st"
       #:placement 'double-pinyin-center))
 
@@ -258,7 +237,6 @@
     #:legends '(abc wubi)
     (rime #:deps '("pinyin-simp") #:extra-files '("wubi86.dict.yaml"))
     (layout "wubi86"
-      #:keyboard 'standard-26
       #:skin "wubi86"
       #:placement 'standard-top-center))
 
@@ -274,7 +252,6 @@
           #:deps '("pinyin-simp")
           #:extra-files '("wubi86.dict.yaml"))
     (layout "wubi-pinyin"
-      #:keyboard 'standard-26
       #:skin "wubi86"
       #:placement 'standard-top-center))
 
@@ -290,7 +267,6 @@
           #:deps '("pinyin-simp")
           #:extra-files '("wubi86.dict.yaml"))
     (layout "wubi-trad"
-      #:keyboard 'standard-26
       #:skin "wubi86"
       #:placement 'standard-top-center))
 
@@ -303,7 +279,6 @@
     #:legends '(abc stroke)
     (rime #:deps '("luna-pinyin") #:extra-files '("stroke.dict.yaml"))
     (layout "stroke"
-      #:keyboard 'standard-26
       #:skin "stroke"
       #:placement 'standard-top-center))
 
@@ -319,6 +294,4 @@
           #:deps '("stroke")
           #:extra-files '("pinyin_simp.dict.yaml"))
     (layout "pinyin-simp"
-      #:keyboard 'standard-26
-      #:skin "luna-pinyin"
-      #:placement 'standard-center)))
+      #:skin "luna-pinyin")))

@@ -165,9 +165,9 @@
                deep-config))
 
 (define (make-layout recipe-id
-                     #:keyboard keyboard-id
+                     #:keyboard [keyboard-id 'standard-26]
                      #:skin [skin-id recipe-id]
-                     #:placement placement
+                     #:placement [placement 'standard-center]
                      #:name [name #f]
                      #:description [description #f]
                      #:rime-source [rime-source-id #f]
