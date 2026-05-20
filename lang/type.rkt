@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require racket/list)
+(require racket/list
+         racket/string)
 
 (provide (struct-out input-method-dimension)
          (struct-out input-method-keyboard)
@@ -94,6 +95,12 @@
     [else
      (error 'type "expected #f, locale hash, or two-item list, got ~v" value)]))
 
+(define (target-id value)
+  (cond
+    [(not value) #f]
+    [(string? value) (string-replace value "-" "_")]
+    [else value]))
+
 (define (make-keyboard recipe-id
                        keyboard-id
                        layout-id
@@ -146,8 +153,8 @@
                    #:extra-dirs [extra-dirs '()]
                    #:artifacts [artifacts '("rime" "yuanshu")]
                    #:deep-config [deep-config #f])
-  (rime-config source-id
-               config-id
+  (rime-config (target-id source-id)
+               (target-id config-id)
                generated?
                package?
                custom?
@@ -174,12 +181,12 @@
                      #:rime-artifacts [rime-artifacts #f])
   (layout-declaration recipe-id
                       keyboard-id
-                      skin-id
+                      (target-id skin-id)
                       placement
                       (localized-value name)
                       (localized-value description)
-                      rime-source-id
-                      rime-config-id
+                      (target-id rime-source-id)
+                      (target-id rime-config-id)
                       rime-generated?
                       rime-package?
                       rime-custom?

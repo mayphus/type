@@ -22,28 +22,28 @@
       #:placement 'split-flypy)
     (layout "double-pinyin-flypy-14"
       #:keyboard 'compact-14
-      #:skin "flypy_14"
+      #:skin "flypy-14"
       #:placement 'compact-center
       #:name '("Flypy 14" "小鶴雙拼 14鍵")
       #:description '("A 14-key Flypy double pinyin input method for Yuanshu, grouping adjacent QWERTY keys."
                       "14 鍵小鶴元書輸入法，按相鄰 QWERTY 鍵位分組。")
-      #:rime-source "flypy_14")
+      #:rime-source "flypy-14")
     (layout "double-pinyin-flypy-18"
       #:keyboard 'compact-18
-      #:skin "flypy_18"
+      #:skin "flypy-18"
       #:placement 'compact-center
       #:name '("Flypy 18" "小鶴雙拼 18鍵")
       #:description '("An 18-key Flypy double pinyin input method for Yuanshu, adapted from a compact phone layout."
                       "18 鍵小鶴元書輸入法，改編自緊湊手機鍵盤佈局。")
-      #:rime-source "flypy_18")
+      #:rime-source "flypy-18")
     (layout "double-pinyin-flypy-shuffle-17"
       #:keyboard 'shuffle-17
-      #:skin "shuffle_17"
+      #:skin "shuffle-17"
       #:placement 'compact-center
       #:name '("Flypy Shuffle 17" "小鶴雙拼亂序 17鍵")
       #:description '("An experimental 17-key shuffled Flypy input method for Yuanshu."
                       "實驗性的 17 鍵亂序小鶴元書輸入法。")
-      #:rime-source "shuffle_17"))
+      #:rime-source "shuffle-17"))
 
   (input-method "luna-pinyin"
     #:category "full-pinyin"
@@ -52,19 +52,19 @@
                     "標準全拼普通話輸入方案，可輸出 Rime 設定與元書套件。")
     #:keymap 'abc
     #:legends '(abc)
-    (rime #:source "luna_pinyin" #:generated? #t)
+    (rime #:source "luna-pinyin" #:generated? #t)
     (layout "luna-pinyin"
       #:keyboard 'standard-26
-      #:skin "luna_pinyin"
+      #:skin "luna-pinyin"
       #:placement 'standard-center)
     (layout "pinyin-14"
       #:keyboard 'compact-14
-      #:skin "pinyin_14"
+      #:skin "pinyin-14"
       #:placement 'compact-center
       #:name '("Pinyin 14-Key" "朙月拼音-14鍵")
       #:description '("A 14-key full-pinyin Yuanshu input method using adjacent QWERTY groups."
                       "14 鍵全拼元書輸入法，使用相鄰 QWERTY 分組。")
-      #:rime-source "pinyin_14"))
+      #:rime-source "pinyin-14"))
 
   (input-method "terra-pinyin"
     #:category "full-pinyin"
@@ -73,10 +73,10 @@
                     "支援聲調數字的全拼普通話輸入，並提供元書鍵盤佈局預覽。")
     #:keymap 'abc
     #:legends '(abc)
-    (rime #:source "terra_pinyin" #:generated? #t)
+    (rime #:source "terra-pinyin" #:generated? #t)
     (layout "terra-pinyin"
       #:keyboard 'standard-26
-      #:skin "terra_pinyin"
+      #:skin "terra-pinyin"
       #:placement 'standard-center))
 
   (input-method "cangjie6"
@@ -117,7 +117,7 @@
                     "上游 Rime 倉頡五代快打模式方案。")
     #:keymap 'cangjie
     #:legends '(cangjie)
-    (rime #:source "cangjie5_express"
+    (rime #:source "cangjie5-express"
           #:deps '("luna-pinyin")
           #:extra-files '("cangjie5.dict.yaml"))
     (layout "cangjie5-express"
@@ -164,7 +164,7 @@
     #:legends '(zhuyin)
     (layout "bopomofo-standard"
       #:keyboard 'standard-zhuyin
-      #:skin "bopomofo_standard"
+      #:skin "bopomofo-standard"
       #:placement 'standard-center
       #:name '("Bopomofo Standard" "標準注音")
       #:description '("Zhuyin input on the standard Da-Chien physical keyboard."
@@ -191,10 +191,10 @@
                     "上游 Rime 自然碼雙拼方案。")
     #:keymap 'zrm
     #:legends '(abc zrm)
-    (rime #:source "double_pinyin" #:deps '("stroke"))
+    (rime #:source "double-pinyin" #:deps '("stroke"))
     (layout "double-pinyin"
       #:keyboard 'standard-26
-      #:skin "double_pinyin_zrm"
+      #:skin "double-pinyin-zrm"
       #:placement 'double-pinyin-center))
 
   (input-method "double-pinyin-abc"
@@ -204,10 +204,10 @@
                     "上游 Rime 智能 ABC 雙拼方案。")
     #:keymap 'abc-dp
     #:legends '(abc abc-dp)
-    (rime #:source "double_pinyin_abc" #:deps '("stroke"))
+    (rime #:source "double-pinyin-abc" #:deps '("stroke"))
     (layout "double-pinyin-abc"
       #:keyboard 'standard-26
-      #:skin "double_pinyin_abc"
+      #:skin "double-pinyin-abc"
       #:placement 'double-pinyin-center))
 
   (input-method "double-pinyin-mspy"
@@ -217,10 +217,10 @@
                     "上游 Rime 微軟雙拼方案。")
     #:keymap 'mspy
     #:legends '(abc mspy)
-    (rime #:source "double_pinyin_mspy" #:deps '("stroke"))
+    (rime #:source "double-pinyin-mspy" #:deps '("stroke"))
     (layout "double-pinyin-mspy"
       #:keyboard 'standard-26
-      #:skin "double_pinyin_mspy"
+      #:skin "double-pinyin-mspy"
       #:placement 'double-pinyin-center))
 
   (input-method "double-pinyin-pyjj"
@@ -230,10 +230,10 @@
                     "上游 Rime 拼音加加雙拼方案。")
     #:keymap 'pyjj
     #:legends '(abc pyjj)
-    (rime #:source "double_pinyin_pyjj" #:deps '("stroke"))
+    (rime #:source "double-pinyin-pyjj" #:deps '("stroke"))
     (layout "double-pinyin-pyjj"
       #:keyboard 'standard-26
-      #:skin "double_pinyin_pyjj"
+      #:skin "double-pinyin-pyjj"
       #:placement 'double-pinyin-center))
 
   (input-method "double-pinyin-st"
@@ -243,10 +243,10 @@
                     "上游 Rime 四通雙拼方案。")
     #:keymap 'st
     #:legends '(abc st)
-    (rime #:source "double_pinyin_st" #:deps '("stroke"))
+    (rime #:source "double-pinyin-st" #:deps '("stroke"))
     (layout "double-pinyin-st"
       #:keyboard 'standard-26
-      #:skin "double_pinyin_st"
+      #:skin "double-pinyin-st"
       #:placement 'double-pinyin-center))
 
   (input-method "wubi86"
@@ -270,7 +270,7 @@
                     "上游 Rime 五筆拼音混輸方案。")
     #:keymap 'wubi
     #:legends '(abc wubi)
-    (rime #:source "wubi_pinyin"
+    (rime #:source "wubi-pinyin"
           #:deps '("pinyin-simp")
           #:extra-files '("wubi86.dict.yaml"))
     (layout "wubi-pinyin"
@@ -286,7 +286,7 @@
                     "上游 Rime 五筆簡入繁出方案。")
     #:keymap 'wubi
     #:legends '(abc wubi)
-    (rime #:source "wubi_trad"
+    (rime #:source "wubi-trad"
           #:deps '("pinyin-simp")
           #:extra-files '("wubi86.dict.yaml"))
     (layout "wubi-trad"
@@ -315,10 +315,10 @@
                     "上游五筆方案使用的簡化字拼音反查支援方案。")
     #:keymap 'abc
     #:legends '(abc)
-    (rime #:source "pinyin_simp"
+    (rime #:source "pinyin-simp"
           #:deps '("stroke")
           #:extra-files '("pinyin_simp.dict.yaml"))
     (layout "pinyin-simp"
       #:keyboard 'standard-26
-      #:skin "luna_pinyin"
+      #:skin "luna-pinyin"
       #:placement 'standard-center)))
