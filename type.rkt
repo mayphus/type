@@ -84,45 +84,33 @@
           #:deps '("double-pinyin-flypy"))
     (layout "cangjie6"))
 
-  (input-method "cangjie5"
-    #:method-schema "cangjie6"
-    #:category "shape"
-    #:name '("Cangjie 5" "倉頡五代")
-    #:description '("Upstream Rime fifth-generation Cangjie shape input."
-                    "上游 Rime 第五代倉頡字形輸入方案。")
-    #:keymap 'cangjie
-    #:legends '(cangjie)
-    (rime #:deps '("luna-pinyin")
-          #:extra-files '("cangjie5.dict.yaml"))
-    (layout "cangjie5"
-      #:skin "cangjie6"))
+  (input-family #:category "shape"
+                #:method-schema "cangjie6"
+                #:keymap 'cangjie
+                #:legends '(cangjie)
+                #:skin "cangjie6"
+                #:rime-deps '("luna-pinyin")
+    (input-method "cangjie5"
+      #:name '("Cangjie 5" "倉頡五代")
+      #:description '("Upstream Rime fifth-generation Cangjie shape input."
+                      "上游 Rime 第五代倉頡字形輸入方案。")
+      (rime #:extra-files '("cangjie5.dict.yaml"))
+      (layout "cangjie5"))
 
-  (input-method "cangjie5-express"
-    #:method-schema "cangjie6"
-    #:category "shape"
-    #:name '("Cangjie 5 Express" "倉頡五代·快打模式")
-    #:description '("Upstream Rime Cangjie 5 schema with express auto-selection behavior."
-                    "上游 Rime 倉頡五代快打模式方案。")
-    #:keymap 'cangjie
-    #:legends '(cangjie)
-    (rime #:source "cangjie5-express"
-          #:deps '("luna-pinyin")
-          #:extra-files '("cangjie5.dict.yaml"))
-    (layout "cangjie5-express"
-      #:skin "cangjie6"))
+    (input-method "cangjie5-express"
+      #:name '("Cangjie 5 Express" "倉頡五代·快打模式")
+      #:description '("Upstream Rime Cangjie 5 schema with express auto-selection behavior."
+                      "上游 Rime 倉頡五代快打模式方案。")
+      (rime #:source "cangjie5-express"
+            #:extra-files '("cangjie5.dict.yaml"))
+      (layout "cangjie5-express"))
 
-  (input-method "quick5"
-    #:method-schema "cangjie6"
-    #:category "shape"
-    #:name '("Quick 5" "速成")
-    #:description '("Upstream Rime Quick 5 shape input derived from Cangjie."
-                    "上游 Rime 速成五代字形輸入方案。")
-    #:keymap 'cangjie
-    #:legends '(cangjie)
-    (rime #:deps '("luna-pinyin")
-          #:extra-files '("quick5.dict.yaml"))
-    (layout "quick5"
-      #:skin "cangjie6"))
+    (input-method "quick5"
+      #:name '("Quick 5" "速成")
+      #:description '("Upstream Rime Quick 5 shape input derived from Cangjie."
+                      "上游 Rime 速成五代字形輸入方案。")
+      (rime #:extra-files '("quick5.dict.yaml"))
+      (layout "quick5")))
 
   (input-method "jyut6ping3"
     #:category "full-pinyin"
@@ -162,103 +150,84 @@
       #:rime-generated? #t
       #:rime-artifacts '("yuanshu")))
 
-  (input-method "double-pinyin"
-    #:slug "double-pinyin-zrm"
-    #:category "double-pinyin"
-    #:name '("Double Pinyin: ZRM" "自然碼雙拼")
-    #:description '("Upstream Rime double-pinyin schema using the Ziranma layout."
-                    "上游 Rime 自然碼雙拼方案。")
-    #:keymap 'zrm
-    #:legends '(abc zrm)
-    (rime #:source "double-pinyin" #:deps '("stroke"))
-    (layout "double-pinyin"
-      #:skin "double-pinyin-zrm"
-      #:placement 'double-pinyin-center))
+  (input-family #:category "double-pinyin"
+                #:placement 'double-pinyin-center
+                #:rime-deps '("stroke")
+    (input-method "double-pinyin"
+      #:slug "double-pinyin-zrm"
+      #:name '("Double Pinyin: ZRM" "自然碼雙拼")
+      #:description '("Upstream Rime double-pinyin schema using the Ziranma layout."
+                      "上游 Rime 自然碼雙拼方案。")
+      #:keymap 'zrm
+      #:legends '(abc zrm)
+      (rime #:source "double-pinyin")
+      (layout "double-pinyin"
+        #:skin "double-pinyin-zrm"))
 
-  (input-method "double-pinyin-abc"
-    #:category "double-pinyin"
-    #:name '("Double Pinyin: ABC" "智能ABC雙拼")
-    #:description '("Upstream Rime double-pinyin schema using the Intelligent ABC layout."
-                    "上游 Rime 智能 ABC 雙拼方案。")
-    #:keymap 'abc-dp
-    #:legends '(abc abc-dp)
-    (rime #:source "double-pinyin-abc" #:deps '("stroke"))
-    (layout "double-pinyin-abc"
-      #:placement 'double-pinyin-center))
+    (input-method "double-pinyin-abc"
+      #:name '("Double Pinyin: ABC" "智能ABC雙拼")
+      #:description '("Upstream Rime double-pinyin schema using the Intelligent ABC layout."
+                      "上游 Rime 智能 ABC 雙拼方案。")
+      #:keymap 'abc-dp
+      #:legends '(abc abc-dp)
+      (rime #:source "double-pinyin-abc")
+      (layout "double-pinyin-abc"))
 
-  (input-method "double-pinyin-mspy"
-    #:category "double-pinyin"
-    #:name '("Double Pinyin: MSPY" "微軟雙拼")
-    #:description '("Upstream Rime double-pinyin schema using the Microsoft layout."
-                    "上游 Rime 微軟雙拼方案。")
-    #:keymap 'mspy
-    #:legends '(abc mspy)
-    (rime #:source "double-pinyin-mspy" #:deps '("stroke"))
-    (layout "double-pinyin-mspy"
-      #:placement 'double-pinyin-center))
+    (input-method "double-pinyin-mspy"
+      #:name '("Double Pinyin: MSPY" "微軟雙拼")
+      #:description '("Upstream Rime double-pinyin schema using the Microsoft layout."
+                      "上游 Rime 微軟雙拼方案。")
+      #:keymap 'mspy
+      #:legends '(abc mspy)
+      (rime #:source "double-pinyin-mspy")
+      (layout "double-pinyin-mspy"))
 
-  (input-method "double-pinyin-pyjj"
-    #:category "double-pinyin"
-    #:name '("Double Pinyin: PYJJ" "拼音加加雙拼")
-    #:description '("Upstream Rime double-pinyin schema using the Pinyin Jiajia layout."
-                    "上游 Rime 拼音加加雙拼方案。")
-    #:keymap 'pyjj
-    #:legends '(abc pyjj)
-    (rime #:source "double-pinyin-pyjj" #:deps '("stroke"))
-    (layout "double-pinyin-pyjj"
-      #:placement 'double-pinyin-center))
+    (input-method "double-pinyin-pyjj"
+      #:name '("Double Pinyin: PYJJ" "拼音加加雙拼")
+      #:description '("Upstream Rime double-pinyin schema using the Pinyin Jiajia layout."
+                      "上游 Rime 拼音加加雙拼方案。")
+      #:keymap 'pyjj
+      #:legends '(abc pyjj)
+      (rime #:source "double-pinyin-pyjj")
+      (layout "double-pinyin-pyjj"))
 
-  (input-method "double-pinyin-st"
-    #:category "double-pinyin"
-    #:name '("Double Pinyin: ST" "四通雙拼")
-    #:description '("Upstream Rime double-pinyin schema using the Stone layout."
-                    "上游 Rime 四通雙拼方案。")
-    #:keymap 'st
-    #:legends '(abc st)
-    (rime #:source "double-pinyin-st" #:deps '("stroke"))
-    (layout "double-pinyin-st"
-      #:placement 'double-pinyin-center))
+    (input-method "double-pinyin-st"
+      #:name '("Double Pinyin: ST" "四通雙拼")
+      #:description '("Upstream Rime double-pinyin schema using the Stone layout."
+                      "上游 Rime 四通雙拼方案。")
+      #:keymap 'st
+      #:legends '(abc st)
+      (rime #:source "double-pinyin-st")
+      (layout "double-pinyin-st")))
 
-  (input-method "wubi86"
-    #:category "shape"
-    #:name '("Wubi 86" "五筆86")
-    #:description '("Upstream Rime Wubi 86 shape input."
-                    "上游 Rime 五筆 86 字形輸入方案。")
-    #:keymap 'wubi
-    #:legends '(abc wubi)
-    (rime #:deps '("pinyin-simp") #:extra-files '("wubi86.dict.yaml"))
-    (layout "wubi86"
-      #:placement 'standard-top-center))
+  (input-family #:category "shape"
+                #:method-schema "wubi86"
+                #:keymap 'wubi
+                #:legends '(abc wubi)
+                #:placement 'standard-top-center
+                #:rime-deps '("pinyin-simp")
+                #:rime-extra-files '("wubi86.dict.yaml")
+    (input-method "wubi86"
+      #:name '("Wubi 86" "五筆86")
+      #:description '("Upstream Rime Wubi 86 shape input."
+                      "上游 Rime 五筆 86 字形輸入方案。")
+      (layout "wubi86"))
 
-  (input-method "wubi-pinyin"
-    #:method-schema "wubi86"
-    #:category "shape"
-    #:name '("Wubi Pinyin" "五筆·拼音")
-    #:description '("Upstream Rime Wubi schema with pinyin mixed input."
-                    "上游 Rime 五筆拼音混輸方案。")
-    #:keymap 'wubi
-    #:legends '(abc wubi)
-    (rime #:source "wubi-pinyin"
-          #:deps '("pinyin-simp")
-          #:extra-files '("wubi86.dict.yaml"))
-    (layout "wubi-pinyin"
-      #:skin "wubi86"
-      #:placement 'standard-top-center))
+    (input-method "wubi-pinyin"
+      #:name '("Wubi Pinyin" "五筆·拼音")
+      #:description '("Upstream Rime Wubi schema with pinyin mixed input."
+                      "上游 Rime 五筆拼音混輸方案。")
+      (rime #:source "wubi-pinyin")
+      (layout "wubi-pinyin"
+        #:skin "wubi86"))
 
-  (input-method "wubi-trad"
-    #:method-schema "wubi86"
-    #:category "shape"
-    #:name '("Wubi Traditional" "五筆·簡入繁出")
-    #:description '("Upstream Rime Wubi schema for simplified input with traditional output."
-                    "上游 Rime 五筆簡入繁出方案。")
-    #:keymap 'wubi
-    #:legends '(abc wubi)
-    (rime #:source "wubi-trad"
-          #:deps '("pinyin-simp")
-          #:extra-files '("wubi86.dict.yaml"))
-    (layout "wubi-trad"
-      #:skin "wubi86"
-      #:placement 'standard-top-center))
+    (input-method "wubi-trad"
+      #:name '("Wubi Traditional" "五筆·簡入繁出")
+      #:description '("Upstream Rime Wubi schema for simplified input with traditional output."
+                      "上游 Rime 五筆簡入繁出方案。")
+      (rime #:source "wubi-trad")
+      (layout "wubi-trad"
+        #:skin "wubi86")))
 
   (input-method "stroke"
     #:category "shape"

@@ -13,6 +13,7 @@
          method
          keyboard
          input-method
+         input-family
          rime
          layout)
 
@@ -268,6 +269,113 @@
            #:keyboards (map (lambda (item) (layout->keyboard item family-rime))
                             layouts))))
 
+(define (family-schema item category rule)
+  (if (schema-declaration? item)
+      (let* ([current-category (schema-declaration-category item)]
+             [next-category (if (and category (equal? current-category "other"))
+                                category
+                                current-category)]
+             [next-rule (cond
+                          [rule rule]
+                          [(and category (equal? (schema-declaration-rule item) "other"))
+                           next-category]
+                          [else (schema-declaration-rule item)])])
+        (schema-declaration (schema-declaration-id item)
+                            next-category
+                            next-rule
+                            (schema-declaration-deps item)
+                            (schema-declaration-slug item)
+                            (schema-declaration-names item)
+                            (schema-declaration-descriptions item)))
+      item))
+
+(define (family-keyboard item skin placement rime-deps rime-extra-files)
+  (define current-skin (input-method-keyboard-layout-id item))
+  (input-method-keyboard (input-method-keyboard-recipe-id item)
+                         (input-method-keyboard-keyboard-id item)
+                         (if (and skin
+                                  (equal? current-skin
+                                          (target-id (input-method-keyboard-recipe-id item))))
+                             (target-id skin)
+                             current-skin)
+                         (if (and placement
+                                  (eq? (input-method-keyboard-placement item) 'standard-center))
+                             placement
+                             (input-method-keyboard-placement item))
+                         (input-method-keyboard-names item)
+                         (input-method-keyboard-descriptions item)
+                         (input-method-keyboard-rime-source-id item)
+                         (input-method-keyboard-rime-config-id item)
+                         (input-method-keyboard-rime-generated? item)
+                         (input-method-keyboard-rime-package? item)
+                         (input-method-keyboard-rime-custom? item)
+                         (if (and rime-deps (null? (input-method-keyboard-rime-deps item)))
+                             rime-deps
+                             (input-method-keyboard-rime-deps item))
+                         (if (and rime-extra-files
+                                  (null? (input-method-keyboard-rime-extra-files item)))
+                             rime-extra-files
+                             (input-method-keyboard-rime-extra-files item))
+                         (input-method-keyboard-rime-extra-dirs item)
+                         (input-method-keyboard-rime-artifacts item)))
+
+(define (family-method item method-schema keymap legends skin placement rime-deps rime-extra-files)
+  (if (input-method-dimension? item)
+      (input-method-dimension
+       (input-method-dimension-id item)
+       (if (and method-schema
+                (equal? (input-method-dimension-schema item)
+                        (input-method-dimension-id item)))
+           method-schema
+           (input-method-dimension-schema item))
+       (if (and keymap
+                (equal? (input-method-dimension-keymap item)
+                        (input-method-dimension-id item)))
+           keymap
+           (input-method-dimension-keymap item))
+       (if (and legends (null? (input-method-dimension-legends item)))
+           legends
+           (input-method-dimension-legends item))
+       (map (lambda (keyboard)
+              (family-keyboard keyboard skin placement rime-deps rime-extra-files))
+            (input-method-dimension-keyboards item)))
+      item))
+
+(define (family-entry entry category rule method-schema keymap legends skin placement rime-deps rime-extra-files)
+  (map (lambda (item)
+         (family-method (family-schema item category rule)
+                        method-schema
+                        keymap
+                        legends
+                        skin
+                        placement
+                        rime-deps
+                        rime-extra-files))
+       (catalog-entry->list entry)))
+
+(define (make-input-family #:category [category #f]
+                           #:rule [rule #f]
+                           #:method-schema [method-schema #f]
+                           #:keymap [keymap #f]
+                           #:legends [legends #f]
+                           #:skin [skin #f]
+                           #:placement [placement #f]
+                           #:rime-deps [rime-deps #f]
+                           #:rime-extra-files [rime-extra-files #f]
+                           . entries)
+  (append-map (lambda (entry)
+                (family-entry entry
+                              category
+                              rule
+                              method-schema
+                              keymap
+                              legends
+                              skin
+                              placement
+                              rime-deps
+                              rime-extra-files))
+              entries))
+
 (define (make-schema id
                      #:slug [slug id]
                      #:category [category "other"]
@@ -300,6 +408,9 @@
 
 (define-syntax-rule (input-method arg ...)
   (make-input-method arg ...))
+
+(define-syntax-rule (input-family arg ...)
+  (make-input-family arg ...))
 
 (define (catalog-entry->list entry)
   (if (list? entry) entry (list entry)))
