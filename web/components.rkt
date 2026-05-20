@@ -2,7 +2,7 @@
 
 (require racket/list
          racket/string
-         "../input-method/schema.rkt"
+         "../catalog/schemas.rkt"
          "locale.rkt")
 
 (provide schema-id

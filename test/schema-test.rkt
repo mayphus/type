@@ -5,16 +5,16 @@
          racket/list
          racket/runtime-path
          racket/string
-         (prefix-in keyboard: "../keyboard/registry.rkt")
-         (prefix-in schema-index: "../input-method/schema.rkt")
-         (prefix-in calculate: "../input-method/calculate.rkt")
-         (prefix-in rime-registry: "../rime/registry.rkt")
-         (prefix-in flypy: "../rime/flypy.rkt")
-         (prefix-in flypy_14: "../rime/flypy_14.rkt")
-         (prefix-in luna_pinyin: "../rime/luna_pinyin.rkt")
-         (prefix-in pinyin_14: "../rime/pinyin_14.rkt")
-         (prefix-in terra_pinyin: "../rime/terra_pinyin.rkt")
-         (prefix-in jyut6ping3: "../rime/jyut6ping3.rkt")
+         (prefix-in keyboard: "../catalog/keyboard/registry.rkt")
+         (prefix-in schema-index: "../catalog/schemas.rkt")
+         (prefix-in calculate: "../catalog/methods.rkt")
+         (prefix-in rime-registry: "../targets/rime/registry.rkt")
+         (prefix-in flypy: "../targets/rime/flypy.rkt")
+         (prefix-in flypy_14: "../targets/rime/flypy_14.rkt")
+         (prefix-in luna_pinyin: "../targets/rime/luna_pinyin.rkt")
+         (prefix-in pinyin_14: "../targets/rime/pinyin_14.rkt")
+         (prefix-in terra_pinyin: "../targets/rime/terra_pinyin.rkt")
+         (prefix-in jyut6ping3: "../targets/rime/jyut6ping3.rkt")
          "../workflow/build.rkt"
          "../lib/preview/svg.rkt"
          "../targets/yuanshu/skin/core/preview.rkt"
@@ -27,7 +27,7 @@
          (prefix-in zrm18-layout: "../targets/yuanshu/skin/layouts/zrm-18-page.rkt")
          (prefix-in zrm18-aux-layout: "../targets/yuanshu/skin/layouts/zrm-18-aux-page.rkt"))
 
-(define-runtime-path rime-source-dir "../rime")
+(define-runtime-path rime-source-dir "../targets/rime")
 
 (define (generated-file files path)
   (hash-ref files path (lambda () (error 'generated-file "missing ~a" path))))

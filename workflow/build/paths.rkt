@@ -4,7 +4,6 @@
          racket/runtime-path)
 
 (provide root-dir
-         schema-dir
          rime-source-dir
          rime-dir
          profiles-dir
@@ -14,8 +13,7 @@
 
 (define-runtime-path raw-root-dir "../..")
 (define root-dir (simplify-path raw-root-dir))
-(define schema-dir   (build-path root-dir "input-method" "schema"))
-(define rime-source-dir (build-path root-dir "rime"))
+(define rime-source-dir (build-path root-dir "targets" "rime"))
 (define rime-dir     (build-path root-dir "assets" "rime"))
 (define profiles-dir (build-path root-dir "profiles"))
 (define output-dir   (build-path root-dir "output" "rime"))

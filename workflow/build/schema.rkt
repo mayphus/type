@@ -2,9 +2,9 @@
 
 (require racket/list
          racket/string
-         "../../input-method/calculate.rkt"
-         "../../input-method/schema.rkt"
-         "../../rime/registry.rkt"
+         "../../catalog/methods.rkt"
+         "../../catalog/schemas.rkt"
+         "../../targets/rime/registry.rkt"
          "paths.rkt")
 
 (provide generated-config-ids

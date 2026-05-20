@@ -18,9 +18,9 @@
          "forms.rkt"
          "locale.rkt"
          "../workflow/build.rkt"
-         "../input-method/calculate.rkt"
-         "../input-method/schema.rkt"
-         "../keymap/registry.rkt")
+         "../catalog/methods.rkt"
+         "../catalog/schemas.rkt"
+         "../catalog/keymaps.rkt")
 
 (provide keyboard-layout-items
          skin-items

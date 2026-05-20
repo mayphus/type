@@ -19,13 +19,13 @@
 
 (define sources
   (list
-   (dict-source "rime/rime-cantonese/main/jyut6ping3.chars.dict.yaml" "jyut6ping3_dicts/jyut6ping3.chars.dict.yaml" "jyut6ping3.chars" #f)
-   (dict-source "rime/rime-cantonese/main/jyut6ping3.words.dict.yaml" "jyut6ping3_dicts/jyut6ping3.words.dict.yaml" "jyut6ping3.words" #f)
-   (dict-source "rime/rime-cantonese/main/jyut6ping3.phrase.dict.yaml" "jyut6ping3_dicts/jyut6ping3.phrase.dict.yaml" "jyut6ping3.phrase" #f)
-   (dict-source "rime/rime-cantonese/main/jyut6ping3.lettered.dict.yaml" "jyut6ping3_dicts/jyut6ping3.lettered.dict.yaml" "jyut6ping3.lettered" #f)
-   (dict-source "rime/rime-cantonese/main/jyut6ping3.maps.dict.yaml" "jyut6ping3_dicts/jyut6ping3.maps.dict.yaml" "jyut6ping3.maps" #f)
-   (dict-source "rime/rime-cantonese/main/essay-cantonese.txt" "jyut6ping3_dicts/essay-cantonese.txt" #f #f)
-   (dict-source "rime/rime-cantonese/main/symbols_cantonese.yaml" "symbols_cantonese.yaml" #f #f)
+   (dict-source "targets/rime/rime-cantonese/main/jyut6ping3.chars.dict.yaml" "jyut6ping3_dicts/jyut6ping3.chars.dict.yaml" "jyut6ping3.chars" #f)
+   (dict-source "targets/rime/rime-cantonese/main/jyut6ping3.words.dict.yaml" "jyut6ping3_dicts/jyut6ping3.words.dict.yaml" "jyut6ping3.words" #f)
+   (dict-source "targets/rime/rime-cantonese/main/jyut6ping3.phrase.dict.yaml" "jyut6ping3_dicts/jyut6ping3.phrase.dict.yaml" "jyut6ping3.phrase" #f)
+   (dict-source "targets/rime/rime-cantonese/main/jyut6ping3.lettered.dict.yaml" "jyut6ping3_dicts/jyut6ping3.lettered.dict.yaml" "jyut6ping3.lettered" #f)
+   (dict-source "targets/rime/rime-cantonese/main/jyut6ping3.maps.dict.yaml" "jyut6ping3_dicts/jyut6ping3.maps.dict.yaml" "jyut6ping3.maps" #f)
+   (dict-source "targets/rime/rime-cantonese/main/essay-cantonese.txt" "jyut6ping3_dicts/essay-cantonese.txt" #f #f)
+   (dict-source "targets/rime/rime-cantonese/main/symbols_cantonese.yaml" "symbols_cantonese.yaml" #f #f)
    (dict-source "ksqsf/rime-moran/main/moran.base.dict.yaml" "moran_dicts/moran.base.dict.yaml" "moran_dicts/moran.base" "moran.base")
    (dict-source "ksqsf/rime-moran/main/moran.words.dict.yaml" "moran_dicts/moran.words.dict.yaml" "moran_dicts/moran.words" "moran.words")
    (dict-source "ksqsf/rime-moran/main/moran.tencent.dict.yaml" "moran_dicts/moran.tencent.dict.yaml" "moran_dicts/moran.tencent" "moran.tencent")

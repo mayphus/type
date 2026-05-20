@@ -5,7 +5,7 @@
          racket/path
          racket/set
          racket/string
-         "../../rime/registry.rkt"
+         "../../targets/rime/registry.rkt"
          "keyboard.rkt"
          "paths.rkt"
          "schema.rkt"

@@ -11,22 +11,20 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
   `workflow/build/`.
 - `workflow/` contains operational code for build, serve, Kubernetes, dictionary
   updates, Cloudflare route repair, and Yuanshu sync.
-- `dsl/` exposes the repo-wide definition languages for Rime schemas, schema
-  metadata, keyboard catalogs, and YAML objects.
-- `targets/` contains third-party target adapters and reference configs.
+- `type.rkt` is only the product catalog declaration surface for input methods,
+  keyboard variants, Rime ids, target artifacts, and dependencies.
+- `lang/` exposes the repo-wide definition languages for Rime schemas, type
+  catalog declarations, keyboard catalogs, and YAML objects.
+- `targets/` contains platform-specific target renderers, adapters, and
+  reference configs.
 - `web/` contains server-rendered UI pages, components, locale handling, form
   parsing, and the app-specific style DSL.
-- `assets/rime/` holds native Rime YAML and dictionaries.
-- `rime/` holds generated schema modules. It emits Rime YAML from Racket
+- `assets/rime/` holds native upstream Rime YAML and dictionaries.
+- `targets/rime/` holds Rime target modules. It emits Rime YAML from Racket
   definitions; it is not the source of truth for available methods.
-- `input-method/` is the source of truth for concrete input methods. It composes
-  schema, keymap, keyboard dimensions, Rime adapter metadata, and third-party
-  app layout/skin targets.
-- `input-method/schema/` holds pure schema registry entries.
+- `catalog/` derives schemas, input-method records, keymaps, and keyboard
+  dimensions from `type.rkt` and shared layout definitions.
 - `profiles/` contains named build profiles such as the desktop Rime bundle.
-- `keymap/` holds logical key mappings and reusable key labels.
-- `keyboard/` holds skeletons, projections, dimensions, placements,
-  interactions, and the public keyboard resolver.
 - `lib/preview/` contains shared preview layout and SVG rendering code used by
   the web app and Yuanshu build outputs.
 - `lib/yaml/` contains the internal YAML renderer.
@@ -35,13 +33,14 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - Dockerfile and Kubernetes YAML are generated from `workflow/k8s.rkt` into
   temporary paths only when needed; neither artifact is checked in.
 
-Generated Rime modules in `rime/` use `#lang s-exp "../dsl/rime.rkt"` to describe
+Generated Rime modules in `targets/rime/` use `#lang s-exp "../../lang/rime.rkt"` to describe
 the emitted Rime schema/custom YAML directly. The available method list,
 artifact support, dependencies, static Rime files, and Yuanshu layout/skin
-selection are defined once in `input-method/calculate.rkt`; `rime/registry.rkt`
-is only a compatibility view over that catalog. Schema identity and display
-metadata live under `input-method/schema/`. Reusable keyboard dimensions live
-under `keyboard/`; calculated input methods compose schema logic, keymaps,
+selection are declared once in `type.rkt`; `catalog/methods.rkt` derives
+the concrete records, and `targets/rime/registry.rkt` is only a compatibility view over
+that catalog. Schema identity and display
+metadata live in `type.rkt`. Reusable keyboard dimensions live
+under `catalog/keyboard/`; calculated input methods compose schema logic, keymaps,
 keyboard skeletons, projections, placements, and target-specific app behavior.
 Inline `(keyboard ...)` clauses remain the generated Yuanshu skin definition
 surface:
