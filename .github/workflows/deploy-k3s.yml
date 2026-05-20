@@ -34,10 +34,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends librsvg2-bin
 
       - name: Generate deploy artifacts
-        run: racket -e '(require "workflow/k8s.rkt") (render-k8s-directory! (string->path "tmp/k8s")) (render-dockerfile!)'
+        run: racket -e '(require "workflow/k8s.rkt") (render-k8s-directory! (string->path "tmp/k8s")) (render-dockerfile! (string->path "tmp/Dockerfile"))'
 
       - name: Check deploy artifacts
-        run: racket -e '(require "workflow/k8s.rkt") (check-k8s-directory! (string->path "tmp/k8s")) (check-dockerfile!)'
+        run: racket -e '(require "workflow/k8s.rkt") (check-k8s-directory! (string->path "tmp/k8s")) (check-dockerfile! (string->path "tmp/Dockerfile"))'
 
       - name: Validate generated profiles
         run: |
@@ -70,7 +70,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: ./Dockerfile
+          file: ./tmp/Dockerfile
           push: true
           tags: |
             ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}

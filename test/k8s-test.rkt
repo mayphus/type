@@ -2,7 +2,7 @@
 
 (require racket/file
          rackunit
-         "../k8s.rkt")
+         "../workflow/k8s.rkt")
 
 (module+ test
   (test-case "k8s manifests are generated from Racket"

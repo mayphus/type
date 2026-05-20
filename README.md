@@ -16,7 +16,6 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `targets/` contains third-party target adapters and reference configs.
 - `web/` contains server-rendered UI pages, components, locale handling, form
   parsing, and the app-specific style DSL.
-- `k8s.rkt` is the stable facade for generated deploy artifacts.
 - `assets/rime/` holds native Rime YAML and dictionaries.
 - `rime/` holds generated schema modules. It emits Rime YAML from Racket
   definitions; it is not the source of truth for available methods.
@@ -32,8 +31,8 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `lib/yaml/` contains the internal YAML renderer.
 - `targets/yuanshu/skin/` is the Yuanshu skin compiler and adapts generated
   Yuanshu page files into shared preview specs.
-- `Dockerfile` is generated from `k8s.rkt`; Kubernetes YAML is generated into a
-  temporary directory only when needed.
+- Dockerfile and Kubernetes YAML are generated from `workflow/k8s.rkt` into
+  temporary paths only when needed; neither artifact is checked in.
 
 Generated Rime modules in `rime/` use `#lang s-exp "../dsl/rime.rkt"` to describe
 the emitted Rime schema/custom YAML directly. The available method list,
@@ -177,9 +176,9 @@ racket main.rkt build --schema flypy --artifact yuanshu
 ## Deployment
 
 This repo deploys the public web UI and build API together as one Racket app
-on k3s on `pb62`. `k8s.rkt` owns the generated Dockerfile and Kubernetes
-objects; Kubernetes YAML is generated into a temporary Kustomize directory when
-deployment needs it.
+on k3s on `pb62`. `workflow/k8s.rkt` owns the generated Dockerfile and
+Kubernetes objects; both are generated into temporary paths when deployment
+needs them.
 
 GitHub Actions workflows are currently manual-only. For local validation before
 deploying, run:
@@ -194,9 +193,9 @@ racket main.rkt build --schemas all --artifact yuanshu --profile-name all
 
 The GitHub Actions deploy flow builds the repo root into
 `ghcr.io/mayphus/input-foundry`, joins your tailnet with Tailscale OAuth
-credentials, uses `KUBECONFIG_PB62` to reach k3s on `pb62`, renders Kubernetes
-manifests into a temporary job directory, applies them, and updates the image
-tag.
+credentials, uses `KUBECONFIG_PB62` to reach k3s on `pb62`, renders the
+Dockerfile and Kubernetes manifests into a temporary job directory, applies
+them, and updates the image tag.
 
 Required GitHub secrets:
 
@@ -222,7 +221,7 @@ Deployment notes:
   UI is no longer part of this repo.
 - The cert-manager issuer name is currently `letsencrypt`.
 - If your k3s ingress class, cert-manager setup, or runtime image differs,
-  adjust `workflow/k8s.rkt` and regenerate with `racket main.rkt k8s`.
+  adjust `workflow/k8s.rkt` and validate with `racket main.rkt check-k8s`.
 
 ## Current shape
 

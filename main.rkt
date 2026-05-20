@@ -98,9 +98,9 @@
     ['build (run-build args)]
     ['k8s (when (pair? args)
             (error 'k8s "unexpected arguments: ~a" (~a args)))
-          (define k8s-dir (render-deploy-artifacts!))
-          (printf "Rendered deploy artifacts. Kubernetes manifests: ~a\n"
-                  (path->string k8s-dir))]
+          (define deploy-dir (render-deploy-artifacts!))
+          (printf "Rendered deploy artifacts: ~a\n"
+                  (path->string deploy-dir))]
     ['check-k8s (when (pair? args)
                   (error 'check-k8s "unexpected arguments: ~a" (~a args)))
                 (check-deploy-artifacts!)

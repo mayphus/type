@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require racket/file
-         racket/runtime-path
+         racket/path
          racket/string
          "../lib/yaml/yaml.rkt")
 
@@ -15,8 +15,6 @@
          check-k8s!
          render-deploy-artifacts!
          check-deploy-artifacts!)
-
-(define-runtime-path dockerfile-path "../Dockerfile")
 
 (define app-name "input-foundry")
 (define namespace-name "input-foundry")
@@ -246,8 +244,9 @@
       (lambda (out)
         (display (yaml->string (cdr entry)) out)))))
 
-(define (render-dockerfile!)
-  (call-with-output-file dockerfile-path
+(define (render-dockerfile! path)
+  (make-directory* (or (path-only path) (current-directory)))
+  (call-with-output-file path
     #:exists 'replace
     (lambda (out)
       (display dockerfile-text out))))
@@ -282,22 +281,38 @@
     (lambda ()
       (delete-directory/files dir #:must-exist? #f))))
 
-(define (check-dockerfile!)
+(define (check-dockerfile! path)
   (define actual
-    (and (file-exists? dockerfile-path)
-         (file->string dockerfile-path)))
+    (and (file-exists? path)
+         (file->string path)))
   (unless (equal? actual dockerfile-text)
     (error 'check-dockerfile!
            "generated Dockerfile is stale: ~a"
-           (path->string dockerfile-path))))
+           (path->string path))))
+
+(define (make-deploy-temp-dir!)
+  (make-temporary-file "input-foundry-deploy-~a" 'directory))
 
 (define (render-deploy-artifacts!)
-  (render-dockerfile!)
-  (render-k8s!))
+  (define dir (make-deploy-temp-dir!))
+  (define k8s-dir (build-path dir "k8s"))
+  (render-dockerfile! (build-path dir "Dockerfile"))
+  (render-k8s-directory! k8s-dir)
+  dir)
 
 (define (check-deploy-artifacts!)
-  (check-k8s!)
-  (check-dockerfile!))
+  (define dir (make-deploy-temp-dir!))
+  (dynamic-wind
+    void
+    (lambda ()
+      (define dockerfile (build-path dir "Dockerfile"))
+      (define k8s-dir (build-path dir "k8s"))
+      (render-dockerfile! dockerfile)
+      (render-k8s-directory! k8s-dir)
+      (check-dockerfile! dockerfile)
+      (check-k8s-directory! k8s-dir))
+    (lambda ()
+      (delete-directory/files dir #:must-exist? #f))))
 
 (module+ main
   (render-deploy-artifacts!))
