@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "luna-pinyin" #:category "full-pinyin"
          #:en-name "Luna Pinyin" #:zh-name "朙月拼音"

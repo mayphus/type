@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "stroke" #:category "shape"
          #:en-name "Stroke" #:zh-name "五筆畫"

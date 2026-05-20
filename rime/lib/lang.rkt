@@ -1,5 +1,5 @@
 #lang racket/base
 
-(require "private.rkt")
+(require "../../dsl/rime.rkt")
 
-(provide (all-from-out "private.rkt"))
+(provide (all-from-out "../../dsl/rime.rkt"))

@@ -3,8 +3,8 @@
 (require racket/format
          racket/list
          racket/set
-         "../keyboard/registry.rkt"
-         "../rime/registry.rkt"
+         "../../keyboard/registry.rkt"
+         "../../rime/registry.rkt"
          "paths.rkt")
 
 (provide keyboard-layout-module?

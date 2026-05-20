@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "terra-pinyin" #:category "full-pinyin"
          #:en-name "Terra Pinyin" #:zh-name "地球拼音"

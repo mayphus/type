@@ -15,17 +15,17 @@
          (prefix-in pinyin_14: "../rime/pinyin_14.rkt")
          (prefix-in terra_pinyin: "../rime/terra_pinyin.rkt")
          (prefix-in jyut6ping3: "../rime/jyut6ping3.rkt")
-         "../build.rkt"
+         "../workflow/build.rkt"
          "../lib/preview/svg.rkt"
-         "../yuanshu/skin/core/preview.rkt"
-         "../yuanshu/skin/layouts/bopomofo-page.rkt"
-         (prefix-in flypy14-layout: "../yuanshu/skin/layouts/flypy-14-page.rkt")
-         (prefix-in flypy18-layout: "../yuanshu/skin/layouts/flypy-18-page.rkt")
-         (prefix-in pinyin14-layout: "../yuanshu/skin/layouts/pinyin-14-page.rkt")
-         "../yuanshu/skin/layouts/shuffle-17-pages.rkt"
-         "../yuanshu/skin/layouts/standard-phone-pinyin-page.rkt"
-         (prefix-in zrm18-layout: "../yuanshu/skin/layouts/zrm-18-page.rkt")
-         (prefix-in zrm18-aux-layout: "../yuanshu/skin/layouts/zrm-18-aux-page.rkt"))
+         "../targets/yuanshu/skin/core/preview.rkt"
+         "../targets/yuanshu/skin/layouts/bopomofo-page.rkt"
+         (prefix-in flypy14-layout: "../targets/yuanshu/skin/layouts/flypy-14-page.rkt")
+         (prefix-in flypy18-layout: "../targets/yuanshu/skin/layouts/flypy-18-page.rkt")
+         (prefix-in pinyin14-layout: "../targets/yuanshu/skin/layouts/pinyin-14-page.rkt")
+         "../targets/yuanshu/skin/layouts/shuffle-17-pages.rkt"
+         "../targets/yuanshu/skin/layouts/standard-phone-pinyin-page.rkt"
+         (prefix-in zrm18-layout: "../targets/yuanshu/skin/layouts/zrm-18-page.rkt")
+         (prefix-in zrm18-aux-layout: "../targets/yuanshu/skin/layouts/zrm-18-aux-page.rkt"))
 
 (define-runtime-path rime-source-dir "../rime")
 

@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "pinyin-simp" #:category "full-pinyin"
          #:en-name "Pinyin Simplified" #:zh-name "袖珍簡化字拼音"

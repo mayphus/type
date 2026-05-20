@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "quick5" #:category "shape"
          #:en-name "Quick 5" #:zh-name "速成"

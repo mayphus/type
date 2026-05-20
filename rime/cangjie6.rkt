@@ -1,4 +1,4 @@
-#lang s-exp "lib/lang.rkt"
+#lang s-exp "../dsl/rime.rkt"
 
 (rime-schema cangjie6
   (name "蒼頡六代")

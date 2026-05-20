@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "jyut6ping3" #:category "full-pinyin"
          #:en-name "Jyutping" #:zh-name "粵拼"

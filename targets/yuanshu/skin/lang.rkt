@@ -3,7 +3,7 @@
 ;; Yuanshu skin DSL language module
 ;;
 ;; Usage in generated Yuanshu skin modules:
-;;   #lang s-exp "yuanshu/skin/lang.rkt"
+;;   #lang s-exp "targets/yuanshu/skin/lang.rkt"
 ;;
 ;;   (yuanshu-skin <slug>
 ;;     (triggers <schema-id> ... | default)
@@ -78,7 +78,7 @@
          "core/dsl.rkt"
          "core/docs.rkt"
          "core/preview.rkt"
-         "../../lib/preview/svg.rkt"
+         "../../../lib/preview/svg.rkt"
          "core/visual-policy.rkt"
          "presets/standard.rkt"
          "keysets/pinyin-common.rkt"
@@ -108,7 +108,7 @@
                        "core/dsl.rkt"
                        "core/docs.rkt"
                        "core/preview.rkt"
-                       "../../lib/preview/svg.rkt"
+                       "../../../lib/preview/svg.rkt"
                        "core/visual-policy.rkt"
                        "presets/standard.rkt"
                        "keysets/pinyin-common.rkt"

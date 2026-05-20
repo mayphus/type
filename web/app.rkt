@@ -12,15 +12,15 @@
          net/url
          json
          style/main
-         "lib/preview/svg.rkt"
-         "web/app-style.rkt"
-         "web/pages.rkt"
-         "web/forms.rkt"
-         "web/locale.rkt"
-         "build.rkt"
-         "input-method/calculate.rkt"
-         "input-method/schema.rkt"
-         "keymap/registry.rkt")
+         "../lib/preview/svg.rkt"
+         "app-style.rkt"
+         "pages.rkt"
+         "forms.rkt"
+         "locale.rkt"
+         "../workflow/build.rkt"
+         "../input-method/calculate.rkt"
+         "../input-method/schema.rkt"
+         "../keymap/registry.rkt")
 
 (provide keyboard-layout-items
          skin-items
@@ -31,7 +31,7 @@
 
 ;; ---- Helpers ---------------------------------------------------------------
 
-(define-runtime-path support-svg-path "static/support-8f6d2b.svg")
+(define-runtime-path support-svg-path "../static/support-8f6d2b.svg")
 
 (define (valid-id? s)
   (and (string? s) (regexp-match? #rx"^[a-zA-Z0-9_-]+$" s)))

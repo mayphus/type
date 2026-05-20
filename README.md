@@ -4,16 +4,22 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 
 ## Layout
 
-- `web.rkt` serves the public museum HTML, keyboard layout previews, and ZIP builds.
-- `gui.rkt` opens a native Racket GUI for local Yuanshu builds and iPhone pushes.
-- `build.rkt` is the callable build facade; focused build modules live in `build/`.
+- `web/app.rkt` serves the public museum HTML, keyboard layout previews, and ZIP builds.
+- `workflow/gui.rkt` opens a native Racket GUI for local Yuanshu builds and
+  iPhone pushes.
+- `workflow/build.rkt` is the build facade; focused build modules live in
+  `workflow/build/`.
+- `workflow/` contains operational code for build, serve, Kubernetes, dictionary
+  updates, Cloudflare route repair, and Yuanshu sync.
+- `dsl/` exposes the repo-wide definition languages for Rime schemas, schema
+  metadata, keyboard catalogs, and YAML objects.
+- `targets/` contains third-party target adapters and reference configs.
 - `web/` contains server-rendered UI pages, components, locale handling, form
   parsing, and the app-specific style DSL.
-- `k8s.rkt` generates and checks the Kubernetes YAML.
+- `k8s.rkt` is the stable facade for generated deploy artifacts.
 - `assets/rime/` holds native Rime YAML and dictionaries.
-- `rime/` holds the Rime adapter DSL and generated schema modules. It emits Rime
-  YAML from Racket definitions; it is not the source of truth for available
-  methods.
+- `rime/` holds generated schema modules. It emits Rime YAML from Racket
+  definitions; it is not the source of truth for available methods.
 - `input-method/` is the source of truth for concrete input methods. It composes
   schema, keymap, keyboard dimensions, Rime adapter metadata, and third-party
   app layout/skin targets.
@@ -24,12 +30,12 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `lib/preview/` contains shared preview layout and SVG rendering code used by
   the web app and Yuanshu build outputs.
 - `lib/yaml/` contains the internal YAML renderer.
-- `yuanshu/skin/` is the Yuanshu skin compiler and adapts generated Yuanshu
-  page files into shared preview specs.
-- `tools/` contains maintenance scripts.
-- `k8s/` is ignored generated deploy output from `k8s.rkt`.
+- `targets/yuanshu/skin/` is the Yuanshu skin compiler and adapts generated
+  Yuanshu page files into shared preview specs.
+- `Dockerfile` is generated from `k8s.rkt`; Kubernetes YAML is generated into a
+  temporary directory only when needed.
 
-Generated Rime modules in `rime/` use `#lang s-exp "lib/lang.rkt"` to describe
+Generated Rime modules in `rime/` use `#lang s-exp "../dsl/rime.rkt"` to describe
 the emitted Rime schema/custom YAML directly. The available method list,
 artifact support, dependencies, static Rime files, and Yuanshu layout/skin
 selection are defined once in `input-method/calculate.rkt`; `rime/registry.rkt`
@@ -123,8 +129,8 @@ other Yuanshu layouts are left untouched.
 
 ## Build logic
 
-`build.rkt` is the shared build facade for both web and GUI. The implementation
-is split under `build/`:
+`workflow/build.rkt` is the shared build facade for both web and GUI. The
+implementation is split under `workflow/build/`:
 
 - `paths.rkt` owns shared paths and tool locations.
 - `schema.rkt` resolves schemas, profiles, artifacts, and asset lists.
@@ -150,13 +156,13 @@ The build flow is:
    unpacked skin directory is provided, it also refreshes only those selected
    `/Skins/` folders.
 
-Regenerate Kubernetes manifests after changing deploy settings:
+Regenerate deploy artifacts after changing deploy settings:
 
 ```sh
 racket main.rkt k8s
 ```
 
-Check generated Kubernetes manifests:
+Check generated deploy artifacts:
 
 ```sh
 racket main.rkt check-k8s
@@ -171,13 +177,26 @@ racket main.rkt build --schema flypy --artifact yuanshu
 ## Deployment
 
 This repo deploys the public web UI and build API together as one Racket app
-on k3s on `pb62`. `k8s.rkt` owns the Kubernetes objects; the YAML files in
-`k8s/` are generated for Kustomize.
+on k3s on `pb62`. `k8s.rkt` owns the generated Dockerfile and Kubernetes
+objects; Kubernetes YAML is generated into a temporary Kustomize directory when
+deployment needs it.
+
+GitHub Actions workflows are currently manual-only. For local validation before
+deploying, run:
+
+```sh
+raco test test
+racket main.rkt k8s
+racket main.rkt check-k8s
+racket main.rkt build --schemas double-pinyin-flypy,cangjie6 --artifact rime --profile-name desktop
+racket main.rkt build --schemas all --artifact yuanshu --profile-name all
+```
 
 The GitHub Actions deploy flow builds the repo root into
 `ghcr.io/mayphus/input-foundry`, joins your tailnet with Tailscale OAuth
-credentials, uses `KUBECONFIG_PB62` to reach k3s on `pb62`, applies `k8s/`, and
-updates the image tag.
+credentials, uses `KUBECONFIG_PB62` to reach k3s on `pb62`, renders Kubernetes
+manifests into a temporary job directory, applies them, and updates the image
+tag.
 
 Required GitHub secrets:
 
@@ -202,8 +221,8 @@ Deployment notes:
   hostnames redirect permanently to `type.mayphus.org`, and the old Worker web
   UI is no longer part of this repo.
 - The cert-manager issuer name is currently `letsencrypt`.
-- If your k3s ingress class or cert-manager setup differs, adjust `k8s.rkt` and
-  regenerate with `racket k8s.rkt`.
+- If your k3s ingress class, cert-manager setup, or runtime image differs,
+  adjust `workflow/k8s.rkt` and regenerate with `racket main.rkt k8s`.
 
 ## Current shape
 

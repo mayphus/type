@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "catalog.rkt")
+(require "../dsl/keyboard.rkt")
 
 (provide keyboard-layout-definitions
          keyboard-layout-definition-ref)

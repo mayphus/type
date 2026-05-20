@@ -1,4 +1,4 @@
-#lang s-exp "lib/lang.rkt"
+#lang s-exp "../dsl/rime.rkt"
 
 (rime-schema flypy_14
   (name "小鶴雙拼 14鍵")

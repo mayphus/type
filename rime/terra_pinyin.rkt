@@ -1,4 +1,4 @@
-#lang s-exp "lib/lang.rkt"
+#lang s-exp "../dsl/rime.rkt"
 
 (rime-schema terra_pinyin
   (name "地球拼音")

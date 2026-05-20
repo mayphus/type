@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require racket/format
-         "../lib/yaml/dsl.rkt")
+         "../../dsl/yaml.rkt")
 
 (provide yuanshu-common-patch
          yuanshu-script-patch

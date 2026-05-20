@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "../lib/lang.rkt"
+(require "../../dsl/rime.rkt"
          (for-syntax racket/base
                      racket/list
                      racket/syntax
@@ -169,7 +169,7 @@
                                [static-dep-dirs #,static-dirs-id]
                                [chinese-name #,chinese-name-id]
                                [schema-summary #,schema-summary-id]))))
-     (define lang-path (datum->syntax stx "lib/lang.rkt"))
+     (define lang-path (datum->syntax stx "../dsl/rime.rkt"))
      (define self-path (datum->syntax stx "families/flypy.rkt"))
      (with-syntax ([(schema-id ...) schema-ids]
                    [flypy-schema (datum->syntax #f 'flypy-schema)]

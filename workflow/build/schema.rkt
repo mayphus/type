@@ -2,10 +2,10 @@
 
 (require racket/list
          racket/string
-         "../default-profile.rkt"
-         "../input-method/calculate.rkt"
-         "../input-method/schema.rkt"
-         "../rime/registry.rkt"
+         "../../default-profile.rkt"
+         "../../input-method/calculate.rkt"
+         "../../input-method/schema.rkt"
+         "../../rime/registry.rkt"
          "paths.rkt")
 
 (provide generated-config-ids

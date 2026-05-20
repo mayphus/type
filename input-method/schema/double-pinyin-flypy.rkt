@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "double-pinyin-flypy" #:category "double-pinyin"
          #:en-name "Flypy" #:zh-name "小鶴雙拼"

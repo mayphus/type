@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "wubi-trad" #:category "shape"
          #:en-name "Wubi Traditional" #:zh-name "五筆·簡入繁出"

@@ -1,4 +1,4 @@
-#lang s-exp "lib/lang.rkt"
+#lang s-exp "../dsl/rime.rkt"
 
 (rime-schema luna_pinyin
   (name "朙月拼音")

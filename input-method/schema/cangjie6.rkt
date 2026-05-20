@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "cangjie6" #:category "shape"
          #:en-name "Cangjie 6" #:zh-name "蒼頡六代"

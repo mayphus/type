@@ -1,4 +1,4 @@
-#lang s-exp "lib/lang.rkt"
+#lang s-exp "../dsl/rime.rkt"
 
 (rime-schema pinyin_14
   (name "朙月拼音-14鍵")

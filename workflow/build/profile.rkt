@@ -5,8 +5,8 @@
          racket/path
          racket/set
          racket/string
-         "../default-profile.rkt"
-         "../rime/registry.rkt"
+         "../../default-profile.rkt"
+         "../../rime/registry.rkt"
          "keyboard.rkt"
          "paths.rkt"
          "schema.rkt"

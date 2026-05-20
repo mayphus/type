@@ -1,9 +1,16 @@
 #lang racket/base
 
-(require rackunit
+(require racket/file
+         rackunit
          "../k8s.rkt")
 
 (module+ test
   (test-case "k8s manifests are generated from Racket"
-    (render-k8s!)
-    (check-k8s!)))
+    (define dir (make-temporary-file "input-foundry-k8s-test-~a" 'directory))
+    (dynamic-wind
+      void
+      (lambda ()
+        (render-k8s-directory! dir)
+        (check-k8s-directory! dir))
+      (lambda ()
+        (delete-directory/files dir #:must-exist? #f)))))

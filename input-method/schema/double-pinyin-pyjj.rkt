@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "double-pinyin-pyjj" #:slug "double-pinyin-pyjj" #:category "double-pinyin"
          #:en-name "Double Pinyin: PYJJ" #:zh-name "拼音加加雙拼"

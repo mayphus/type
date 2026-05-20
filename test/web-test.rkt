@@ -4,7 +4,7 @@
          net/url
          racket/promise
          web-server/http
-         "../web.rkt")
+         "../web/app.rkt")
 
 (define (req path host)
   (request #"GET"

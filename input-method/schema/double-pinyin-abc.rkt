@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "double-pinyin-abc" #:slug "double-pinyin-abc" #:category "double-pinyin"
          #:en-name "Double Pinyin: ABC" #:zh-name "智能ABC雙拼"

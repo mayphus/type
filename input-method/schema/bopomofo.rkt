@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "bopomofo" #:category "zhuyin"
          #:en-name "Zhuyin" #:zh-name "注音"

@@ -5,7 +5,7 @@
          racket/set
          racket/string
          racket/system
-         "../default-profile.rkt"
+         "../../default-profile.rkt"
          "paths.rkt"
          "profile.rkt"
          "util.rkt")

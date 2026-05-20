@@ -13,11 +13,9 @@
       (error 'dev-web "racket not found in PATH")))
 
 (define watch-roots
-  '("web.rkt"
-    "build.rkt"
+  '("workflow"
     "web"
     "input-method"
-    "preview"
     "static"
     "lib"))
 
@@ -72,7 +70,8 @@
      "INPUT_FOUNDRY_DEV_RELOAD=1"
      (string-append "INPUT_FOUNDRY_DEV_RELOAD_TOKEN=" token)
      (path->string racket-exe)
-     "web.rkt"))
+     "main.rkt"
+     "serve"))
   (set! current-server proc)
   (log "started Racket web server with reload token ~a" token))
 

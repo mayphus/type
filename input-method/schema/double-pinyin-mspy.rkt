@@ -1,5 +1,5 @@
 #lang racket/base
-(require "../define-schema.rkt")
+(require "../../dsl/schema.rkt")
 
 (define-schema "double-pinyin-mspy" #:slug "double-pinyin-mspy" #:category "double-pinyin"
          #:en-name "Double Pinyin: MSPY" #:zh-name "微軟雙拼"

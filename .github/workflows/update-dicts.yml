@@ -1,8 +1,7 @@
 name: update-dicts
 
 on:
-  schedule:
-    - cron: "30 20 * * 0"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -32,19 +31,21 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends librsvg2-bin
 
       - name: Update dictionary files
-        run: racket -e '(require "tools/update-dicts.rkt") (update-dicts!)'
+        run: racket -e '(require "workflow/update-dicts.rkt") (update-dicts!)'
 
       - name: Run Racket tests
         run: raco test test
 
-      - name: Generate k8s manifests
-        run: racket k8s.rkt
+      - name: Generate deploy artifacts
+        run: racket -e '(require "workflow/k8s.rkt") (render-k8s-directory! (string->path "tmp/k8s")) (render-dockerfile!)'
 
-      - name: Check generated k8s manifests
-        run: racket -e '(require "k8s.rkt") (check-k8s!)'
+      - name: Check deploy artifacts
+        run: racket -e '(require "workflow/k8s.rkt") (check-k8s-directory! (string->path "tmp/k8s")) (check-dockerfile!)'
 
       - name: Validate generated profiles
-        run: racket -e '(require "build.rkt") (build-profile! "desktop") (build-profile! "all")'
+        run: |
+          racket main.rkt build --schemas double-pinyin-flypy,cangjie6 --artifact rime --profile-name desktop
+          racket main.rkt build --schemas all --artifact yuanshu --profile-name all
 
       - name: Create update pull request
         uses: peter-evans/create-pull-request@v8
@@ -57,6 +58,7 @@ jobs:
 
             Validation:
             - `raco test test`
-            - `racket -e '(require "build.rkt") (build-profile! "desktop") (build-profile! "all")'`
+            - `racket main.rkt build --schemas double-pinyin-flypy,cangjie6 --artifact rime --profile-name desktop`
+            - `racket main.rkt build --schemas all --artifact yuanshu --profile-name all`
           add-paths: |
-            rime/**
+            assets/rime/**
