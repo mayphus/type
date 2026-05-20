@@ -199,6 +199,7 @@
 (define dockerfile-packages
   '("ca-certificates"
     "fonts-noto-cjk"
+    "git"
     "libgdk-pixbuf-2.0-0"
     "libgdk-pixbuf-xlib-2.0-0"
     "libglib2.0-0"
@@ -221,6 +222,8 @@
       (format "    ~a ~a" package "\\"))
     "\n")
    "\n && rm -rf /var/lib/apt/lists/*\n"
+   "\n"
+   "RUN raco pkg install --auto --batch --scope installation https://github.com/mayphus/style.git\n"
    "\n"
    "WORKDIR /app\n"
    "COPY . .\n"

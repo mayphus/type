@@ -4,6 +4,7 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     ca-certificates \
     fonts-noto-cjk \
+    git \
     libgdk-pixbuf-2.0-0 \
     libgdk-pixbuf-xlib-2.0-0 \
     libglib2.0-0 \
@@ -15,6 +16,8 @@ RUN apt-get update \
     racket \
     zip \
  && rm -rf /var/lib/apt/lists/*
+
+RUN raco pkg install --auto --batch --scope installation https://github.com/mayphus/style.git
 
 WORKDIR /app
 COPY . .
