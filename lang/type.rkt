@@ -8,12 +8,14 @@
          (struct-out schema-declaration)
          (struct-out rime-config)
          (struct-out layout-declaration)
+         (struct-out family-layout-template)
          define-input-methods
          schema
          method
          keyboard
          input-method
          input-family
+         family-layout
          rime
          layout)
 
@@ -82,6 +84,16 @@
    rime-extra-files
    rime-extra-dirs
    rime-artifacts)
+  #:transparent)
+
+(struct family-layout-template
+  (suffix
+   keyboard-id
+   generated-skin-id
+   skin-suffix
+   placement
+   rime-source-id
+   rime-source-suffix)
   #:transparent)
 
 (define (localized en zh)
@@ -195,6 +207,21 @@
                       rime-extra-files
                       rime-extra-dirs
                       rime-artifacts))
+
+(define (make-family-layout suffix
+                            #:keyboard keyboard-id
+                            #:generated-skin [generated-skin-id #f]
+                            #:skin-suffix [skin-suffix suffix]
+                            #:placement [placement 'standard-center]
+                            #:rime-source [rime-source-id #f]
+                            #:rime-source-suffix [rime-source-suffix #f])
+  (family-layout-template suffix
+                          keyboard-id
+                          (target-id generated-skin-id)
+                          skin-suffix
+                          placement
+                          (target-id rime-source-id)
+                          rime-source-suffix))
 
 (define (first-rime-config clauses)
   (for/first ([clause (in-list clauses)]
@@ -319,29 +346,81 @@
                          (input-method-keyboard-rime-extra-dirs item)
                          (input-method-keyboard-rime-artifacts item)))
 
-(define (family-method item method-schema keymap legends skin placement rime-deps rime-extra-files)
+(define (append-target-suffix value suffix)
+  (and value suffix (string-append value (target-id suffix))))
+
+(define (templated-family-keyboard base template)
+  (define next-source
+    (cond
+      [(and (input-method-keyboard-rime-generated? base)
+            (family-layout-template-rime-source-id template))
+       (family-layout-template-rime-source-id template)]
+      [(and (input-method-keyboard-rime-generated? base)
+            (family-layout-template-rime-source-suffix template))
+       (append-target-suffix (input-method-keyboard-rime-source-id base)
+                             (family-layout-template-rime-source-suffix template))]
+      [else (input-method-keyboard-rime-source-id base)]))
+  (input-method-keyboard
+   (string-append (input-method-keyboard-recipe-id base)
+                  (family-layout-template-suffix template))
+   (family-layout-template-keyboard-id template)
+   (if (and (input-method-keyboard-rime-generated? base)
+            (family-layout-template-generated-skin-id template))
+       (family-layout-template-generated-skin-id template)
+       (append-target-suffix (input-method-keyboard-layout-id base)
+                             (family-layout-template-skin-suffix template)))
+   (family-layout-template-placement template)
+   #f
+   #f
+   next-source
+   (if (equal? next-source (input-method-keyboard-rime-source-id base))
+       (input-method-keyboard-rime-config-id base)
+       #f)
+   (input-method-keyboard-rime-generated? base)
+   (input-method-keyboard-rime-package? base)
+   (input-method-keyboard-rime-custom? base)
+   (input-method-keyboard-rime-deps base)
+   (input-method-keyboard-rime-extra-files base)
+   (input-method-keyboard-rime-extra-dirs base)
+   (input-method-keyboard-rime-artifacts base)))
+
+(define (family-template-keyboards method-id keyboards templates)
+  (define base
+    (for/first ([item (in-list keyboards)]
+                #:when (equal? (input-method-keyboard-recipe-id item) method-id))
+      item))
+  (if base
+      (append keyboards
+              (map (lambda (template) (templated-family-keyboard base template))
+                   templates))
+      keyboards))
+
+(define (family-method item method-schema keymap legends skin placement rime-deps rime-extra-files layout-templates)
   (if (input-method-dimension? item)
-      (input-method-dimension
-       (input-method-dimension-id item)
-       (if (and method-schema
-                (equal? (input-method-dimension-schema item)
-                        (input-method-dimension-id item)))
-           method-schema
-           (input-method-dimension-schema item))
-       (if (and keymap
-                (equal? (input-method-dimension-keymap item)
-                        (input-method-dimension-id item)))
-           keymap
-           (input-method-dimension-keymap item))
-       (if (and legends (null? (input-method-dimension-legends item)))
-           legends
-           (input-method-dimension-legends item))
-       (map (lambda (keyboard)
-              (family-keyboard keyboard skin placement rime-deps rime-extra-files))
-            (input-method-dimension-keyboards item)))
+      (let* ([method-id (input-method-dimension-id item)]
+             [keyboards
+              (map (lambda (keyboard)
+                     (family-keyboard keyboard skin placement rime-deps rime-extra-files))
+                   (input-method-dimension-keyboards item))])
+        (input-method-dimension
+         method-id
+         (if (and method-schema
+                  (equal? (input-method-dimension-schema item)
+                          method-id))
+             method-schema
+             (input-method-dimension-schema item))
+         (if (and keymap
+                  (equal? (input-method-dimension-keymap item)
+                          method-id))
+             keymap
+             (input-method-dimension-keymap item))
+         (if (and legends (null? (input-method-dimension-legends item)))
+             legends
+             (input-method-dimension-legends item))
+         (family-template-keyboards method-id keyboards layout-templates)))
       item))
 
-(define (family-entry entry category rule method-schema keymap legends skin placement rime-deps rime-extra-files)
+(define (family-entry entry category rule method-schema keymap legends skin placement rime-deps rime-extra-files layout-templates)
   (map (lambda (item)
          (family-method (family-schema item category rule)
                         method-schema
@@ -350,7 +429,8 @@
                         skin
                         placement
                         rime-deps
-                        rime-extra-files))
+                        rime-extra-files
+                        layout-templates))
        (catalog-entry->list entry)))
 
 (define (make-input-family #:category [category #f]
@@ -362,7 +442,9 @@
                            #:placement [placement #f]
                            #:rime-deps [rime-deps #f]
                            #:rime-extra-files [rime-extra-files #f]
-                           . entries)
+                           . clauses)
+  (define layout-templates (filter family-layout-template? clauses))
+  (define entries (filter (lambda (clause) (not (family-layout-template? clause))) clauses))
   (append-map (lambda (entry)
                 (family-entry entry
                               category
@@ -373,7 +455,8 @@
                               skin
                               placement
                               rime-deps
-                              rime-extra-files))
+                              rime-extra-files
+                              layout-templates))
               entries))
 
 (define (make-schema id
@@ -405,6 +488,9 @@
 
 (define-syntax-rule (layout arg ...)
   (make-layout arg ...))
+
+(define-syntax-rule (family-layout arg ...)
+  (make-family-layout arg ...))
 
 (define-syntax-rule (input-method arg ...)
   (make-input-method arg ...))
