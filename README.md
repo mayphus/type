@@ -31,15 +31,33 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
   temporary paths only when needed; neither artifact is checked in.
 
 Generated Rime modules in `targets/rime/` use `#lang s-exp "../../lang/rime.rkt"` to describe
-the emitted Rime schema/custom YAML directly. The available method list,
-artifact support, dependencies, static Rime files, and Yuanshu layout/skin
-selection are declared once in `type.rkt`; `catalog/methods.rkt` derives
-the concrete records and Rime-facing build selectors. Schema identity and display
-metadata live in `type.rkt`. Reusable keyboard dimensions live in
-`catalog/keyboard.rkt`; calculated input methods compose schema logic, keymaps,
-keyboard skeletons, projections, placements, and target-specific app behavior.
+the emitted Rime schema/custom YAML directly. Supported input methods are
+declared once in `type.rkt` with nested `(rime ...)` and `(layout ...)` clauses;
+`catalog/methods.rkt` derives the concrete records and Rime-facing build
+selectors. Schema identity and display metadata live in `type.rkt`. Reusable
+keyboard dimensions live in `catalog/keyboard.rkt`; calculated input methods
+compose schema logic, keymaps, keyboard skeletons, projections, placements, and
+target-specific app behavior.
 Inline `(keyboard ...)` clauses remain the generated Yuanshu skin definition
 surface:
+
+```racket
+(input-method "double-pinyin-flypy"
+  #:category "double-pinyin"
+  #:name '("Flypy" "小鶴雙拼")
+  #:keymap 'flypy
+  #:legends '(abc flypy)
+  (rime #:source "flypy" #:config "flypy" #:generated? #t #:custom? #t)
+  (layout "double-pinyin-flypy"
+    #:keyboard 'standard-26
+    #:skin "flypy"
+    #:placement 'split-flypy)
+  (layout "double-pinyin-flypy-14"
+    #:keyboard 'compact-14
+    #:skin "flypy_14"
+    #:placement 'compact-center
+    #:rime-source "flypy_14"))
+```
 
 ```racket
 (rime-schema flypy_14
