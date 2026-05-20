@@ -23,6 +23,7 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
   schema, keymap, keyboard dimensions, Rime adapter metadata, and third-party
   app layout/skin targets.
 - `input-method/schema/` holds pure schema registry entries.
+- `profiles/` contains named build profiles such as the desktop Rime bundle.
 - `keymap/` holds logical key mappings and reusable key labels.
 - `keyboard/` holds skeletons, projections, dimensions, placements,
   interactions, and the public keyboard resolver.

@@ -1,9 +1,8 @@
 #lang racket/base
 
-(provide default-rime-profile
-         default-desktop-profile)
+(provide profile)
 
-(define default-rime-profile
+(define profile
   (hash 'schemas         '("cangjie5"
                            "cangjie5_express"
                            "cangjie6"
@@ -24,5 +23,3 @@
                            "wubi_trad")
         'extra-src-files '("squirrel.custom.yaml")
         'artifact        "rime"))
-
-(define default-desktop-profile default-rime-profile)

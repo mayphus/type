@@ -5,9 +5,9 @@
          racket/set
          racket/string
          racket/system
-         "../../default-profile.rkt"
          "paths.rkt"
          "profile.rkt"
+         "schema.rkt"
          "util.rkt")
 
 (provide deploy-desktop!)
@@ -66,11 +66,12 @@
   (dynamic-wind
     void
     (lambda ()
-      (build-output! #:schemas (hash-ref default-desktop-profile 'schemas '())
+      (define desktop-profile (named-rime-profile "desktop"))
+      (build-output! #:schemas (hash-ref desktop-profile 'schemas '())
                      #:artifact "rime"
                      #:out-dir build-out
                      #:profile-name "desktop"
-                     #:extra-src-files (hash-ref default-desktop-profile 'extra-src-files '())
+                     #:extra-src-files (hash-ref desktop-profile 'extra-src-files '())
                      #:skip-default-custom? #f)
 
       (make-directory* target-dir)

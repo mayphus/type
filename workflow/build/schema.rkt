@@ -2,7 +2,6 @@
 
 (require racket/list
          racket/string
-         "../../default-profile.rkt"
          "../../input-method/calculate.rkt"
          "../../input-method/schema.rkt"
          "../../rime/registry.rkt"
@@ -64,7 +63,6 @@
 
 (define (named-rime-profile name)
   (cond
-    [(equal? name "desktop") default-desktop-profile]
     [(equal? name "all") all-mobile-profile]
     [else (load-profile name)]))
 
