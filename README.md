@@ -39,8 +39,8 @@ artifact support, dependencies, static Rime files, and Yuanshu layout/skin
 selection are declared once in `type.rkt`; `catalog/methods.rkt` derives
 the concrete records, and `targets/rime/registry.rkt` is only a compatibility view over
 that catalog. Schema identity and display
-metadata live in `type.rkt`. Reusable keyboard dimensions live
-under `catalog/keyboard/`; calculated input methods compose schema logic, keymaps,
+metadata live in `type.rkt`. Reusable keyboard dimensions live in
+`catalog/keyboard.rkt`; calculated input methods compose schema logic, keymaps,
 keyboard skeletons, projections, placements, and target-specific app behavior.
 Inline `(keyboard ...)` clauses remain the generated Yuanshu skin definition
 surface:
@@ -179,8 +179,8 @@ on k3s on `pb62`. `build/k8s.rkt` owns the generated Dockerfile and
 Kubernetes objects; both are generated into temporary paths when deployment
 needs them.
 
-GitHub Actions workflows are currently manual-only. For local validation before
-deploying, run:
+There is no checked-in GitHub Actions deployment path right now. Validate and
+deploy from a local machine:
 
 ```sh
 raco test test
@@ -190,29 +190,10 @@ racket main.rkt build --schemas double-pinyin-flypy,cangjie6 --artifact rime --p
 racket main.rkt build --schemas all --artifact yuanshu --profile-name all
 ```
 
-The GitHub Actions deploy flow builds the repo root into
-`ghcr.io/mayphus/input-foundry`, joins your tailnet with Tailscale OAuth
-credentials, uses `KUBECONFIG_PB62` to reach k3s on `pb62`, renders the
-Dockerfile and Kubernetes manifests into a temporary job directory, applies
-them, and updates the image tag.
-
-Required GitHub secrets:
-
-- `TAILSCALE_OAUTH_CLIENT_ID`
-- `TAILSCALE_OAUTH_SECRET`
-- `KUBECONFIG_PB62`
-- `GHCR_PULL_TOKEN`
-
 Deployment notes:
 
-- The deploy workflow rewrites the kubeconfig `server:` to
-  `https://100.116.247.67:6443` before running `kubectl`, so the stored
-  `KUBECONFIG_PB62` secret can keep the original cluster/user/certificate data.
-- If `pb62` gets a different Tailscale IP, update `K8S_API_SERVER` in
-  `.github/workflows/deploy-k3s.yml`.
-- `GHCR_PULL_TOKEN` should be a GitHub personal access token for `mayphus` with
-  at least `read:packages`, so the workflow can create the `ghcr-pull` image
-  pull secret before deploying.
+- `build/k8s.rkt` is the source for deployment manifests; generated YAML and
+  Dockerfile output stays temporary.
 - The ingress manifest assumes `type.mayphus.org`, `rime.mayphus.org`, and
   `rime-config.mayphus.org` terminate in the cluster.
 - Cloudflare should route those hostnames to the k3s ingress. The old Rime

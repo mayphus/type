@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require racket/list
-         "keyboard/dimensions.rkt"
+         "keyboard.rkt"
          "../lang/type.rkt"
          "../type.rkt")
 

@@ -5,7 +5,7 @@
          racket/list
          racket/runtime-path
          racket/string
-         (prefix-in keyboard: "../catalog/keyboard/registry.rkt")
+         (prefix-in keyboard: "../catalog/keyboard.rkt")
          (prefix-in schema-index: "../catalog/schemas.rkt")
          (prefix-in calculate: "../catalog/methods.rkt")
          (prefix-in rime-registry: "../targets/rime/registry.rkt")

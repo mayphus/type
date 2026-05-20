@@ -3,7 +3,7 @@
 (require racket/format
          racket/list
          racket/set
-         "../catalog/keyboard/registry.rkt"
+         "../catalog/keyboard.rkt"
          "../targets/rime/registry.rkt"
          "paths.rkt")
 
