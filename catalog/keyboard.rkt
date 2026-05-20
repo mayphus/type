@@ -252,7 +252,7 @@
 
 ;; Static upstream schemas do not have schema modules, so their reusable printed
 ;; keyboard legends live here. Generated schemas still own their local layouts.
-(define-static-keyboard-layouts keyboard-layout-definitions
+(define-static-keyboard-layouts standard-keyboard-layout-definitions
   (wubi86
    #:name "Wubi 86" "五筆86"
    #:summary "Wubi 86 root legends on standard QWERTY rows."
@@ -304,6 +304,49 @@
    #:layer st
    #:phone-size 11
    #:ipad-size 13))
+
+(define (static-compact-keyboard-layout id english-name chinese-name summary variant)
+  `(,id
+    (meta
+     (name ,english-name ,chinese-name)
+     (summary ,summary)
+     (features "Compact double-pinyin phone layout"
+               "Standard iPad pinyin page and secondary pages"))
+    (phone-layout ,variant)
+    (ipad-layout standard-18)))
+
+(define (double-pinyin-compact-layouts base-id english-name chinese-name)
+  (list
+   (static-compact-keyboard-layout
+    (string->symbol (format "~a_14" base-id))
+    (format "~a 14 Key" english-name)
+    (format "~a 14鍵" chinese-name)
+    (format "14-key compact Yuanshu keyboard layout for ~a." english-name)
+    'pinyin-14)
+   (static-compact-keyboard-layout
+    (string->symbol (format "~a_shuffle_17" base-id))
+    (format "~a Shuffle 17" english-name)
+    (format "~a亂序 17鍵" chinese-name)
+    (format "17-key shuffled Yuanshu keyboard layout for ~a." english-name)
+    'shuffle-17)
+   (static-compact-keyboard-layout
+    (string->symbol (format "~a_18" base-id))
+    (format "~a 18 Key" english-name)
+    (format "~a 18鍵" chinese-name)
+    (format "18-key compact Yuanshu keyboard layout for ~a." english-name)
+    'zrm-18)))
+
+(define double-pinyin-compact-keyboard-layout-definitions
+  (append
+   (double-pinyin-compact-layouts "double_pinyin_zrm" "Double Pinyin ZRM" "自然碼雙拼")
+   (double-pinyin-compact-layouts "double_pinyin_abc" "Double Pinyin ABC" "智能ABC雙拼")
+   (double-pinyin-compact-layouts "double_pinyin_mspy" "Double Pinyin MSPY" "微軟雙拼")
+   (double-pinyin-compact-layouts "double_pinyin_pyjj" "Double Pinyin PYJJ" "拼音加加雙拼")
+   (double-pinyin-compact-layouts "double_pinyin_st" "Double Pinyin ST" "四通雙拼")))
+
+(define keyboard-layout-definitions
+  (append standard-keyboard-layout-definitions
+          double-pinyin-compact-keyboard-layout-definitions))
 
 (define (keyboard-layout-definition-ref layout (default #f))
   (catalog-definition-ref keyboard-layout-definitions layout default))

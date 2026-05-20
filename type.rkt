@@ -5,44 +5,44 @@
 (provide input-methods)
 
 (define-input-methods input-methods
-  (input-method "double-pinyin-flypy"
-    #:category "double-pinyin"
-    #:name '("Flypy" "小鶴雙拼")
-    #:description '("Flypy double pinyin with Rime config and Yuanshu keyboard layout previews."
-                    "小鶴方案，提供 Rime 設定與元書鍵盤佈局預覽。")
-    #:keymap 'flypy
-    #:legends '(abc flypy)
-    (rime #:source "flypy"
-          #:config "flypy"
-          #:generated? #t
-          #:custom? #t)
-    (layout "double-pinyin-flypy"
-      #:skin "flypy"
-      #:placement 'split-flypy)
-    (layout "double-pinyin-flypy-14"
-      #:keyboard 'compact-14
-      #:skin "flypy-14"
-      #:placement 'compact-center
-      #:name '("Flypy 14" "小鶴雙拼 14鍵")
-      #:description '("A 14-key Flypy double pinyin input method for Yuanshu, grouping adjacent QWERTY keys."
-                      "14 鍵小鶴元書輸入法，按相鄰 QWERTY 鍵位分組。")
-      #:rime-source "flypy-14")
-    (layout "double-pinyin-flypy-18"
-      #:keyboard 'compact-18
-      #:skin "flypy-18"
-      #:placement 'compact-center
-      #:name '("Flypy 18" "小鶴雙拼 18鍵")
-      #:description '("An 18-key Flypy double pinyin input method for Yuanshu, adapted from a compact phone layout."
-                      "18 鍵小鶴元書輸入法，改編自緊湊手機鍵盤佈局。")
-      #:rime-source "flypy-18")
-    (layout "double-pinyin-flypy-shuffle-17"
-      #:keyboard 'shuffle-17
-      #:skin "shuffle-17"
-      #:placement 'compact-center
-      #:name '("Flypy Shuffle 17" "小鶴雙拼亂序 17鍵")
-      #:description '("An experimental 17-key shuffled Flypy input method for Yuanshu."
-                      "實驗性的 17 鍵亂序小鶴元書輸入法。")
-      #:rime-source "shuffle-17"))
+  (input-family #:category "double-pinyin"
+    (input-method "double-pinyin-flypy"
+      #:name '("Flypy" "小鶴雙拼")
+      #:description '("Flypy double pinyin with Rime config and Yuanshu keyboard layout previews."
+                      "小鶴方案，提供 Rime 設定與元書鍵盤佈局預覽。")
+      #:keymap 'flypy
+      #:legends '(abc flypy)
+      (rime #:source "flypy"
+            #:config "flypy"
+            #:generated? #t
+            #:custom? #t)
+      (layout "double-pinyin-flypy"
+        #:skin "flypy"
+        #:placement 'split-flypy)
+      (layout "double-pinyin-flypy-14"
+        #:keyboard 'compact-14
+        #:skin "flypy-14"
+        #:placement 'compact-center
+        #:name '("Flypy 14" "小鶴雙拼 14鍵")
+        #:description '("A 14-key Flypy double pinyin input method for Yuanshu, grouping adjacent QWERTY keys."
+                        "14 鍵小鶴元書輸入法，按相鄰 QWERTY 鍵位分組。")
+        #:rime-source "flypy-14")
+      (layout "double-pinyin-flypy-18"
+        #:keyboard 'compact-18
+        #:skin "flypy-18"
+        #:placement 'compact-center
+        #:name '("Flypy 18" "小鶴雙拼 18鍵")
+        #:description '("An 18-key Flypy double pinyin input method for Yuanshu, adapted from a compact phone layout."
+                        "18 鍵小鶴元書輸入法，改編自緊湊手機鍵盤佈局。")
+        #:rime-source "flypy-18")
+      (layout "double-pinyin-flypy-shuffle-17"
+        #:keyboard 'shuffle-17
+        #:skin "shuffle-17"
+        #:placement 'compact-center
+        #:name '("Flypy Shuffle 17" "小鶴雙拼亂序 17鍵")
+        #:description '("An experimental 17-key shuffled Flypy input method for Yuanshu."
+                        "實驗性的 17 鍵亂序小鶴元書輸入法。")
+        #:rime-source "shuffle-17")))
 
   (input-method "luna-pinyin"
     #:category "full-pinyin"
@@ -162,7 +162,19 @@
       #:legends '(abc zrm)
       (rime #:source "double-pinyin")
       (layout "double-pinyin"
-        #:skin "double-pinyin-zrm"))
+        #:skin "double-pinyin-zrm")
+      (layout "double-pinyin-14"
+        #:keyboard 'compact-14
+        #:skin "double-pinyin-zrm-14"
+        #:placement 'compact-center)
+      (layout "double-pinyin-shuffle-17"
+        #:keyboard 'shuffle-17
+        #:skin "double-pinyin-zrm-shuffle-17"
+        #:placement 'compact-center)
+      (layout "double-pinyin-18"
+        #:keyboard 'compact-18
+        #:skin "double-pinyin-zrm-18"
+        #:placement 'compact-center))
 
     (input-method "double-pinyin-abc"
       #:name '("Double Pinyin: ABC" "智能ABC雙拼")
@@ -171,7 +183,19 @@
       #:keymap 'abc-dp
       #:legends '(abc abc-dp)
       (rime #:source "double-pinyin-abc")
-      (layout "double-pinyin-abc"))
+      (layout "double-pinyin-abc")
+      (layout "double-pinyin-abc-14"
+        #:keyboard 'compact-14
+        #:skin "double-pinyin-abc-14"
+        #:placement 'compact-center)
+      (layout "double-pinyin-abc-shuffle-17"
+        #:keyboard 'shuffle-17
+        #:skin "double-pinyin-abc-shuffle-17"
+        #:placement 'compact-center)
+      (layout "double-pinyin-abc-18"
+        #:keyboard 'compact-18
+        #:skin "double-pinyin-abc-18"
+        #:placement 'compact-center))
 
     (input-method "double-pinyin-mspy"
       #:name '("Double Pinyin: MSPY" "微軟雙拼")
@@ -180,7 +204,19 @@
       #:keymap 'mspy
       #:legends '(abc mspy)
       (rime #:source "double-pinyin-mspy")
-      (layout "double-pinyin-mspy"))
+      (layout "double-pinyin-mspy")
+      (layout "double-pinyin-mspy-14"
+        #:keyboard 'compact-14
+        #:skin "double-pinyin-mspy-14"
+        #:placement 'compact-center)
+      (layout "double-pinyin-mspy-shuffle-17"
+        #:keyboard 'shuffle-17
+        #:skin "double-pinyin-mspy-shuffle-17"
+        #:placement 'compact-center)
+      (layout "double-pinyin-mspy-18"
+        #:keyboard 'compact-18
+        #:skin "double-pinyin-mspy-18"
+        #:placement 'compact-center))
 
     (input-method "double-pinyin-pyjj"
       #:name '("Double Pinyin: PYJJ" "拼音加加雙拼")
@@ -189,7 +225,19 @@
       #:keymap 'pyjj
       #:legends '(abc pyjj)
       (rime #:source "double-pinyin-pyjj")
-      (layout "double-pinyin-pyjj"))
+      (layout "double-pinyin-pyjj")
+      (layout "double-pinyin-pyjj-14"
+        #:keyboard 'compact-14
+        #:skin "double-pinyin-pyjj-14"
+        #:placement 'compact-center)
+      (layout "double-pinyin-pyjj-shuffle-17"
+        #:keyboard 'shuffle-17
+        #:skin "double-pinyin-pyjj-shuffle-17"
+        #:placement 'compact-center)
+      (layout "double-pinyin-pyjj-18"
+        #:keyboard 'compact-18
+        #:skin "double-pinyin-pyjj-18"
+        #:placement 'compact-center))
 
     (input-method "double-pinyin-st"
       #:name '("Double Pinyin: ST" "四通雙拼")
@@ -198,7 +246,19 @@
       #:keymap 'st
       #:legends '(abc st)
       (rime #:source "double-pinyin-st")
-      (layout "double-pinyin-st")))
+      (layout "double-pinyin-st")
+      (layout "double-pinyin-st-14"
+        #:keyboard 'compact-14
+        #:skin "double-pinyin-st-14"
+        #:placement 'compact-center)
+      (layout "double-pinyin-st-shuffle-17"
+        #:keyboard 'shuffle-17
+        #:skin "double-pinyin-st-shuffle-17"
+        #:placement 'compact-center)
+      (layout "double-pinyin-st-18"
+        #:keyboard 'compact-18
+        #:skin "double-pinyin-st-18"
+        #:placement 'compact-center)))
 
   (input-family #:category "shape"
                 #:method-schema "wubi86"
