@@ -1,7 +1,6 @@
 #lang racket/base
 
-(require "../lang/keyboard.rkt"
-         "keymaps.rkt")
+(require "keymaps.rkt")
 
 (provide keyboard-layout-definitions
          keyboard-layout-definition-ref
@@ -25,6 +24,24 @@
          keyboard-placement-definition-ref
          keyboard-interaction-definitions
          keyboard-interaction-definition-ref)
+
+(define-syntax-rule (define-catalog name (id body ...) ...)
+  (define name
+    '((id body ...) ...)))
+
+(define (catalog-symbol value)
+  (cond
+    ((symbol? value) value)
+    ((string? value) (string->symbol value))
+    (else value)))
+
+(define (catalog-definition-ref definitions id (default #f))
+  (define id-symbol (catalog-symbol id))
+  (define body
+    (for/first ((clause (in-list definitions))
+                #:when (eq? (car clause) id-symbol))
+      (cdr clause)))
+  (or body default))
 
 (define standard-key-slots
   '((center #:font-size 25 #:role primary)

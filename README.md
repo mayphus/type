@@ -13,8 +13,8 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
   updates, Cloudflare route repair, and Yuanshu sync.
 - `type.rkt` is only the product catalog declaration surface for input methods,
   keyboard variants, Rime ids, target artifacts, and dependencies.
-- `lang/` exposes the repo-wide definition languages for Rime schemas, type
-  catalog declarations, keyboard catalogs, and YAML objects.
+- `lang/` exposes only the repo-wide declaration languages for Rime schemas,
+  the type catalog, and YAML objects.
 - `targets/` contains platform-specific target renderers, adapters, and
   reference configs.
 - `web/` contains server-rendered UI pages, components, locale handling, form
