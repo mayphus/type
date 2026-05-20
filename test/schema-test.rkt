@@ -15,7 +15,7 @@
          (prefix-in pinyin_14: "../targets/rime/pinyin_14.rkt")
          (prefix-in terra_pinyin: "../targets/rime/terra_pinyin.rkt")
          (prefix-in jyut6ping3: "../targets/rime/jyut6ping3.rkt")
-         "../workflow/build.rkt"
+         "../build/main.rkt"
          "../lib/preview/svg.rkt"
          "../targets/yuanshu/skin/core/preview.rkt"
          "../targets/yuanshu/skin/layouts/bopomofo-page.rkt"

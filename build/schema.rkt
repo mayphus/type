@@ -2,9 +2,9 @@
 
 (require racket/list
          racket/string
-         "../../catalog/methods.rkt"
-         "../../catalog/schemas.rkt"
-         "../../targets/rime/registry.rkt"
+         "../catalog/methods.rkt"
+         "../catalog/schemas.rkt"
+         "../targets/rime/registry.rkt"
          "paths.rkt")
 
 (provide generated-config-ids

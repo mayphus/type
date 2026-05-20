@@ -7,8 +7,8 @@
          racket/path
          racket/string
          racket/system
-         "workflow/build.rkt"
-         "workflow/k8s.rkt")
+         "build/main.rkt"
+         "build/k8s.rkt")
 
 (define commands '(serve build k8s check-k8s dev gui))
 
@@ -79,11 +79,11 @@
   (define racket-exe
     (or (find-executable-path "racket")
         (error 'dev "racket not found in PATH")))
-  (unless (system* racket-exe "workflow/serve.rkt")
-    (error 'dev "workflow/serve.rkt failed")))
+  (unless (system* racket-exe "build/serve.rkt")
+    (error 'dev "build/serve.rkt failed")))
 
 (define (run-gui)
-  (define start-gui (dynamic-require "workflow/gui.rkt" 'start-gui))
+  (define start-gui (dynamic-require "build/gui.rkt" 'start-gui))
   (start-gui))
 
 (define (run-serve)

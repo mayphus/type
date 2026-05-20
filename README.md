@@ -5,11 +5,11 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 ## Layout
 
 - `web/app.rkt` serves the public museum HTML, keyboard layout previews, and ZIP builds.
-- `workflow/gui.rkt` opens a native Racket GUI for local Yuanshu builds and
+- `build/gui.rkt` opens a native Racket GUI for local Yuanshu builds and
   iPhone pushes.
-- `workflow/build.rkt` is the build facade; focused build modules live in
-  `workflow/build/`.
-- `workflow/` contains operational code for build, serve, Kubernetes, dictionary
+- `build/main.rkt` is the build facade; focused build modules live in
+  `build/`.
+- `build/` contains operational code for build, serve, Kubernetes, dictionary
   updates, Cloudflare route repair, and Yuanshu sync.
 - `type.rkt` is only the product catalog declaration surface for input methods,
   keyboard variants, Rime ids, target artifacts, and dependencies.
@@ -24,13 +24,13 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
   definitions; it is not the source of truth for available methods.
 - `catalog/` derives schemas, input-method records, keymaps, and keyboard
   dimensions from `type.rkt` and shared layout definitions.
-- `profiles/` contains named build profiles such as the desktop Rime bundle.
+- `build/profiles/` contains named build profiles such as the desktop Rime bundle.
 - `lib/preview/` contains shared preview layout and SVG rendering code used by
   the web app and Yuanshu build outputs.
 - `lib/yaml/` contains the internal YAML renderer.
 - `targets/yuanshu/skin/` is the Yuanshu skin compiler and adapts generated
   Yuanshu page files into shared preview specs.
-- Dockerfile and Kubernetes YAML are generated from `workflow/k8s.rkt` into
+- Dockerfile and Kubernetes YAML are generated from `build/k8s.rkt` into
   temporary paths only when needed; neither artifact is checked in.
 
 Generated Rime modules in `targets/rime/` use `#lang s-exp "../../lang/rime.rkt"` to describe
@@ -105,9 +105,8 @@ For browser reload during web development, run:
 racket main.rkt dev
 ```
 
-This restarts the Racket server when web, schema, preview, keyboard, static, or
-library files change. Pages opened in the browser reload after the new server is
-ready.
+This restarts the Racket server when build, catalog, target, web, or library
+files change. Pages opened in the browser reload after the new server is ready.
 
 Run the native GUI when you want to push directly to a local iPhone:
 
@@ -128,8 +127,8 @@ other Yuanshu layouts are left untouched.
 
 ## Build logic
 
-`workflow/build.rkt` is the shared build facade for both web and GUI. The
-implementation is split under `workflow/build/`:
+`build/main.rkt` is the shared build facade for both web and GUI. The
+implementation is split under `build/`:
 
 - `paths.rkt` owns shared paths and tool locations.
 - `schema.rkt` resolves schemas, profiles, artifacts, and asset lists.
@@ -176,7 +175,7 @@ racket main.rkt build --schema flypy --artifact yuanshu
 ## Deployment
 
 This repo deploys the public web UI and build API together as one Racket app
-on k3s on `pb62`. `workflow/k8s.rkt` owns the generated Dockerfile and
+on k3s on `pb62`. `build/k8s.rkt` owns the generated Dockerfile and
 Kubernetes objects; both are generated into temporary paths when deployment
 needs them.
 
@@ -221,7 +220,7 @@ Deployment notes:
   UI is no longer part of this repo.
 - The cert-manager issuer name is currently `letsencrypt`.
 - If your k3s ingress class, cert-manager setup, or runtime image differs,
-  adjust `workflow/k8s.rkt` and validate with `racket main.rkt check-k8s`.
+  adjust `build/k8s.rkt` and validate with `racket main.rkt check-k8s`.
 
 ## Current shape
 

@@ -31,16 +31,16 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends librsvg2-bin
 
       - name: Update dictionary files
-        run: racket -e '(require "workflow/update-dicts.rkt") (update-dicts!)'
+        run: racket -e '(require "build/update-dicts.rkt") (update-dicts!)'
 
       - name: Run Racket tests
         run: raco test test
 
       - name: Generate deploy artifacts
-        run: racket -e '(require "workflow/k8s.rkt") (render-k8s-directory! (string->path "tmp/k8s")) (render-dockerfile!)'
+        run: racket -e '(require "build/k8s.rkt") (render-k8s-directory! (string->path "tmp/k8s")) (render-dockerfile!)'
 
       - name: Check deploy artifacts
-        run: racket -e '(require "workflow/k8s.rkt") (check-k8s-directory! (string->path "tmp/k8s")) (check-dockerfile!)'
+        run: racket -e '(require "build/k8s.rkt") (check-k8s-directory! (string->path "tmp/k8s")) (check-dockerfile!)'
 
       - name: Validate generated profiles
         run: |

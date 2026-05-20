@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "../yuanshu-sync.rkt")
+(require "yuanshu-sync.rkt")
 
 (provide do-upload!)
 

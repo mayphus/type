@@ -2,14 +2,14 @@
 
 ;;; Stable public facade for build helpers.
 
-(require "build/paths.rkt"
-         "build/schema.rkt"
-         "build/keyboard.rkt"
-         "build/profile.rkt"
-         "build/upload.rkt"
-         "build/deploy.rkt")
+(require "paths.rkt"
+         "schema.rkt"
+         "keyboard.rkt"
+         "profile.rkt"
+         "upload.rkt"
+         "deploy.rkt")
 
-(provide (all-from-out "build/paths.rkt")
+(provide (all-from-out "paths.rkt")
          generated-config-ids
          schema-module-ref
          keyboard-layout-module-ref

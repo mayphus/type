@@ -1,6 +1,6 @@
 compiled/
 .racket/
-profiles/yuanshu/customer/
+build/profiles/yuanshu/customer/
 tmp/
 .DS_Store
 output/

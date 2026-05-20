@@ -13,11 +13,13 @@
       (error 'dev-web "racket not found in PATH")))
 
 (define watch-roots
-  '("workflow"
+  '("build"
+    "catalog"
+    "lang"
+    "targets"
     "web"
-    "input-method"
-    "static"
-    "lib"))
+    "lib"
+    "type.rkt"))
 
 (define ignored-dir-names
   '("compiled" ".git" ".DS_Store"))

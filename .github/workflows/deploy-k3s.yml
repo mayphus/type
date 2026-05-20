@@ -34,10 +34,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends librsvg2-bin
 
       - name: Generate deploy artifacts
-        run: racket -e '(require "workflow/k8s.rkt") (render-k8s-directory! (string->path "tmp/k8s")) (render-dockerfile! (string->path "tmp/Dockerfile"))'
+        run: racket -e '(require "build/k8s.rkt") (render-k8s-directory! (string->path "tmp/k8s")) (render-dockerfile! (string->path "tmp/Dockerfile"))'
 
       - name: Check deploy artifacts
-        run: racket -e '(require "workflow/k8s.rkt") (check-k8s-directory! (string->path "tmp/k8s")) (check-dockerfile! (string->path "tmp/Dockerfile"))'
+        run: racket -e '(require "build/k8s.rkt") (check-k8s-directory! (string->path "tmp/k8s")) (check-dockerfile! (string->path "tmp/Dockerfile"))'
 
       - name: Validate generated profiles
         run: |
@@ -54,7 +54,7 @@ jobs:
             echo "Cloudflare tunnel route skipped: repository secrets are not configured."
             exit 0
           fi
-          racket workflow/cloudflare.rkt
+          racket build/cloudflare.rkt
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v4

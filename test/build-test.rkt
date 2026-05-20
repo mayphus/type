@@ -4,7 +4,7 @@
          racket/file
          racket/string
          racket/system
-         "../workflow/build.rkt")
+         "../build/main.rkt")
 
 (define (check-upload-layout-files tmp layout)
   (check-true (file-exists? (build-path tmp layout "config.yaml")))

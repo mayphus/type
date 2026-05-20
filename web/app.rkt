@@ -17,7 +17,7 @@
          "pages.rkt"
          "forms.rkt"
          "locale.rkt"
-         "../workflow/build.rkt"
+         "../build/main.rkt"
          "../catalog/methods.rkt"
          "../catalog/schemas.rkt"
          "../catalog/keymaps.rkt")
@@ -31,7 +31,7 @@
 
 ;; ---- Helpers ---------------------------------------------------------------
 
-(define-runtime-path support-svg-path "../static/support-8f6d2b.svg")
+(define-runtime-path support-svg-path "static/support-8f6d2b.svg")
 
 (define (valid-id? s)
   (and (string? s) (regexp-match? #rx"^[a-zA-Z0-9_-]+$" s)))
