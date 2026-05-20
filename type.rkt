@@ -52,8 +52,7 @@
     #:keymap 'abc
     #:legends '(abc)
     (rime #:source "luna-pinyin" #:generated? #t)
-    (layout "luna-pinyin"
-      #:skin "luna-pinyin")
+    (layout "luna-pinyin")
     (layout "pinyin-14"
       #:keyboard 'compact-14
       #:skin "pinyin-14"
@@ -71,8 +70,7 @@
     #:keymap 'abc
     #:legends '(abc)
     (rime #:source "terra-pinyin" #:generated? #t)
-    (layout "terra-pinyin"
-      #:skin "terra-pinyin"))
+    (layout "terra-pinyin"))
 
   (input-method "cangjie6"
     #:category "shape"
@@ -84,8 +82,7 @@
     (rime #:generated? #t
           #:custom? #t
           #:deps '("double-pinyin-flypy"))
-    (layout "cangjie6"
-      #:skin "cangjie6"))
+    (layout "cangjie6"))
 
   (input-method "cangjie5"
     #:method-schema "cangjie6"
@@ -138,7 +135,6 @@
           #:custom? #t
           #:deps '("double-pinyin-flypy" "cangjie6"))
     (layout "jyut6ping3"
-      #:skin "jyut6ping3"
       #:placement 'standard-top-center))
 
   (input-method "bopomofo"
@@ -160,7 +156,6 @@
       #:rime-artifacts '("rime"))
     (layout "bopomofo"
       #:keyboard 'zhuyin
-      #:skin "bopomofo"
       #:name '("Ortholinear Bopomofo" "正交注音")
       #:description '("Zhuyin input arranged on an ortholinear mobile keyboard."
                       "配置為正交手機鍵盤的注音輸入法。")
@@ -189,7 +184,6 @@
     #:legends '(abc abc-dp)
     (rime #:source "double-pinyin-abc" #:deps '("stroke"))
     (layout "double-pinyin-abc"
-      #:skin "double-pinyin-abc"
       #:placement 'double-pinyin-center))
 
   (input-method "double-pinyin-mspy"
@@ -201,7 +195,6 @@
     #:legends '(abc mspy)
     (rime #:source "double-pinyin-mspy" #:deps '("stroke"))
     (layout "double-pinyin-mspy"
-      #:skin "double-pinyin-mspy"
       #:placement 'double-pinyin-center))
 
   (input-method "double-pinyin-pyjj"
@@ -213,7 +206,6 @@
     #:legends '(abc pyjj)
     (rime #:source "double-pinyin-pyjj" #:deps '("stroke"))
     (layout "double-pinyin-pyjj"
-      #:skin "double-pinyin-pyjj"
       #:placement 'double-pinyin-center))
 
   (input-method "double-pinyin-st"
@@ -225,7 +217,6 @@
     #:legends '(abc st)
     (rime #:source "double-pinyin-st" #:deps '("stroke"))
     (layout "double-pinyin-st"
-      #:skin "double-pinyin-st"
       #:placement 'double-pinyin-center))
 
   (input-method "wubi86"
@@ -237,7 +228,6 @@
     #:legends '(abc wubi)
     (rime #:deps '("pinyin-simp") #:extra-files '("wubi86.dict.yaml"))
     (layout "wubi86"
-      #:skin "wubi86"
       #:placement 'standard-top-center))
 
   (input-method "wubi-pinyin"
@@ -279,7 +269,6 @@
     #:legends '(abc stroke)
     (rime #:deps '("luna-pinyin") #:extra-files '("stroke.dict.yaml"))
     (layout "stroke"
-      #:skin "stroke"
       #:placement 'standard-top-center))
 
   (input-method "pinyin-simp"
