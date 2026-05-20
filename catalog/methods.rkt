@@ -6,6 +6,7 @@
          "../type.rkt")
 
 (provide (all-from-out "../lang/type.rkt")
+         input-methods
          type-catalog
          (struct-out input-method-recipe)
          input-method-keyboards
@@ -64,7 +65,7 @@
   #:transparent)
 
 (define input-method-methods
-  (filter input-method-dimension? type-catalog))
+  (filter input-method-dimension? input-methods))
 
 (define input-method-dimensions input-method-methods)
 

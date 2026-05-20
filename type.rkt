@@ -2,9 +2,9 @@
 
 (require "lang/type.rkt")
 
-(provide type-catalog)
+(provide input-methods type-catalog)
 
-(define-type-catalog type-catalog
+(define-input-methods input-methods
   (input-method "double-pinyin-flypy"
     #:category "double-pinyin"
     #:name '("Flypy" "小鶴雙拼")
@@ -322,3 +322,5 @@
       #:keyboard 'standard-26
       #:skin "luna_pinyin"
       #:placement 'standard-center)))
+
+(define type-catalog input-methods)

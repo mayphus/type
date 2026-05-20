@@ -7,6 +7,7 @@
          (struct-out schema-declaration)
          (struct-out rime-config)
          (struct-out layout-declaration)
+         define-input-methods
          define-type-catalog
          schema
          method
@@ -299,3 +300,6 @@
 
 (define-syntax-rule (define-type-catalog name entry ...)
   (define name (append-map catalog-entry->list (list entry ...))))
+
+(define-syntax-rule (define-input-methods name entry ...)
+  (define-type-catalog name entry ...))

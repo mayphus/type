@@ -84,7 +84,7 @@
    #:descriptions (schema-declaration-descriptions declaration)))
 
 (define schema-entries
-  (for/list ([declaration (in-list type-catalog)]
+  (for/list ([declaration (in-list input-methods)]
              #:when (schema-declaration? declaration))
     (schema-declaration->entry declaration)))
 
