@@ -11,8 +11,11 @@
          input-method-keyboards
          input-method-methods
          input-method-dimensions
+         support-schemas
          calculate-input-method-recipes
          input-method-recipes
+         support-schema-recipes
+         rime-entries
          input-method-recipe-ref
          input-method-recipe-layouts
          input-method-recipe-rime-source-id
@@ -71,6 +74,9 @@
 (define input-method-keyboards
   (append-map input-method-dimension-keyboards input-method-dimensions))
 
+(define support-schemas
+  (filter support-schema-declaration? input-methods))
+
 (define (input-method-keyboard->recipe method-dimension method-keyboard)
   (define keyboard-dimension
     (keyboard-dimension-ref (input-method-keyboard-keyboard-id method-keyboard)))
@@ -112,8 +118,40 @@
 (define input-method-recipes
   (calculate-input-method-recipes))
 
+(define (support-schema->recipe definition)
+  (input-method-recipe
+   (support-schema-declaration-id definition)
+   (support-schema-declaration-id definition)
+   #f
+   #f
+   #f
+   #f
+   '()
+   #f
+   '()
+   'rime
+   '()
+   #f
+   #f
+   (support-schema-declaration-source-id definition)
+   (or (support-schema-declaration-config-id definition)
+       (support-schema-declaration-source-id definition))
+   (support-schema-declaration-generated? definition)
+   (support-schema-declaration-package? definition)
+   (support-schema-declaration-custom? definition)
+   (support-schema-declaration-deps definition)
+   (support-schema-declaration-extra-files definition)
+   (support-schema-declaration-extra-dirs definition)
+   (support-schema-declaration-artifacts definition)))
+
+(define support-schema-recipes
+  (map support-schema->recipe support-schemas))
+
+(define rime-entries
+  (append input-method-recipes support-schema-recipes))
+
 (define input-method-recipe-by-id
-  (for/hash ([recipe (in-list input-method-recipes)])
+  (for/hash ([recipe (in-list rime-entries)])
     (values (input-method-recipe-id recipe) recipe)))
 
 (define (input-method-recipe-ref id [default #f])
@@ -124,8 +162,6 @@
   (if recipe
       (input-method-recipe-keyboard-layouts recipe)
       '()))
-
-(define rime-entries input-method-recipes)
 
 (define (rime-schema-ids)
   (map input-method-recipe-id rime-entries))

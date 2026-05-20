@@ -231,7 +231,7 @@
     (check-equal? (read-schema-keyboard-layouts "cangjie5") '("cangjie6"))
     (check-equal? (read-schema-keyboard-layouts "quick5") '("cangjie6"))
     (check-equal? (read-schema-keyboard-layouts "wubi86") '("wubi86"))
-    (check-equal? (read-schema-keyboard-layouts "stroke") '("stroke")))
+    (check-equal? (read-schema-keyboard-layouts "stroke") '()))
 
   (test-case "legacy desktop flag still maps to yuanshu artifact behavior"
     (define tmp (make-temporary-file "input-foundry-legacy-artifact-~a" 'directory))

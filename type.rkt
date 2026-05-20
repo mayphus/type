@@ -218,27 +218,17 @@
       (layout "wubi-trad"
         #:skin "wubi86")))
 
-  (input-method "stroke"
-    #:category "shape"
+  (support-schema "stroke"
     #:name '("Stroke" "五筆畫")
     #:description '("Supporting five-stroke lookup schema used by upstream double-pinyin and Wubi packages."
                     "上游雙拼與五筆方案使用的五筆畫反查支援方案。")
-    #:keymap 'stroke
-    #:legends '(abc stroke)
-    (rime #:deps '("luna-pinyin") #:extra-files '("stroke.dict.yaml"))
-    (layout "stroke"
-      #:placement 'standard-top-center))
+    #:rime-deps '("luna-pinyin")
+    #:extra-files '("stroke.dict.yaml"))
 
-  (input-method "pinyin-simp"
-    #:method-schema "luna-pinyin"
-    #:category "full-pinyin"
+  (support-schema "pinyin-simp"
+    #:source "pinyin-simp"
     #:name '("Pinyin Simplified" "袖珍簡化字拼音")
     #:description '("Supporting simplified pinyin schema used by upstream Wubi packages."
                     "上游五筆方案使用的簡化字拼音反查支援方案。")
-    #:keymap 'abc
-    #:legends '(abc)
-    (rime #:source "pinyin-simp"
-          #:deps '("stroke")
-          #:extra-files '("pinyin_simp.dict.yaml"))
-    (layout "pinyin-simp"
-      #:skin "luna-pinyin")))
+    #:rime-deps '("stroke")
+    #:extra-files '("pinyin_simp.dict.yaml")))

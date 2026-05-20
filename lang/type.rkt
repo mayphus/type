@@ -9,6 +9,7 @@
          (struct-out rime-config)
          (struct-out layout-declaration)
          (struct-out family-layout-template)
+         (struct-out support-schema-declaration)
          define-input-methods
          schema
          method
@@ -16,6 +17,7 @@
          input-method
          input-family
          family-layout
+         support-schema
          rime
          layout)
 
@@ -94,6 +96,19 @@
    placement
    rime-source-id
    rime-source-suffix)
+  #:transparent)
+
+(struct support-schema-declaration
+  (id
+   source-id
+   config-id
+   generated?
+   package?
+   custom?
+   deps
+   extra-files
+   extra-dirs
+   artifacts)
   #:transparent)
 
 (define (localized en zh)
@@ -296,6 +311,41 @@
            #:keyboards (map (lambda (item) (layout->keyboard item family-rime))
                             layouts))))
 
+(define (make-support-schema id
+                             #:source [source-id id]
+                             #:config [config-id #f]
+                             #:category [category "other"]
+                             #:rule [rule category]
+                             #:deps [schema-deps '()]
+                             #:slug [slug id]
+                             #:name [name #f]
+                             #:description [description #f]
+                             #:rime-deps [rime-deps '()]
+                             #:extra-files [extra-files '()]
+                             #:extra-dirs [extra-dirs '()]
+                             #:artifacts [artifacts '("rime" "yuanshu")]
+                             #:generated? [generated? #f]
+                             #:package? [package? #f]
+                             #:custom? [custom? #f])
+  (list
+   (schema id
+           #:slug slug
+           #:category category
+           #:rule rule
+           #:deps schema-deps
+           #:name name
+           #:description description)
+   (support-schema-declaration id
+                               (target-id source-id)
+                               (target-id config-id)
+                               generated?
+                               package?
+                               custom?
+                               rime-deps
+                               extra-files
+                               extra-dirs
+                               artifacts)))
+
 (define (family-schema item category rule)
   (if (schema-declaration? item)
       (let* ([current-category (schema-declaration-category item)]
@@ -497,6 +547,9 @@
 
 (define-syntax-rule (input-family arg ...)
   (make-input-family arg ...))
+
+(define-syntax-rule (support-schema arg ...)
+  (make-support-schema arg ...))
 
 (define (catalog-entry->list entry)
   (if (list? entry) entry (list entry)))
