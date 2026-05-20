@@ -111,24 +111,21 @@
     (rime #:source "terra-pinyin" #:generated? #t)
     (layout "terra-pinyin"))
 
-  (input-method "cangjie6"
-    #:category "shape"
-    #:name '("Cangjie 6" "蒼頡六代")
-    #:description '("Sixth-generation Cangjie shape input with Rime config and Yuanshu keyboard layout support."
-                    "第六代蒼頡字形輸入，提供 Rime 設定與元書鍵盤佈局。")
-    #:keymap 'cangjie
-    #:legends '(cangjie)
-    (rime #:generated? #t
-          #:custom? #t
-          #:deps '("double-pinyin-flypy"))
-    (layout "cangjie6"))
-
   (input-family #:category "shape"
                 #:method-schema "cangjie6"
                 #:keymap 'cangjie
                 #:legends '(cangjie)
                 #:skin "cangjie6"
                 #:rime-deps '("luna-pinyin")
+    (input-method "cangjie6"
+      #:name '("Cangjie 6" "蒼頡六代")
+      #:description '("Sixth-generation Cangjie shape input with Rime config and Yuanshu keyboard layout support."
+                      "第六代蒼頡字形輸入，提供 Rime 設定與元書鍵盤佈局。")
+      (rime #:generated? #t
+            #:custom? #t
+            #:deps '("double-pinyin-flypy"))
+      (layout "cangjie6"))
+
     (input-method "cangjie5"
       #:name '("Cangjie 5" "倉頡五代")
       #:description '("Upstream Rime fifth-generation Cangjie shape input."
