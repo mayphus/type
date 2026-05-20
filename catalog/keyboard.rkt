@@ -269,6 +269,13 @@
    #:layer stroke
    #:phone-size 22
    #:ipad-size 24)
+  (cangjie5
+   #:name "Cangjie 5" "倉頡五代"
+   #:summary "Cangjie 5 root legends on standard QWERTY rows."
+   #:features ("Cangjie 5 root labels centered on letter keys")
+   #:layer cangjie5
+   #:phone-size 25
+   #:ipad-size 22.5)
   (double_pinyin_zrm
    #:name "Double Pinyin ZRM" "自然碼雙拼"
    #:summary "Ziranma double-pinyin final legends."

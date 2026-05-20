@@ -40,6 +40,8 @@
                     symbol
                     (hash 'wubi (keyboard-legend-text 'wubi 'letter)
                           'stroke (keyboard-legend-text 'stroke 'letter)
+                          'cangjie5 (keyboard-legend-text 'cangjie5 'letter)
+                          'cangjie6 (keyboard-legend-text 'cangjie6 'letter)
                           'zrm (keyboard-legend-text 'zrm 'letter)
                           'abc-dp (keyboard-legend-text 'abc-dp 'letter)
                           'mspy (keyboard-legend-text 'mspy 'letter)
@@ -59,6 +61,8 @@
         'symbol (key-note-position 'top-right)
         'wubi (key-note-position 'center)
         'stroke (key-note-position 'center)
+        'cangjie5 (key-note-position 'center)
+        'cangjie6 (key-note-position 'center)
         'zrm (key-note-position 'center)
         'abc-dp (key-note-position 'center)
         'mspy (key-note-position 'center)

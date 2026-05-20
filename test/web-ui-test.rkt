@@ -49,7 +49,7 @@
                                   'zh-Hant "倉頡支援方案。")
               'input-method? #t
               'schema-id "cangjie6"
-              'keymap 'cangjie
+              'keymap 'cangjie6
               'keyboard 'standard-26
               'layout "cangjie6"
               'definition-lisp "(define-input-method\n  \"cangjie6\")"
@@ -58,20 +58,20 @@
               'keyboard-layouts '("cangjie6"))
         (hash 'id "cangjie5"
               'slug "cangjie5"
-              'name "Cangjie 6"
-              'names (hash 'en "Cangjie 6" 'zh-Hant "倉頡六代")
-              'description "Static Cangjie support schema."
-              'descriptions (hash 'en "Static Cangjie support schema."
-                                  'zh-Hant "倉頡支援方案。")
+              'name "Cangjie 5"
+              'names (hash 'en "Cangjie 5" 'zh-Hant "倉頡五代")
+              'description "Upstream Rime fifth-generation Cangjie shape input."
+              'descriptions (hash 'en "Upstream Rime fifth-generation Cangjie shape input."
+                                  'zh-Hant "上游 Rime 第五代倉頡字形輸入方案。")
               'input-method? #t
               'schema-id "cangjie6"
-              'keymap 'cangjie
+              'keymap 'cangjie5
               'keyboard 'standard-26
-              'layout "cangjie6"
+              'layout "cangjie5"
               'definition-lisp "(define-input-method\n  \"cangjie5\")"
               'deps '()
               'artifacts '("rime")
-              'keyboard-layouts '("cangjie6"))))
+              'keyboard-layouts '("cangjie5"))))
 
 (define layouts
   (list (hash 'id "double-pinyin-flypy"
@@ -118,7 +118,7 @@
     (check-true (regexp-match? #rx"href=\"/exhibits/double-pinyin-flypy-14\"" html))
     (check-true (regexp-match? #rx"href=\"/exhibits/cangjie6\"" html))
     (check-equal? (match-count #rx"href=\"/exhibits/cangjie6\"" html) 1)
-    (check-false (regexp-match? #rx"href=\"/exhibits/cangjie5\"" html))
+    (check-equal? (match-count #rx"href=\"/exhibits/cangjie5\"" html) 1)
     (check-false (regexp-match? #rx"id=\"filter-desktop\"" html))
     (check-false (regexp-match? #rx"id=\"filter-mobile\"" html))
     (check-false (regexp-match? #rx"rime-category-filter" html))

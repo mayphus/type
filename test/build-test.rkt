@@ -228,8 +228,8 @@
     (check-equal? (read-schema-keyboard-layouts "double-pinyin-st-14") '("double_pinyin_st_14"))
     (check-equal? (read-schema-keyboard-layouts "double-pinyin-st-shuffle-17") '("double_pinyin_st_shuffle_17"))
     (check-equal? (read-schema-keyboard-layouts "double-pinyin-st-18") '("double_pinyin_st_18"))
-    (check-equal? (read-schema-keyboard-layouts "cangjie5") '("cangjie6"))
-    (check-equal? (read-schema-keyboard-layouts "quick5") '("cangjie6"))
+    (check-equal? (read-schema-keyboard-layouts "cangjie5") '("cangjie5"))
+    (check-equal? (read-schema-keyboard-layouts "quick5") '("cangjie5"))
     (check-equal? (read-schema-keyboard-layouts "wubi86") '("wubi86"))
     (check-equal? (read-schema-keyboard-layouts "stroke") '()))
 

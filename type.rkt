@@ -113,14 +113,13 @@
 
   (input-family #:category "shape"
                 #:method-schema "cangjie6"
-                #:keymap 'cangjie
-                #:legends '(cangjie)
-                #:skin "cangjie6"
                 #:rime-deps '("luna-pinyin")
     (input-method "cangjie6"
       #:name '("Cangjie 6" "蒼頡六代")
       #:description '("Sixth-generation Cangjie shape input with Rime config and Yuanshu keyboard layout support."
                       "第六代蒼頡字形輸入，提供 Rime 設定與元書鍵盤佈局。")
+      #:keymap 'cangjie6
+      #:legends '(cangjie6)
       (rime #:generated? #t
             #:custom? #t
             #:deps '("double-pinyin-flypy"))
@@ -130,6 +129,8 @@
       #:name '("Cangjie 5" "倉頡五代")
       #:description '("Upstream Rime fifth-generation Cangjie shape input."
                       "上游 Rime 第五代倉頡字形輸入方案。")
+      #:keymap 'cangjie5
+      #:legends '(cangjie5)
       (rime #:extra-files '("cangjie5.dict.yaml"))
       (layout "cangjie5"))
 
@@ -137,16 +138,20 @@
       #:name '("Cangjie 5 Express" "倉頡五代·快打模式")
       #:description '("Upstream Rime Cangjie 5 schema with express auto-selection behavior."
                       "上游 Rime 倉頡五代快打模式方案。")
+      #:keymap 'cangjie5
+      #:legends '(cangjie5)
       (rime #:source "cangjie5-express"
             #:extra-files '("cangjie5.dict.yaml"))
-      (layout "cangjie5-express"))
+      (layout "cangjie5-express" #:skin "cangjie5"))
 
     (input-method "quick5"
       #:name '("Quick 5" "速成")
       #:description '("Upstream Rime Quick 5 shape input derived from Cangjie."
                       "上游 Rime 速成五代字形輸入方案。")
+      #:keymap 'cangjie5
+      #:legends '(cangjie5)
       (rime #:extra-files '("quick5.dict.yaml"))
-      (layout "quick5")))
+      (layout "quick5" #:skin "cangjie5")))
 
   (input-method "jyut6ping3"
     #:category "full-pinyin"

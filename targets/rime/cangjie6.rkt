@@ -8,16 +8,16 @@
      (name "Cangjie 6" "倉頡六代")
      (summary "A Yuanshu keyboard layout focused on Cangjie 6 labels across phone and iPad layouts.")
      (features
-      "Cangjie-centered legends"
+      "Cangjie 6 centered legends"
       "Standard numeric and symbolic secondary pages"))
-    (print cangjie center #:font-size 25 #:role primary)
+    (print cangjie6 center #:font-size 25 #:role primary)
     (ipad
      (raw
       (ipad-layout
-       (layers cangjie)
+       (layers cangjie6)
        (size "1.1/16")
        (fonts
-        (cangjie 22.5 #:primary))))))
+        (cangjie6 22.5 #:primary))))))
   (deps double-pinyin-flypy)
   (static-files "cangjie6.dict.yaml")
   (custom "cangjie6.custom.yaml"

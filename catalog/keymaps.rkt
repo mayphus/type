@@ -32,10 +32,14 @@
    (q "iu") (w "ei") (e "e") (r "uan") (t "ue/ve") (y "un") (u "sh") (i "ch") (o "uo") (p "ie")
    (a "a") (s "ong/iong") (d "ai") (f "en") (g "eng") (h "ang") (j "an") (k "ing/uai") (l "iang/uang")
    (z "ou") (x "ia/ua") (c "ao") (v "zh/ui") (b "in") (n "iao") (m "ian"))
-  (cangjie
+  (cangjie6
    (q "手") (w "田") (e "水") (r "口") (t "廿") (y "卜") (u "山") (i "戈") (o "人") (p "心")
    (a "日") (s "尸") (d "木") (f "火") (g "土") (h "的") (j "十") (k "大") (l "中")
    (z "片") (x "止") (c "金") (v "女") (b "月") (n "弓") (m "一"))
+  (cangjie5
+   (q "手") (w "田") (e "水") (r "口") (t "廿") (y "卜") (u "山") (i "戈") (o "人") (p "心")
+   (a "日") (s "尸") (d "木") (f "火") (g "土") (h "竹") (j "十") (k "大") (l "中")
+   (z "符") (x "難") (c "金") (v "女") (b "月") (n "弓") (m "一"))
   (zhuyin
    (bo "ㄅ") (po "ㄆ") (mo "ㄇ") (fo "ㄈ") (de "ㄉ") (te "ㄊ") (ne "ㄋ") (le "ㄌ") (ge "ㄍ") (ke "ㄎ") (he "ㄏ")
    (ji "ㄐ") (qi "ㄑ") (xi "ㄒ") (zhi "ㄓ") (chi "ㄔ") (shi "ㄕ") (ri "ㄖ") (zi "ㄗ") (ci "ㄘ") (si "ㄙ")
