@@ -4,7 +4,7 @@
          racket/list
          racket/set
          "../catalog/keyboard.rkt"
-         "../targets/rime/registry.rkt"
+         "../catalog/methods.rkt"
          "paths.rkt")
 
 (provide keyboard-layout-module?

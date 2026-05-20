@@ -37,8 +37,7 @@ Generated Rime modules in `targets/rime/` use `#lang s-exp "../../lang/rime.rkt"
 the emitted Rime schema/custom YAML directly. The available method list,
 artifact support, dependencies, static Rime files, and Yuanshu layout/skin
 selection are declared once in `type.rkt`; `catalog/methods.rkt` derives
-the concrete records, and `targets/rime/registry.rkt` is only a compatibility view over
-that catalog. Schema identity and display
+the concrete records and Rime-facing build selectors. Schema identity and display
 metadata live in `type.rkt`. Reusable keyboard dimensions live in
 `catalog/keyboard.rkt`; calculated input methods compose schema logic, keymaps,
 keyboard skeletons, projections, placements, and target-specific app behavior.

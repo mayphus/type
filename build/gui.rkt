@@ -4,9 +4,9 @@
          racket/gui/base
          racket/list
          racket/string
+         "../catalog/methods.rkt"
          "../catalog/schemas.rkt"
-         "../targets/rime/registry.rkt"
-         "build.rkt")
+         "main.rkt")
 
 (provide start-gui)
 
