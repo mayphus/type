@@ -12,7 +12,7 @@
          net/url
          json
          style/main
-         "../lib/preview/svg.rkt"
+         "../targets/yuanshu/skin/core/preview-svg.rkt"
          "app-style.rkt"
          "pages.rkt"
          "forms.rkt"

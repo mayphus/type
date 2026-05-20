@@ -3,7 +3,7 @@
 (require racket/format
          racket/match
          racket/string
-         "spec.rkt")
+         "preview-spec.rkt")
 
 (provide keyboard-preview-svg
          keyboard-skin-preview-svg

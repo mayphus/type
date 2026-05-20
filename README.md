@@ -25,9 +25,6 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `catalog/` derives schemas, input-method records, keymaps, and keyboard
   dimensions from `type.rkt` and shared layout definitions.
 - `build/profiles/` contains named build profiles such as the desktop Rime bundle.
-- `lib/preview/` contains shared preview layout and SVG rendering code used by
-  the web app and Yuanshu build outputs.
-- `lib/yaml/` contains the internal YAML renderer.
 - `targets/yuanshu/skin/` is the Yuanshu skin compiler and adapts generated
   Yuanshu page files into shared preview specs.
 - Dockerfile and Kubernetes YAML are generated from `build/k8s.rkt` into

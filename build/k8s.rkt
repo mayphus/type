@@ -3,7 +3,7 @@
 (require racket/file
          racket/path
          racket/string
-         "../lib/yaml/yaml.rkt")
+         "../lang/yaml.rkt")
 
 (provide k8s-documents
          dockerfile-text
