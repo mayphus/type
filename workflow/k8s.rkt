@@ -8,7 +8,9 @@
 (provide k8s-documents
          dockerfile-text
          render-k8s-directory!
+         render-dockerfile!
          check-k8s-directory!
+         check-dockerfile!
          render-k8s!
          check-k8s!
          render-deploy-artifacts!
