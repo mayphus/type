@@ -64,10 +64,6 @@
                        placement
                        #:name [name #f]
                        #:description [description #f]
-                       #:en-name [en-name #f]
-                       #:zh-name [zh-name #f]
-                       #:en-description [en-description #f]
-                       #:zh-description [zh-description #f]
                        #:rime-source-id [rime-source-id #f]
                        #:rime-config-id [rime-config-id #f]
                        #:rime-generated? [rime-generated? #f]
@@ -78,12 +74,9 @@
                        #:rime-extra-dirs [rime-extra-dirs '()]
                        #:rime-artifacts [rime-artifacts '("rime" "yuanshu")])
   (define names
-    (or (localized-value name)
-        (and en-name zh-name (localized en-name zh-name))))
+    (localized-value name))
   (define descriptions
-    (or (localized-value description)
-        (and en-description zh-description
-             (localized en-description zh-description))))
+    (localized-value description))
   (input-method-keyboard recipe-id
                          keyboard-id
                          layout-id
