@@ -18,9 +18,9 @@
          "forms.rkt"
          "locale.rkt"
          "../build/main.rkt"
-         "../catalog/methods.rkt"
-         "../catalog/schemas.rkt"
-         "../catalog/keymaps.rkt")
+         "../core/methods.rkt"
+         "../core/schemas.rkt"
+         "../core/keymaps.rkt")
 
 (provide keyboard-layout-items
          skin-items

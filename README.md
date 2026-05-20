@@ -11,7 +11,7 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
   `build/`.
 - `build/` contains operational code for build, serve, Kubernetes, dictionary
   updates, Cloudflare route repair, and Yuanshu sync.
-- `type.rkt` is only the product catalog declaration surface for input methods,
+- `type.rkt` is only the product declaration surface for input methods,
   keyboard variants, Rime ids, target artifacts, and dependencies.
 - `lang/` exposes only the repo-wide declaration languages for Rime schemas,
   the type catalog, and YAML objects.
@@ -22,7 +22,7 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `assets/rime/` holds native upstream Rime YAML and dictionaries.
 - `targets/rime/` holds Rime target modules. It emits Rime YAML from Racket
   definitions; it is not the source of truth for available methods.
-- `catalog/` derives schemas, input-method records, keymaps, and keyboard
+- `core/` derives schemas, input-method records, keymaps, and keyboard
   dimensions from `type.rkt` and shared layout definitions.
 - `build/profiles/` contains named build profiles such as the desktop Rime bundle.
 - `targets/yuanshu/skin/` is the Yuanshu skin compiler and adapts generated
@@ -33,9 +33,9 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 Generated Rime modules in `targets/rime/` use `#lang s-exp "../../lang/rime.rkt"` to describe
 the emitted Rime schema/custom YAML directly. Supported input methods are
 declared once in `type.rkt` with nested `(rime ...)` and `(layout ...)` clauses;
-`catalog/methods.rkt` derives the concrete records and Rime-facing build
+`core/methods.rkt` derives the concrete records and Rime-facing build
 selectors. Schema identity and display metadata live in `type.rkt`. Reusable
-keyboard dimensions live in `catalog/keyboard.rkt`; calculated input methods
+keyboard dimensions live in `core/keyboard.rkt`; calculated input methods
 compose schema logic, keymaps, keyboard skeletons, projections, placements, and
 target-specific app behavior.
 Inline `(keyboard ...)` clauses remain the generated Yuanshu skin definition
@@ -119,7 +119,7 @@ For browser reload during web development, run:
 racket main.rkt dev
 ```
 
-This restarts the Racket server when build, catalog, target, web, or library
+This restarts the Racket server when build, core, target, web, or library
 files change. Pages opened in the browser reload after the new server is ready.
 
 Run the native GUI when you want to push directly to a local iPhone:

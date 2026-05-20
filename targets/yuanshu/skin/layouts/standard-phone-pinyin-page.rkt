@@ -4,7 +4,7 @@
          racket/hash
          racket/list
          racket/string
-         "../../../../catalog/keyboard.rkt"
+         "../../../../core/keyboard.rkt"
          "../core/dsl.rkt"
          "../core/visual-policy.rkt"
          "../keysets/pinyin-common.rkt"

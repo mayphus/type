@@ -2,8 +2,8 @@
 
 (require racket/list
          racket/string
-         "../catalog/methods.rkt"
-         "../catalog/schemas.rkt"
+         "../core/methods.rkt"
+         "../core/schemas.rkt"
          "paths.rkt")
 
 (provide generated-config-ids

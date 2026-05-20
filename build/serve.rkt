@@ -14,7 +14,7 @@
 
 (define watch-roots
   '("build"
-    "catalog"
+    "core"
     "lang"
     "targets"
     "web"
