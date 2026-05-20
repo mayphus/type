@@ -11,10 +11,12 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
   parsing, and the app-specific style DSL.
 - `k8s.rkt` generates and checks the Kubernetes YAML.
 - `assets/rime/` holds native Rime YAML and dictionaries.
-- `rime/` holds Rime/Yuanshu generation logic, including the `rime-schema`
-  DSL, generated schema modules, and generated keyboard-layout exports.
-- `input-method/` calculates concrete input methods from schema, keymap, and
-  keyboard dimensions.
+- `rime/` holds the Rime adapter DSL and generated schema modules. It emits Rime
+  YAML from Racket definitions; it is not the source of truth for available
+  methods.
+- `input-method/` is the source of truth for concrete input methods. It composes
+  schema, keymap, keyboard dimensions, Rime adapter metadata, and third-party
+  app layout/skin targets.
 - `input-method/schema/` holds pure schema registry entries.
 - `keymap/` holds logical key mappings and reusable key labels.
 - `keyboard/` holds skeletons, projections, dimensions, placements,
@@ -27,13 +29,16 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `tools/` contains maintenance scripts.
 - `k8s/` is ignored generated deploy output from `k8s.rkt`.
 
-Generated Rime modules in `rime/` use `#lang s-exp "lib/lang.rkt"` and declare
-their generated artifact support in the Rime source itself. Schema identity and
-display metadata live under `input-method/schema/`. Reusable keyboard dimensions
-live under `keyboard/`; calculated input methods compose schema logic, keymaps,
-keyboard skeletons, projections, placements, and target-specific mobile
-behavior. Inline `(keyboard ...)` clauses remain the generated Yuanshu skin
-definition surface:
+Generated Rime modules in `rime/` use `#lang s-exp "lib/lang.rkt"` to describe
+the emitted Rime schema/custom YAML directly. The available method list,
+artifact support, dependencies, static Rime files, and Yuanshu layout/skin
+selection are defined once in `input-method/calculate.rkt`; `rime/registry.rkt`
+is only a compatibility view over that catalog. Schema identity and display
+metadata live under `input-method/schema/`. Reusable keyboard dimensions live
+under `keyboard/`; calculated input methods compose schema logic, keymaps,
+keyboard skeletons, projections, placements, and target-specific app behavior.
+Inline `(keyboard ...)` clauses remain the generated Yuanshu skin definition
+surface:
 
 ```racket
 (rime-schema flypy_14
@@ -84,7 +89,7 @@ raco pkg install --auto --link .
 ```
 
 ```sh
-racket web.rkt
+racket main.rkt serve
 ```
 
 Visit `http://localhost:5001`.
@@ -92,7 +97,7 @@ Visit `http://localhost:5001`.
 For browser reload during web development, run:
 
 ```sh
-racket tools/dev-web.rkt
+racket main.rkt dev
 ```
 
 This restarts the Racket server when web, schema, preview, keyboard, static, or
@@ -102,7 +107,7 @@ ready.
 Run the native GUI when you want to push directly to a local iPhone:
 
 ```sh
-racket gui.rkt
+racket main.rkt gui
 ```
 
 Open Yuanshu's WiFi transfer screen on the iPhone, keep both devices on the
@@ -148,7 +153,19 @@ The build flow is:
 Regenerate Kubernetes manifests after changing deploy settings:
 
 ```sh
-racket k8s.rkt
+racket main.rkt k8s
+```
+
+Check generated Kubernetes manifests:
+
+```sh
+racket main.rkt check-k8s
+```
+
+Build a profile from the command line:
+
+```sh
+racket main.rkt build --schema flypy --artifact yuanshu
 ```
 
 ## Deployment

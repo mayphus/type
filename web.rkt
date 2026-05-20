@@ -26,7 +26,8 @@
          skin-items
          list-static-schemas
          canonical-redirect-location
-         canonical-dispatch)
+         canonical-dispatch
+         start)
 
 ;; ---- Helpers ---------------------------------------------------------------
 
