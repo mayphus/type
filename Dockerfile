@@ -17,7 +17,8 @@ RUN apt-get update \
     zip \
  && rm -rf /var/lib/apt/lists/*
 
-RUN raco pkg install --auto --batch --scope installation https://github.com/mayphus/style.git
+RUN raco pkg install --auto --batch --scope installation --no-setup https://github.com/mayphus/style.git \
+ && raco setup --no-docs style
 
 WORKDIR /app
 COPY . .

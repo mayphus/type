@@ -223,7 +223,8 @@
     "\n")
    "\n && rm -rf /var/lib/apt/lists/*\n"
    "\n"
-   "RUN raco pkg install --auto --batch --scope installation https://github.com/mayphus/style.git\n"
+   "RUN raco pkg install --auto --batch --scope installation --no-setup https://github.com/mayphus/style.git \\\n"
+   " && raco setup --no-docs style\n"
    "\n"
    "WORKDIR /app\n"
    "COPY . .\n"
