@@ -7,14 +7,16 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 - `web/app.rkt` serves the public museum HTML, keyboard layout previews, and ZIP builds.
 - `build/gui.rkt` opens a native Racket GUI for local Yuanshu builds and
   iPhone pushes.
-- `build/main.rkt` is the build facade; focused build modules live in
+- `build/api.rkt` is the build API facade; focused build modules live in
   `build/`.
 - `build/` contains operational code for build, serve, Kubernetes, dictionary
   updates, Cloudflare route repair, and Yuanshu sync.
 - `type.rkt` is only the product declaration surface for input methods,
   keyboard variants, Rime ids, target artifacts, and dependencies.
-- `lang/` exposes only the repo-wide declaration languages for Rime schemas,
-  the type catalog, and YAML objects.
+- `core/dsl.rkt` defines the input-method declaration forms used by
+  `type.rkt`.
+- `lang/` exposes only real `#lang` modules for generated Rime schemas and
+  YAML objects.
 - `targets/` contains platform-specific target renderers, adapters, and
   reference configs.
 - `web/` contains server-rendered UI pages, components, locale handling, form
@@ -33,7 +35,7 @@ Input Foundry is a Chinese input museum and Rime/Yuanshu package builder, served
 Generated Rime modules in `targets/rime/` use `#lang s-exp "../../lang/rime.rkt"` to describe
 the emitted Rime schema/custom YAML directly. Supported input methods are
 declared once in `type.rkt` with nested `(rime ...)` and `(layout ...)` clauses;
-`core/methods.rkt` derives the concrete records and Rime-facing build
+`core/input-methods.rkt` derives the concrete records and Rime-facing build
 selectors. Schema identity and display metadata live in `type.rkt`. Reusable
 keyboard dimensions live in `core/keyboard.rkt`; calculated input methods
 compose schema logic, keymaps, keyboard skeletons, projections, placements, and
@@ -141,7 +143,7 @@ other Yuanshu layouts are left untouched.
 
 ## Build logic
 
-`build/main.rkt` is the shared build facade for both web and GUI. The
+`build/api.rkt` is the shared build API for both web and GUI. The
 implementation is split under `build/`:
 
 - `paths.rkt` owns shared paths and tool locations.

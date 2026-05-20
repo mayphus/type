@@ -6,16 +6,14 @@
          racket/runtime-path
          racket/string
          (prefix-in keyboard: "../core/keyboard.rkt")
-         (prefix-in schema-index: "../core/schemas.rkt")
-         (prefix-in calculate: "../core/methods.rkt")
-         (prefix-in rime-core: "../core/methods.rkt")
+         (prefix-in methods: "../core/input-methods.rkt")
          (prefix-in flypy: "../targets/rime/flypy.rkt")
          (prefix-in flypy_14: "../targets/rime/flypy_14.rkt")
          (prefix-in luna_pinyin: "../targets/rime/luna_pinyin.rkt")
          (prefix-in pinyin_14: "../targets/rime/pinyin_14.rkt")
          (prefix-in terra_pinyin: "../targets/rime/terra_pinyin.rkt")
          (prefix-in jyut6ping3: "../targets/rime/jyut6ping3.rkt")
-         "../build/main.rkt"
+         "../build/api.rkt"
          "../targets/yuanshu/skin/core/preview-svg.rkt"
          "../targets/yuanshu/skin/core/preview.rkt"
          "../targets/yuanshu/skin/layouts/bopomofo-page.rkt"
@@ -93,22 +91,22 @@
 
 (module+ test
   (test-case "schema entry ids are unique"
-    (define ids (schema-index:schema-entry-ids))
+    (define ids (methods:schema-entry-ids))
     (check-equal? (length ids) (length (remove-duplicates ids))))
 
   (test-case "input-method schema index exposes recipe-backed entries"
     (define recipe-ids
-      (map calculate:input-method-recipe-id calculate:input-method-recipes))
-    (check-equal? (schema-index:input-method-schema-entry-ids) recipe-ids)
-    (check-not-false (member "double-pinyin-flypy" (schema-index:input-method-schema-entry-ids)))
-    (check-not-false (member "double-pinyin-flypy-14" (schema-index:input-method-schema-entry-ids)))
-    (check-not-false (member "pinyin-14" (schema-index:input-method-schema-entry-ids)))
-    (check-false (member "flypy-ice" (schema-index:input-method-schema-entry-ids)))
-    (for ([id (in-list (schema-index:input-method-schema-entry-ids))])
-      (check-not-false (calculate:input-method-recipe-ref id #f) id)))
+      (map methods:input-method-recipe-id methods:input-method-recipes))
+    (check-equal? (methods:input-method-schema-entry-ids) recipe-ids)
+    (check-not-false (member "double-pinyin-flypy" (methods:input-method-schema-entry-ids)))
+    (check-not-false (member "double-pinyin-flypy-14" (methods:input-method-schema-entry-ids)))
+    (check-not-false (member "pinyin-14" (methods:input-method-schema-entry-ids)))
+    (check-false (member "flypy-ice" (methods:input-method-schema-entry-ids)))
+    (for ([id (in-list (methods:input-method-schema-entry-ids))])
+      (check-not-false (methods:input-method-recipe-ref id #f) id)))
 
   (test-case "schema registry contains only pure schemas"
-    (define schema-ids (schema-index:schema-entry-ids))
+    (define schema-ids (methods:schema-entry-ids))
     (check-not-false (member "double-pinyin-flypy" schema-ids))
     (check-not-false (member "luna-pinyin" schema-ids))
     (for ([id (in-list '("double-pinyin-flypy-14"
@@ -133,25 +131,25 @@
     (check-false (keyboard:keyboard-layout-definition-ref "missing-layout")))
 
   (test-case "generated schema entries point at Rime source module files"
-    (for ([id (in-list rime-core:generated-config-ids)])
+    (for ([id (in-list methods:generated-config-ids)])
       (check-true
        (file-exists?
         (build-path rime-source-dir
-                    (string-append (rime-core:rime-schema-source-id id)
+                    (string-append (methods:rime-schema-source-id id)
                                    ".rkt")))
        id)))
 
   (test-case "schema index keeps dependency and artifact metadata"
-    (check-false (member "flypy-ice" (rime-core:rime-schema-ids)))
-    (check-false (member "flypy_ice" rime-core:generated-config-ids))
-    (check-equal? (rime-core:rime-schema-deps "double-pinyin") '("stroke"))
-    (check-equal? (rime-core:rime-schema-extra-files "wubi-pinyin") '("wubi86.dict.yaml"))
-    (check-equal? (rime-core:rime-schema-artifacts "double-pinyin") '("rime" "yuanshu"))
-    (check-equal? (rime-core:rime-schema-artifacts "bopomofo") '("yuanshu"))
-    (check-equal? (schema-index:schema-id->category-id "cangjie6") "shape")
-    (check-equal? (schema-index:schema-id->category-id "bopomofo") "zhuyin")
-    (check-equal? (schema-index:schema-category-label "full-pinyin" 'en) "Full Pinyin")
-    (check-equal? (schema-index:schema-category-label "double-pinyin" 'zh-Hant) "雙拼"))
+    (check-false (member "flypy-ice" (methods:rime-schema-ids)))
+    (check-false (member "flypy_ice" methods:generated-config-ids))
+    (check-equal? (methods:rime-schema-deps "double-pinyin") '("stroke"))
+    (check-equal? (methods:rime-schema-extra-files "wubi-pinyin") '("wubi86.dict.yaml"))
+    (check-equal? (methods:rime-schema-artifacts "double-pinyin") '("rime" "yuanshu"))
+    (check-equal? (methods:rime-schema-artifacts "bopomofo") '("yuanshu"))
+    (check-equal? (methods:schema-id->category-id "cangjie6") "shape")
+    (check-equal? (methods:schema-id->category-id "bopomofo") "zhuyin")
+    (check-equal? (methods:schema-category-label "full-pinyin" 'en) "Full Pinyin")
+    (check-equal? (methods:schema-category-label "double-pinyin" 'zh-Hant) "雙拼"))
 
   (test-case "flypy shared config emits desktop schema YAML"
     (define yaml (generated-file flypy:config-files "flypy.schema.yaml"))
@@ -163,7 +161,7 @@
 
   (test-case "flypy skin preview includes flypy legends"
     (define flypy-layout-module
-      (for/first ([item (in-list (list-keyboard-layout-items rime-core:generated-config-ids))]
+      (for/first ([item (in-list (list-keyboard-layout-items methods:generated-config-ids))]
                   #:when (equal? (cadr item) "flypy"))
         (caddr item)))
     (define preview
@@ -175,7 +173,7 @@
        (equal? (hash-ref layer 'text) "iu"))))
 
   (test-case "generated Yuanshu layouts do not emit swipe-down actions"
-    (for* ([item (in-list (list-keyboard-layout-items rime-core:generated-config-ids))]
+    (for* ([item (in-list (list-keyboard-layout-items methods:generated-config-ids))]
            [files (in-value ((keyboard-layout-module-ref (caddr item)
                                                          'keyboard-layout-files-with-docs)))]
            [(path content) (in-hash files)]
@@ -339,8 +337,8 @@
     (check-equal?
      (hash-ref (hash-ref cangjie-ipad 'aButtoncangjie6ForegroundStyle) 'fontWeight #f)
      #f)
-    (check-equal? (rime-core:rime-schema-keyboard-layouts "quick5") '("cangjie5"))
-    (check-equal? (rime-core:rime-schema-keyboard-layouts "cangjie5") '("cangjie5")))
+    (check-equal? (methods:rime-schema-keyboard-layouts "quick5") '("cangjie5"))
+    (check-equal? (methods:rime-schema-keyboard-layouts "cangjie5") '("cangjie5")))
 
   (test-case "keyboard legends live in keymap core through keyboard facade"
     (check-equal? (keyboard:keyboard-legend-text 'wubi 'q) "金/勹")

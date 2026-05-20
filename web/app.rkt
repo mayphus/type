@@ -17,9 +17,8 @@
          "pages.rkt"
          "forms.rkt"
          "locale.rkt"
-         "../build/main.rkt"
-         "../core/methods.rkt"
-         "../core/schemas.rkt"
+         "../build/api.rkt"
+         "../core/input-methods.rkt"
          "../core/keymaps.rkt")
 
 (provide keyboard-layout-items

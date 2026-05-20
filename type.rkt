@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "lang/type.rkt")
+(require "core/dsl.rkt")
 
 (provide input-methods)
 

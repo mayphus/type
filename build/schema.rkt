@@ -2,8 +2,7 @@
 
 (require racket/list
          racket/string
-         "../core/methods.rkt"
-         "../core/schemas.rkt"
+         "../core/input-methods.rkt"
          "paths.rkt")
 
 (provide generated-config-ids

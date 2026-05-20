@@ -5,7 +5,7 @@
          racket/path
          racket/set
          racket/string
-         "../core/methods.rkt"
+         "../core/input-methods.rkt"
          "keyboard.rkt"
          "paths.rkt"
          "schema.rkt"

@@ -4,9 +4,8 @@
          racket/gui/base
          racket/list
          racket/string
-         "../core/methods.rkt"
-         "../core/schemas.rkt"
-         "main.rkt")
+         "../core/input-methods.rkt"
+         "api.rkt")
 
 (provide start-gui)
 

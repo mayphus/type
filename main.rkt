@@ -7,7 +7,7 @@
          racket/path
          racket/string
          racket/system
-         "build/main.rkt"
+         "build/api.rkt"
          "build/k8s.rkt")
 
 (define commands '(serve build k8s check-k8s dev gui))

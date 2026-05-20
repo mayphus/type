@@ -4,7 +4,7 @@
          racket/list
          racket/set
          "../core/keyboard.rkt"
-         "../core/methods.rkt"
+         "../core/input-methods.rkt"
          "paths.rkt")
 
 (provide keyboard-layout-module?
