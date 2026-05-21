@@ -208,6 +208,7 @@
         (delete-directory/files tmp #:must-exist? #f))))
 
   (test-case "static upstream schemas reuse preview keyboard layouts"
+    (check-equal? (read-schema-keyboard-layouts "double-pinyin-flypy-9") '("flypy_9"))
     (check-equal? (read-schema-keyboard-layouts "double-pinyin") '("double_pinyin_zrm"))
     (check-equal? (read-schema-keyboard-layouts "double-pinyin-14") '("double_pinyin_zrm_14"))
     (check-equal? (read-schema-keyboard-layouts "double-pinyin-shuffle-17") '("double_pinyin_zrm_shuffle_17"))

@@ -8,6 +8,7 @@
          (prefix-in keyboard: "../core/keyboard.rkt")
          (prefix-in methods: "../core/input-methods.rkt")
          (prefix-in flypy: "../targets/rime/flypy.rkt")
+         (prefix-in flypy_9: "../targets/rime/flypy_9.rkt")
          (prefix-in flypy_14: "../targets/rime/flypy_14.rkt")
          (prefix-in luna_pinyin: "../targets/rime/luna_pinyin.rkt")
          (prefix-in pinyin_14: "../targets/rime/pinyin_14.rkt")
@@ -17,6 +18,7 @@
          "../targets/yuanshu/skin/core/preview-svg.rkt"
          "../targets/yuanshu/skin/core/preview.rkt"
          "../targets/yuanshu/skin/layouts/bopomofo-page.rkt"
+         (prefix-in flypy9-layout: "../targets/yuanshu/skin/layouts/flypy-9-page.rkt")
          (prefix-in flypy14-layout: "../targets/yuanshu/skin/layouts/flypy-14-page.rkt")
          (prefix-in flypy18-layout: "../targets/yuanshu/skin/layouts/flypy-18-page.rkt")
          (prefix-in pinyin14-layout: "../targets/yuanshu/skin/layouts/pinyin-14-page.rkt")
@@ -99,6 +101,7 @@
       (map methods:input-method-recipe-id methods:input-method-recipes))
     (check-equal? (methods:input-method-schema-entry-ids) recipe-ids)
     (check-not-false (member "double-pinyin-flypy" (methods:input-method-schema-entry-ids)))
+    (check-not-false (member "double-pinyin-flypy-9" (methods:input-method-schema-entry-ids)))
     (check-not-false (member "double-pinyin-flypy-14" (methods:input-method-schema-entry-ids)))
     (check-not-false (member "pinyin-14" (methods:input-method-schema-entry-ids)))
     (check-false (member "flypy-ice" (methods:input-method-schema-entry-ids)))
@@ -110,6 +113,7 @@
     (check-not-false (member "double-pinyin-flypy" schema-ids))
     (check-not-false (member "luna-pinyin" schema-ids))
     (for ([id (in-list '("double-pinyin-flypy-14"
+                         "double-pinyin-flypy-9"
                          "double-pinyin-flypy-18"
                          "double-pinyin-flypy-shuffle-17"
                          "pinyin-14"
@@ -120,11 +124,13 @@
     (check-not-false (keyboard:keyboard-skeleton-definition-ref "standard-26"))
     (check-not-false (keyboard:keyboard-model-definition-ref "standard-26"))
     (check-not-false (keyboard:keyboard-model-definition-ref "compact-14"))
+    (check-not-false (keyboard:keyboard-model-definition-ref "compact-9"))
     (check-not-false (keyboard:keyboard-model-definition-ref "compact-18"))
     (check-not-false (keyboard:keyboard-model-definition-ref "compact-17"))
     (check-not-false (keyboard:keyboard-model-definition-ref "zhuyin"))
     (check-not-false (keyboard:keyboard-projection-definition-ref "identity-26"))
     (check-not-false (keyboard:keyboard-projection-definition-ref "adjacent-qwerty-14"))
+    (check-not-false (keyboard:keyboard-projection-definition-ref "qwerty-row-9"))
     (check-not-false (keyboard:keyboard-placement-definition-ref "compact-center"))
     (check-not-false (keyboard:keyboard-interaction-definition-ref "compact-mobile"))
     (check-false (keyboard:keyboard-layout-definition-ref "flypy"))
@@ -258,6 +264,16 @@
                   '("numericButton" "emojiButton" "spaceButton" "backspaceButton"
                     "enterButton")))
 
+  (test-case "flypy_9 schema DSL emits stable schema YAML"
+    (define yaml (generated-file flypy_9:config-files "flypy_9.schema.yaml"))
+    (check-not-false (string-contains? yaml "schema_id: flypy_9"))
+    (check-not-false (string-contains? yaml "name: \"小鶴雙拼 9鍵\""))
+    (check-not-false (string-contains? yaml "dependencies:\n    - cangjie6"))
+    (check-not-false (string-contains? yaml "alphabet: qruafjzvm"))
+    (check-not-false (string-contains? yaml "xlit/qwertyuiopasdfghjklzxcvbnm/qqqrrruuuuaaafffjjjzzzvvvm/"))
+    (check-not-false (string-contains? yaml "dictionary: luna_pinyin"))
+    (check-not-false (string-contains? yaml "prism: flypy_9")))
+
   (test-case "flypy_14 schema DSL emits stable schema YAML"
     (define yaml (generated-file flypy_14:config-files "flypy_14.schema.yaml"))
     (check-not-false (string-contains? yaml "schema_id: flypy_14"))
@@ -267,13 +283,29 @@
     (check-not-false (string-contains? yaml "dictionary: luna_pinyin"))
     (check-not-false (string-contains? yaml "prism: flypy_14")))
 
-  (test-case "14-key schemas own their layout definitions"
+  (test-case "compact schemas own their layout definitions"
+    (check-equal? flypy_9:keyboard-layouts '("flypy_9"))
     (check-equal? flypy_14:keyboard-layouts '("flypy_14"))
     (check-equal? pinyin_14:keyboard-layouts '("pinyin_14"))
+    (check-not-false (assoc "flypy_9" flypy_9:keyboard-layout-defs))
     (check-not-false (assoc "flypy_14" flypy_14:keyboard-layout-defs))
     (check-not-false (assoc "pinyin_14" pinyin_14:keyboard-layout-defs))
+    (check-false (keyboard:keyboard-layout-definition-ref "flypy_9"))
     (check-false (keyboard:keyboard-layout-definition-ref "flypy_14"))
     (check-false (keyboard:keyboard-layout-definition-ref "pinyin_14")))
+
+  (test-case "9-key Flypy layout uses three equal-width merged rows"
+    (define page (generated-json flypy9-layout:flypy-9-iphone-pinyin-files
+                                 "light/pinyinPortrait.yaml"))
+    (check-equal? (layout-row-cell-ids page 0)
+                  '("qwe9Button" "rty9Button" "uiop9Button"))
+    (check-equal? (layout-row-cell-ids page 1)
+                  '("asd9Button" "fgh9Button" "jkl9Button"))
+    (check-equal? (layout-row-cell-ids page 2)
+                  '("zxc9Button" "vbn9Button" "m9Button"))
+    (for ([button-id (in-list '("qwe9Button" "asd9Button" "m9Button"))])
+      (check-equal? (button-width page button-id) "375/1125")
+      (check-false (button-height page button-id))))
 
   (test-case "14-key third row uses five equal-width buttons"
     (for ([files (in-list (list flypy14-layout:flypy-14-iphone-pinyin-files

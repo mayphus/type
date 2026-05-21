@@ -71,6 +71,14 @@
       (zx cv bn m backspace))
      (row-offsets 0 0 0)
      (slots ,standard-key-slots))
+    (compact-9
+     (columns 3)
+     (rows
+      (qwe rty uiop)
+      (asd fgh jkl)
+      (zxc vbn m))
+     (row-offsets 0 0 0)
+     (slots ,standard-key-slots))
     (compact-18
      (columns 7)
      (rows
@@ -132,6 +140,13 @@
     (qw q w) (er e r) (ty t y) (ui u i) (op o p)
     (as a s) (df d f) (gh g h) (jk j k) (l l)
     (zx z x) (cv c v) (bn b n) (m m)))
+  (qwerty-row-9
+   (summary "QWERTY row groups merge into a compact 9-key phone skeleton.")
+   (skeleton compact-9)
+   (groups
+    (qwe q w e) (rty r t y) (uiop u i o p)
+    (asd a s d) (fgh f g h) (jkl j k l)
+    (zxc z x c) (vbn v b n) (m m)))
   (adjacent-qwerty-18
    (summary "Screenshot-derived QWERTY groups merge into the compact 18-key phone skeleton.")
    (skeleton compact-18)
@@ -210,6 +225,7 @@
 (define-keyboard-dimensions keyboard-dimensions
   (standard-26 standard-26 identity-26 (standard-mobile no-swipe-down) yuanshu)
   (compact-14 compact-14 adjacent-qwerty-14 (compact-mobile no-swipe-down) yuanshu)
+  (compact-9 compact-9 qwerty-row-9 (compact-mobile no-swipe-down) yuanshu)
   (compact-18 compact-18 adjacent-qwerty-18 (compact-mobile no-swipe-down) yuanshu)
   (shuffle-17 compact-17 shuffle-17 (custom-mobile-pages no-swipe-down) yuanshu)
   (zhuyin zhuyin zhuyin-direct (zhuyin-mobile custom-mobile-pages no-swipe-down) yuanshu)

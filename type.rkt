@@ -34,7 +34,15 @@
             #:custom? #t)
       (layout "double-pinyin-flypy"
         #:skin "flypy"
-        #:placement 'split-flypy))
+        #:placement 'split-flypy)
+      (layout "double-pinyin-flypy-9"
+        #:keyboard 'compact-9
+        #:skin "flypy_9"
+        #:placement 'compact-center
+        #:name '("Flypy 9-Key" "小鶴雙拼 9鍵")
+        #:description '("A 9-key Yuanshu Flypy layout using QWERTY row groups."
+                        "使用 QWERTY 行分組的 9 鍵小鶴雙拼元書佈局。")
+        #:rime-source "flypy_9"))
 
     (input-method "double-pinyin"
       #:slug "double-pinyin-zrm"

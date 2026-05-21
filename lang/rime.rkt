@@ -378,6 +378,8 @@
          ,@(if (null? fonts) '() `((fonts ,@fonts))))]
       [(and (eq? model 'compact-14) variant)
        `(phone-layout ,variant)]
+      [(and (eq? model 'compact-9) variant)
+       `(phone-layout ,variant)]
       [(and (eq? model 'compact-18) variant)
        `(phone-layout ,variant)]
       [(and (eq? model 'compact-17) variant)

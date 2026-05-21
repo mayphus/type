@@ -20,7 +20,7 @@
               'keymap 'flypy
               'keyboard 'standard-26
               'layout "flypy"
-              'definition-lisp "(define-input-method\n  \"double-pinyin-flypy\"\n  #:schema \"double-pinyin-flypy\"\n  #:keymap 'flypy\n  #:keyboard 'standard-26\n  #:layout \"flypy\")"
+              'definition-lisp "(input-method \"double-pinyin-flypy\"\n  #:keymap 'flypy\n  #:legends '(abc flypy)\n  (layout \"double-pinyin-flypy\"\n    #:skin \"flypy\"\n    #:placement 'split-flypy\n    ))"
               'deps '("cangjie6")
               'artifacts '("rime" "yuanshu")
               'keyboard-layouts '("double-pinyin-flypy"))
@@ -36,7 +36,7 @@
               'keymap 'flypy
               'keyboard 'compact-14
               'layout "flypy_14"
-              'definition-lisp "(define-input-method\n  \"double-pinyin-flypy-14\"\n  #:schema \"double-pinyin-flypy\"\n  #:keymap 'flypy\n  #:keyboard 'compact-14\n  #:layout \"flypy_14\")"
+              'definition-lisp "(input-method \"double-pinyin-flypy\"\n  #:keymap 'flypy\n  #:legends '(abc flypy)\n  (layout \"double-pinyin-flypy-14\"\n    #:keyboard 'compact-14\n    #:skin \"flypy_14\"\n    #:placement 'compact-center\n    #:rime-source \"flypy_14\"\n    ))"
               'deps '("cangjie6")
               'artifacts '("yuanshu")
               'keyboard-layouts '("double-pinyin-flypy-14"))
@@ -187,12 +187,13 @@
     (check-true (regexp-match? #rx"rime-definition-panel" html))
     (check-false (regexp-match? #rx"Definition" html))
     (check-false (regexp-match? #rx"rime-definition-meta" html))
-    (check-true (regexp-match? #rx"define-input-method" html))
-    (check-true (regexp-match? #rx"\\(define-input-method \"double-pinyin-flypy\"" html))
+    (check-true (regexp-match? #rx"input-method" html))
+    (check-true (regexp-match? #rx"\\(input-method \"double-pinyin-flypy\"" html))
+    (check-true (regexp-match? #rx"\\(layout \"double-pinyin-flypy\"" html))
     (check-false (regexp-match? #rx"#:schema" html))
     (check-true (regexp-match? #rx"double-pinyin-flypy" html))
     (check-false (regexp-match? #rx"  &quot;double-pinyin-flypy&quot;" html))
-    (check-true (regexp-match? #rx"#:keyboard 'standard-26" html))
+    (check-true (regexp-match? #rx"#:placement 'split-flypy" html))
     (check-false (regexp-match? #rx"rime-exhibit-meta" html))
     (check-false (regexp-match? #rx"rime-layout-title" html))
     (check-false (regexp-match? #rx"<span class=\"rime-option-id\">flypy" html)))
@@ -210,7 +211,10 @@
     (check-false (regexp-match? #rx"name=\"artifact\" value=\"rime\"" html))
     (check-true (regexp-match? #rx"name=\"artifact\" value=\"yuanshu\"" html))
     (check-true (regexp-match? #rx"#:keyboard 'compact-14" html))
-    (check-true (regexp-match? #rx"#:layout" html))
+    (check-true (regexp-match? #rx"\\(layout \"double-pinyin-flypy-14\"" html))
+    (check-false (regexp-match? #rx"#:skeleton" html))
+    (check-false (regexp-match? #rx"#:projection" html))
+    (check-false (regexp-match? #rx"#:interactions" html))
     (check-true (regexp-match? #rx"flypy_14" html)))
 
   (test-case "locale is remembered from cookie"
