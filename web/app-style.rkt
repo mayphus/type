@@ -174,6 +174,109 @@
       ["flex-direction" "column"]
       ["gap" "1.35rem"]
     )
+    (rule ".rime-customizer"
+      ["display" "flex"]
+      ["flex-direction" "column"]
+      ["gap" "1.05rem"]
+      ["min-height" "calc(100svh - 6.8rem)"]
+      ["padding-bottom" "1.45rem"]
+      ["border-bottom" "1px solid var(--line)"]
+    )
+    (rule ".rime-customizer-grid"
+      ["display" "grid"]
+      ["grid-template-columns" "minmax(13rem, 0.72fr) minmax(14rem, 0.78fr) minmax(0, 2.5fr)"]
+      ["gap" "0.85rem"]
+      ["align-items" "start"]
+      ["flex" "1 1 auto"]
+    )
+    (rule ".rime-customizer-panel"
+      ["min-width" "0"]
+    )
+    (rule ".rime-customizer-heading"
+      ["margin" "0 0 0.55rem"]
+      ["color" "var(--muted)"]
+      ["font-size" "0.78rem"]
+      ["font-weight" "700"]
+      ["letter-spacing" "0"]
+      ["text-transform" "uppercase"]
+    )
+    (rule ".rime-customizer-selector-form"
+      ["display" "block"]
+      ["margin" "0"]
+    )
+    (rule ".rime-customizer-select"
+      ["width" "100%"]
+      ["min-width" "0"]
+      ["min-height" "2.75rem"]
+      ["padding" "0.55rem 2rem 0.55rem 0.7rem"]
+      ["border" "1px solid var(--line)"]
+      ["border-radius" "var(--radius-md)"]
+      ["background" "var(--surface)"]
+      ["color" "var(--fg)"]
+      ["font-size" "0.92rem"]
+      ["font-weight" "600"]
+    )
+    (rule ".rime-customizer-select:hover,\n.rime-customizer-select:focus-visible"
+      ["border-color" "var(--line-strong)"]
+      ["outline" "none"]
+    )
+    (rule ".rime-customizer-preview"
+      ["display" "flex"]
+      ["flex-direction" "column"]
+      ["gap" "0.75rem"]
+      ["min-height" "0"]
+    )
+    (rule ".rime-customizer-preview-head"
+      ["display" "flex"]
+      ["align-items" "flex-start"]
+      ["justify-content" "space-between"]
+      ["gap" "0.75rem"]
+    )
+    (rule ".rime-customizer-preview-head .rime-back-link"
+      ["margin-bottom" "0"]
+    )
+    (rule ".rime-customizer-targets"
+      ["display" "grid"]
+      ["grid-template-columns" "repeat(auto-fit, minmax(min(100%, 12rem), 1fr))"]
+      ["gap" "0.55rem"]
+      ["margin-top" "auto"]
+    )
+    (rule ".rime-customizer-target-form"
+      ["margin" "0"]
+    )
+    (rule ".rime-customizer .rime-detail-preview"
+      ["grid-template-columns" "1fr"]
+      ["flex" "1 1 auto"]
+    )
+    (rule ".rime-customizer .rime-detail-preview .keyboard-preview-svg-wrap"
+      ["height" "clamp(18rem, 46svh, 34rem)"]
+    )
+    (rule ".rime-customizer .rime-target-preview"
+      ["padding" "0.65rem"]
+    )
+    (rule ".rime-customizer .rime-target-download-form"
+      ["display" "none"]
+    )
+    (rule ".rime-reference-section"
+      ["display" "flex"]
+      ["flex-direction" "column"]
+      ["gap" "0.85rem"]
+      ["padding-top" "1rem"]
+    )
+    (rule ".rime-home-links"
+      ["display" "flex"]
+      ["justify-content" "flex-start"]
+      ["padding-top" "0.8rem"]
+    )
+    (rule ".rime-home-links .rime-back-link"
+      ["margin-bottom" "0"]
+    )
+    (rule ".rime-reference-head"
+      ["display" "flex"]
+      ["align-items" "center"]
+      ["justify-content" "space-between"]
+      ["gap" "1rem"]
+    )
     (rule ".rime-schema-category"
       ["display" "grid"]
       ["grid-template-columns" "max-content minmax(0, 1fr)"]
@@ -204,8 +307,8 @@
     )
     (rule ".rime-option-grid"
       ["display" "grid"]
-      ["grid-template-columns" "repeat(auto-fill, minmax(min(100%, 22rem), 1fr))"]
-      ["gap" "0.7rem"]
+      ["grid-template-columns" "repeat(auto-fill, minmax(min(100%, 15rem), 1fr))"]
+      ["gap" "0.55rem"]
       ["justify-content" "start"]
     )
     (rule ".rime-option-card,\n.rime-exhibit-card,\n.rime-layout-card,\n.rime-build-button"
@@ -225,8 +328,8 @@
       ["position" "relative"]
       ["display" "flex"]
       ["flex-direction" "column"]
-      ["gap" "0.5rem"]
-      ["padding" "0.65rem"]
+      ["gap" "0.4rem"]
+      ["padding" "0.55rem"]
       ["background" "transparent"]
       ["min-width" "0"]
     )
@@ -294,16 +397,23 @@
       ["width" "100%"]
       ["padding" "0.92rem 1rem"]
       ["cursor" "pointer"]
-      ["background" "transparent"]
-      ["color" "var(--fg)"]
+      ["background" "var(--fg)"]
+      ["color" "var(--bg)"]
       ["font-weight" "600"]
     )
     (rule ".rime-build-button:hover"
       ["border-color" "var(--line-strong)"]
-      ["background" "var(--accent-soft)"]
+      ["background" "var(--accent)"]
+      ["color" "var(--bg)"]
     )
     (rule ".rime-build-button-secondary"
       ["border-color" "var(--line-strong)"]
+      ["background" "transparent"]
+      ["color" "var(--fg)"]
+    )
+    (rule ".rime-build-button-secondary:hover"
+      ["background" "var(--accent-soft)"]
+      ["color" "var(--fg)"]
     )
     (rule ".rime-exhibit-download"
       ["min-width" "0"]
@@ -613,6 +723,12 @@
     (media "(max-width: 860px)"
       (rule "#app"
         ["padding" "1.25rem 0.9rem 2.6rem"]
+      )
+      (rule ".rime-customizer-grid"
+        ["grid-template-columns" "1fr"]
+      )
+      (rule ".rime-customizer"
+        ["min-height" "0"]
       )
       (rule ".rime-exhibit-download .rime-artifact-form"
         ["grid-template-columns" "1fr"]

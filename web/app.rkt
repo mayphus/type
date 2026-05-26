@@ -451,6 +451,10 @@
   (html-response (render-page req schema-items keyboard-layout-items)
                  (remember-locale-headers req)))
 
+(define (handle-methods-page req)
+  (html-response (render-methods-page req schema-items keyboard-layout-items)
+                 (remember-locale-headers req)))
+
 (define (handle-exhibit req schema-id)
   (cond
     [(not (valid-id? schema-id))
@@ -657,6 +661,7 @@
 (define-values (dispatch url)
   (dispatch-rules
    [("") handle-page]
+   [("methods") handle-methods-page]
    [("metadata") handle-metadata]
    [("__dev" "reload-token") handle-dev-reload-token]
    [("desktop") (lambda (req) (redirect-response "/"))]

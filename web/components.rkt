@@ -3,7 +3,8 @@
 (require racket/list
          racket/string
          "../core/input-methods.rkt"
-         "locale.rkt")
+         "locale.rkt"
+         "view-model.rkt")
 
 (provide schema-id
          schema-slug
@@ -15,6 +16,7 @@
          schema-layout-items
          schema-detail-preview
          schema-definition-panel
+         customizer-workbench
          categorized-schemas
          language-toggle
          page-xexpr
@@ -96,6 +98,109 @@
           (values items seen)
           (values (cons schema items) (cons key seen)))))
   (reverse items))
+
+(define (variant-target-button locale schema artifact)
+  `(form ((class "rime-customizer-target-form")
+          (method "post")
+          (action "/build"))
+         (input ((type "hidden") (name "schemas") (value ,(schema-id schema))))
+         (button ((class ,(classes "rime-build-button"
+                                   (and (equal? artifact "yuanshu")
+                                        "rime-build-button-secondary")))
+                  (type "submit")
+                 (name "artifact")
+                 (value ,artifact))
+                 ,(cond
+                    [(equal? artifact "rime") (t locale 'build-rime)]
+                    [(equal? artifact "yuanshu") (t locale 'build-yuanshu)]
+                    [else (t locale 'download)]))))
+
+(define (schema-selector-option label selected? value)
+  `(option ,(append `((value ,value))
+                   (if selected? '((selected "selected")) '()))
+           ,label))
+
+(define (method-selector locale current methods)
+  `(form ((class "rime-customizer-selector-form")
+          (method "get")
+          (action "/"))
+         ,@(if (eq? locale 'zh-Hant)
+               '((input ((type "hidden") (name "locale") (value "zh-Hant"))))
+               '())
+         (select ((class "rime-customizer-select")
+                  (name "schema")
+                  (aria-label "Input method"))
+                 ,@(for/list ([schema (in-list methods)])
+                     (schema-selector-option
+                      (format "~a - ~a"
+                              (schema-name locale schema)
+                              (schema-category-label
+                               (schema-id->category-id
+                                (hash-ref schema 'schema-id (schema-id schema)))
+                               locale))
+                      (equal? (method-key current) (method-key schema))
+                      (schema-slug schema))))))
+
+(define (layout-selector locale method-schema current variants)
+  `(form ((class "rime-customizer-selector-form")
+          (method "get")
+          (action "/"))
+         ,@(if (eq? locale 'zh-Hant)
+               '((input ((type "hidden") (name "locale") (value "zh-Hant"))))
+               '())
+         (select ((class "rime-customizer-select")
+                  (name "schema")
+                  (aria-label "Keyboard layout"))
+                 ,@(for/list ([schema (in-list variants)])
+                     (schema-selector-option
+                      (format "~a - ~a"
+                              (schema-layout-title locale method-schema schema)
+                              (string-join
+                               (map (lambda (artifact)
+                                      (cond
+                                        [(equal? artifact "rime") "Rime"]
+                                        [(equal? artifact "yuanshu") "Yuanshu"]
+                                        [else artifact]))
+                                    (schema-artifacts schema))
+                               " / "))
+                      (equal? (schema-id current) (schema-id schema))
+                      (schema-slug schema))))))
+
+(define (customizer-workbench locale schemas layouts selected-ref)
+  (define selected (selected-customizer-schema schemas selected-ref))
+  (define methods (method-option-schemas schemas))
+  (define selected-method (and selected (customizer-method-schema methods selected)))
+  (define variants (if selected (schema-method-variants schemas selected) '()))
+  `(section ((class "rime-customizer"))
+            (div ((class "rime-hero-head"))
+                 (div
+                  (h1 ((class "page-title")) ,(t locale 'title)))
+                 ,(language-toggle locale "/"))
+            (div ((class "rime-customizer-grid"))
+                 (section ((class "rime-customizer-panel rime-customizer-methods")
+                           (aria-label "Input method"))
+                          (h2 ((class "rime-customizer-heading")) ,(t locale 'method))
+                          ,(method-selector locale selected methods))
+                 (section ((class "rime-customizer-panel rime-customizer-layouts")
+                           (aria-label "Keyboard layout"))
+                          (h2 ((class "rime-customizer-heading")) ,(t locale 'layout))
+                          ,(layout-selector locale selected-method selected variants))
+                 (section ((class "rime-customizer-panel rime-customizer-preview")
+                           (aria-label "Preview and build"))
+                          ,@(if selected
+                                `((div ((class "rime-customizer-preview-head"))
+                                       (div
+                                        (h2 ((class "rime-customizer-heading"))
+                                            ,(schema-layout-title locale selected-method selected))
+                                        (a ((class "rime-back-link")
+                                            (href ,(format "/exhibits/~a" (schema-slug selected))))
+                                           ,(t locale 'details))))
+                                  ,@(let ([preview (schema-detail-preview locale selected layouts)])
+                                      (if preview (list preview) '()))
+                                  (div ((class "rime-customizer-targets"))
+                                       ,@(for/list ([artifact (in-list (schema-artifacts selected))])
+                                           (variant-target-button locale selected artifact))))
+                                `((p ((class "rime-empty-state")) "No input method selected.")))))))
 
 (define (categorized-schemas schemas)
   (filter-map
@@ -275,6 +380,53 @@ async function check(){
 setInterval(check, 700);
 check();"))
 
+(define customizer-script
+  `(script
+    ((type "module"))
+    "async function loadCustomizer(url, push){
+  const current = document.querySelector('.rime-customizer');
+  if (!current) {
+    location.href = url;
+    return;
+  }
+  current.setAttribute('aria-busy', 'true');
+  try {
+    const res = await fetch(url, {
+      cache: 'no-store',
+      headers: { 'X-Requested-With': 'fetch' }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    const doc = new DOMParser().parseFromString(text, 'text/html');
+    const next = doc.querySelector('.rime-customizer');
+    if (!next) throw new Error('Missing customizer');
+    current.replaceWith(next);
+    document.title = doc.title;
+    if (push) history.pushState(null, '', url);
+  } catch (_) {
+    location.href = url;
+  } finally {
+    const active = document.querySelector('.rime-customizer');
+    if (active) active.removeAttribute('aria-busy');
+  }
+}
+
+document.addEventListener('change', function(event) {
+  const select = event.target.closest('.rime-customizer-select');
+  if (!select || !select.form) return;
+  event.preventDefault();
+  const url = new URL(select.form.getAttribute('action') || location.pathname, location.href);
+  const data = new FormData(select.form);
+  for (const [key, value] of data.entries()) {
+    if (value) url.searchParams.set(key, value);
+  }
+  loadCustomizer(url, true);
+});
+
+addEventListener('popstate', function() {
+  loadCustomizer(new URL(location.href), false);
+});"))
+
 (define (page-xexpr locale current-path body)
   `(html ((lang ,(if (eq? locale 'zh-Hant) "zh-Hant" "en")))
          (head
@@ -287,6 +439,7 @@ check();"))
                 (div ((class "rime-museum-shell"))
                      ,@body
                      ,(footer locale current-path)))
+          ,customizer-script
           ,@(if (getenv "INPUT_FOUNDRY_DEV_RELOAD")
                 (list dev-reload-script)
                 '()))))

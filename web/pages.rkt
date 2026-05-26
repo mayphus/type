@@ -5,21 +5,33 @@
          "components.rkt")
 
 (provide render-page
+         render-methods-page
          render-exhibit-page)
 
 (define (home-page req schemas layouts)
   (define locale (request-locale req))
+  (define selected-schema (request-value req "schema" #f))
   (page-xexpr
    locale
    "/"
-     `((section ((class "rime-hero-card"))
+   `(,(customizer-workbench locale schemas layouts selected-schema)
+     (nav ((class "rime-home-links") (aria-label "Reference"))
+          (a ((class "rime-back-link") (href "/methods")) ,(t locale 'browse-methods))))))
+
+(define (methods-page req schemas layouts)
+  (define locale (request-locale req))
+  (page-xexpr
+   locale
+   "/methods"
+   `((section ((class "rime-reference-section"))
               (div ((class "rime-hero-head"))
                    (div
-                    (h1 ((class "page-title")) ,(t locale 'title)))
-                   ,(language-toggle locale "/")))
-     (div ((class "rime-schema-categories"))
-          ,@(for/list ([category (in-list (categorized-schemas schemas))])
-              (schema-category-section locale layouts category))))))
+                    (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
+                    (h1 ((class "page-title")) ,(t locale 'all-methods)))
+                   ,(language-toggle locale "/methods"))
+              (div ((class "rime-schema-categories"))
+                   ,@(for/list ([category (in-list (categorized-schemas schemas))])
+                       (schema-category-section locale layouts category)))))))
 
 (define (exhibit-page req schemas layouts schema-ref)
   (define locale (request-locale req))
@@ -49,6 +61,9 @@
 
 (define (render-page req schemas layouts #:route [_route 'home])
   (xexpr->string (home-page req schemas layouts)))
+
+(define (render-methods-page req schemas layouts)
+  (xexpr->string (methods-page req schemas layouts)))
 
 (define (render-exhibit-page req schemas layouts schema-id)
   (xexpr->string (exhibit-page req schemas layouts schema-id)))

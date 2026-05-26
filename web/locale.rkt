@@ -21,7 +21,14 @@
   (hash
    'en
    (hash
-    'title "Chinese Input Method Museum"
+    'title "Input Method Builder"
+    'all-methods "All methods"
+    'browse-methods "Browse all methods"
+    'method "Method"
+    'layout "Layout"
+    'details "Details"
+    'build-rime "Build Rime"
+    'build-yuanshu "Build Yuanshu"
     'landing-copy "Explore Chinese input methods from history to hands-on interaction."
     'back "Home"
     'layouts "Keyboard layouts"
@@ -42,7 +49,14 @@
     'language "繁")
    'zh-Hant
    (hash
-    'title "中文輸入博物館"
+    'title "輸入法構建器"
+    'all-methods "全部方案"
+    'browse-methods "瀏覽全部方案"
+    'method "方案"
+    'layout "佈局"
+    'details "詳情"
+    'build-rime "構建 Rime"
+    'build-yuanshu "構建元書"
     'landing-copy "探索中文輸入法，從歷史脈絡到可互動的鍵盤佈局。"
     'back "首頁"
     'layouts "鍵盤佈局"
