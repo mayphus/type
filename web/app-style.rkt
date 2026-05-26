@@ -43,9 +43,9 @@
       ["letter-spacing" "0"]
     )
     (rule ".page-title"
-      ["font-size" "clamp(2.35rem, 4.8vw, 4rem)"]
+      ["font-size" "clamp(2rem, 4.2vw, 3.45rem)"]
       ["line-height" "1"]
-      ["white-space" "nowrap"]
+      ["white-space" "normal"]
     )
     (rule ".rime-section-title"
       ["font-size" "1.45rem"]
@@ -183,8 +183,8 @@
     )
     (rule ".rime-customizer-grid"
       ["display" "grid"]
-      ["grid-template-columns" "minmax(15rem, 20rem) minmax(0, 1fr)"]
-      ["gap" "0.85rem 1.2rem"]
+      ["grid-template-columns" "repeat(2, minmax(14rem, 1fr))"]
+      ["gap" "0.75rem 1rem"]
       ["align-items" "start"]
       ["flex" "1 1 auto"]
     )
@@ -200,10 +200,10 @@
       ["text-transform" "uppercase"]
     )
     (rule ".rime-customizer-methods,\n.rime-customizer-layouts"
-      ["grid-column" "1"]
+      ["grid-column" "auto"]
     )
     (rule ".rime-customizer-layouts"
-      ["margin-top" "0.15rem"]
+      ["margin-top" "0"]
     )
     (rule ".rime-customizer-selector-form"
       ["display" "block"]
@@ -228,8 +228,8 @@
     (rule ".rime-customizer-preview"
       ["display" "flex"]
       ["flex-direction" "column"]
-      ["grid-column" "2"]
-      ["grid-row" "1 / span 2"]
+      ["grid-column" "1 / -1"]
+      ["grid-row" "auto"]
       ["gap" "0.65rem"]
       ["min-height" "0"]
     )
