@@ -90,9 +90,10 @@ surface:
 
 ## URL strategy
 
-The product is served directly by the k3s-hosted Racket app:
+The product is served directly by the k3s-hosted Racket app under the main
+Mayphus site:
 
-- `type.mayphus.org`
+- `mayphus.org/type`
 
 Legacy hostnames redirect permanently to the main domain:
 
@@ -210,11 +211,11 @@ Deployment notes:
 
 - `build/k8s.rkt` is the source for deployment manifests; generated YAML and
   Dockerfile output stays temporary.
-- The ingress manifest assumes `type.mayphus.org`, `rime.mayphus.org`, and
+- The ingress manifest assumes `mayphus.org/type`, `rime.mayphus.org`, and
   `rime-config.mayphus.org` terminate in the cluster.
-- Cloudflare should route those hostnames to the k3s ingress. The old Rime
-  hostnames redirect permanently to `type.mayphus.org`, and the old Worker web
-  UI is no longer part of this repo.
+- Cloudflare should route `mayphus.org/type` and the legacy hostnames to the
+  k3s ingress. The old Rime hostnames redirect permanently to
+  `mayphus.org/type`, and the old Worker web UI is no longer part of this repo.
 - The cert-manager issuer name is currently `letsencrypt`.
 - If your k3s ingress class, cert-manager setup, or runtime image differs,
   adjust `build/k8s.rkt` and validate with `racket main.rkt check-k8s`.

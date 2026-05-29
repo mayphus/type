@@ -22,7 +22,10 @@
 (define http-port 80)
 (define container-port 8080)
 (define node-port 32080)
-(define hosts '("type.mayphus.org" "rime.mayphus.org" "rime-config.mayphus.org"))
+(define canonical-host "mayphus.org")
+(define public-base-path "/type")
+(define legacy-hosts '("rime.mayphus.org" "rime-config.mayphus.org"))
+(define hosts (cons canonical-host legacy-hosts))
 
 (define (label-map)
   (mapping (kv "app" app-name)))
@@ -134,6 +137,9 @@
    (kv "hosts" (sequence host))
    (kv "secretName" (string-append (string-replace host "." "-") "-tls"))))
 
+(define (host-path host)
+  (if (equal? host canonical-host) public-base-path "/"))
+
 (define (host-rule host)
   (mapping
    (kv "host" host)
@@ -142,7 +148,7 @@
         (kv "paths"
             (sequence
              (mapping
-              (kv "path" "/")
+              (kv "path" (host-path host))
               (kv "pathType" "Prefix")
               (kv "backend"
                   (mapping

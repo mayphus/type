@@ -1,10 +1,13 @@
 #lang racket/base
 
 (require racket/match
+         racket/string
          net/url
          web-server/http)
 
 (provide app-css-href
+         public-base-path
+         public-path
          preview-svg-version
          t
          localized-value
@@ -14,7 +17,16 @@
          request-locale
          remember-locale-headers)
 
-(define app-css-href "/app.css")
+(define public-base-path "/type")
+
+(define (public-path path)
+  (cond
+    [(equal? path "/") public-base-path]
+    [(string-prefix? path "/?") (string-append public-base-path (substring path 1))]
+    [(string-prefix? path "/") (string-append public-base-path path)]
+    [else (string-append public-base-path "/" path)]))
+
+(define app-css-href (public-path "/app.css"))
 (define preview-svg-version "20260510-preview-canvas")
 
 (define copy
@@ -144,6 +156,6 @@
   (if (locale-value? locale)
       (list (cookie->header
              (make-cookie locale-cookie-name locale
-                          #:path "/"
+                          #:path public-base-path
                           #:max-age (* 60 60 24 365))))
       '()))

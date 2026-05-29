@@ -102,7 +102,7 @@
 (define (variant-target-button locale schema artifact)
   `(form ((class "rime-customizer-target-form")
           (method "post")
-          (action "/build"))
+          (action ,(public-path "/build")))
          (input ((type "hidden") (name "schemas") (value ,(schema-id schema))))
          (button ((class ,(classes "rime-build-button"
                                    (and (equal? artifact "yuanshu")
@@ -123,7 +123,7 @@
 (define (method-selector locale current methods)
   `(form ((class "rime-customizer-selector-form")
           (method "get")
-          (action "/"))
+          (action ,(public-path "/")))
          ,@(if (eq? locale 'zh-Hant)
                '((input ((type "hidden") (name "locale") (value "zh-Hant"))))
                '())
@@ -144,7 +144,7 @@
 (define (layout-selector locale method-schema current variants)
   `(form ((class "rime-customizer-selector-form")
           (method "get")
-          (action "/"))
+          (action ,(public-path "/")))
          ,@(if (eq? locale 'zh-Hant)
                '((input ((type "hidden") (name "locale") (value "zh-Hant"))))
                '())
@@ -175,7 +175,7 @@
             (div ((class "rime-hero-head"))
                  (div
                   (h1 ((class "page-title")) ,(t locale 'title)))
-                 ,(language-toggle locale "/"))
+                 ,(language-toggle locale (public-path "/")))
             (div ((class "rime-customizer-grid"))
                  (section ((class "rime-customizer-panel rime-customizer-methods")
                            (aria-label "Input method"))
@@ -193,7 +193,7 @@
                                         (h2 ((class "rime-customizer-heading"))
                                             ,(schema-layout-title locale selected-method selected))
                                         (a ((class "rime-back-link")
-                                            (href ,(format "/exhibits/~a" (schema-slug selected))))
+                                            (href ,(public-path (format "/exhibits/~a" (schema-slug selected)))))
                                            ,(t locale 'details))))
                                   ,@(let ([preview (schema-detail-preview locale selected layouts)])
                                       (if preview (list preview) '()))
@@ -227,8 +227,8 @@
       ,(t locale 'language)))
 
 (define (layout-preview locale layout #:base-path [base-path "layouts"])
-  (preview-image (format "/~a/~a/preview.svg" base-path (layout-id layout))
-                 (format "/~a/~a/preview-dark.svg" base-path (layout-id layout))
+  (preview-image (public-path (format "/~a/~a/preview.svg" base-path (layout-id layout)))
+                 (public-path (format "/~a/~a/preview-dark.svg" base-path (layout-id layout)))
                  (layout-name locale layout)))
 
 (define (preview-image light-path dark-path alt-text #:class [extra-class #f])
@@ -246,8 +246,8 @@
 
 (define (schema-card-preview locale schema #:platform [platform #f])
   (define name (schema-name locale schema))
-  (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
-                 (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
+  (preview-image (public-path (format "/schemas/~a/preview.svg" (schema-public-ref schema)))
+                 (public-path (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema)))
                  name))
 
 (define (target-add-button locale artifact title)
@@ -264,7 +264,7 @@
 (define (target-download-form locale schema artifact title)
   `(form ((class "rime-target-download-form")
           (method "post")
-          (action "/build"))
+          (action ,(public-path "/build")))
          ,(schema-select locale schema (list schema))
          ,(target-add-button locale artifact title)))
 
@@ -291,24 +291,24 @@
                                   schema
                                   "rime-target-preview-desktop"
                                   (t locale 'desktop)
-                                  (format "/schemas/~a/desktop-preview.svg" (schema-public-ref schema))
-                                  (format "/schemas/~a/desktop-preview-dark.svg" (schema-public-ref schema))
+                                  (public-path (format "/schemas/~a/desktop-preview.svg" (schema-public-ref schema)))
+                                  (public-path (format "/schemas/~a/desktop-preview-dark.svg" (schema-public-ref schema)))
                                   "rime"))
              (and mobile-preview?
                   (target-preview locale
                                   schema
                                   "rime-target-preview-mobile"
                                   (t locale 'mobile)
-                                  (format "/schemas/~a/skin-preview.svg" (schema-public-ref schema))
-                                  (format "/schemas/~a/skin-preview-dark.svg" (schema-public-ref schema))
+                                  (public-path (format "/schemas/~a/skin-preview.svg" (schema-public-ref schema)))
+                                  (public-path (format "/schemas/~a/skin-preview-dark.svg" (schema-public-ref schema)))
                                   "yuanshu")))))
   (and (pair? preview-layouts)
        `(div ((class "rime-detail-preview"))
              ,@(if (pair? previews)
                    previews
                    (list
-                    (preview-image (format "/schemas/~a/preview.svg" (schema-public-ref schema))
-                                   (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema))
+                    (preview-image (public-path (format "/schemas/~a/preview.svg" (schema-public-ref schema)))
+                                   (public-path (format "/schemas/~a/preview-dark.svg" (schema-public-ref schema)))
                                    (schema-name locale schema)))))))
 
 (define (display-definition-lisp schema)
@@ -324,9 +324,9 @@
 (define (schema-card locale schema layouts #:platform [platform #f])
   (define preview-layouts (schema-layout-items schema layouts))
   `(a ((class "rime-exhibit-card")
-       (href ,(format "/exhibits/~a~a"
-                      (schema-public-ref schema)
-                      (if platform (format "?platform=~a" platform) ""))))
+       (href ,(public-path (format "/exhibits/~a~a"
+                                   (schema-public-ref schema)
+                                   (if platform (format "?platform=~a" platform) "")))))
       (div ((class "rime-option-head"))
            (div ((class "rime-option-copy"))
                 (div ((class "rime-option-title-row"))
@@ -360,13 +360,13 @@
                 (span ((class "rime-footer-credit")) ,(t locale 'footer-credit)))
            (div ((class "rime-footer-support"))
                 (img ((class "rime-footer-support-image")
-                      (src "/support-8f6d2b.svg")
+                      (src ,(public-path "/support-8f6d2b.svg"))
                       (alt ,(t locale 'support)))))))
 
 (define dev-reload-script
   `(script
     ((type "module"))
-    "const url='/__dev/reload-token';
+    "const url='/type/__dev/reload-token';
 let token=null;
 async function check(){
   try {
@@ -473,7 +473,7 @@ addEventListener('popstate', function() {
 (define (artifact-form locale schema variants artifacts layouts)
   `(form ((class "rime-artifact-form")
           (method "post")
-          (action "/build"))
+          (action ,(public-path "/build")))
          ,(schema-select locale schema variants)
          (div ((class "rime-artifact-buttons"))
              ,@(for/list ([artifact (in-list artifacts)])

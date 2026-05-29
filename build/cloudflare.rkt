@@ -7,7 +7,8 @@
          racket/port
          racket/string)
 
-(define hostname "type.mayphus.org")
+(define hostname "mayphus.org")
+(define public-path "^/type(/.*)?$")
 (define service "http://192.168.36.236:80")
 (define default-tunnel-id "28166ba0-3b51-4dc2-b46c-ea3feeabb262")
 
@@ -69,27 +70,37 @@
            method path body))
   parsed)
 
-(define (hostname-rule? rule)
-  (equal? hostname (hash-ref rule 'hostname #f)))
+(define (type-route-rule? rule)
+  (and (equal? hostname (hash-ref rule 'hostname #f))
+       (equal? public-path (hash-ref rule 'path #f))))
+
+(define (same-host-rule? rule)
+  (and (equal? hostname (hash-ref rule 'hostname #f))
+       (not (hash-has-key? rule 'path))))
 
 (define (fallback-rule? rule)
   (not (hash-has-key? rule 'hostname)))
 
 (define type-route
   (hash 'hostname hostname
+        'path public-path
         'service service))
 
 (define (ensure-type-route ingress)
   (define without-type
-    (filter (lambda (rule) (not (hostname-rule? rule))) ingress))
-  (define-values (before-fallback fallback-and-after)
-    (splitf-at without-type (lambda (rule) (not (fallback-rule? rule)))))
-  (append before-fallback (list type-route) fallback-and-after))
+    (filter (lambda (rule) (not (type-route-rule? rule))) ingress))
+  (define-values (before-catchall catchall-and-after)
+    (splitf-at without-type
+               (lambda (rule)
+                 (not (or (same-host-rule? rule)
+                          (fallback-rule? rule))))))
+  (append before-catchall (list type-route) catchall-and-after))
 
 (define (print-ingress ingress)
   (for ([rule (in-list ingress)])
     (printf "- ~a => ~a\n"
-            (hash-ref rule 'hostname "<fallback>")
+            (string-append (hash-ref rule 'hostname "<fallback>")
+                           (hash-ref rule 'path ""))
             (hash-ref rule 'service))))
 
 (module+ main

@@ -313,7 +313,7 @@
         'skin-preview-svgs (preview-spec->svgs standard-zhuyin-preview)))
 
 (define legacy-hosts '("rime.mayphus.org" "rime-config.mayphus.org"))
-(define canonical-host "type.mayphus.org")
+(define canonical-host "mayphus.org")
 
 (define (request-host req)
   (for/first ([header (in-list (request-headers/raw req))]
@@ -324,18 +324,30 @@
 (define (host-without-port host)
   (car (string-split host ":")))
 
+(define (public-uri-string req)
+  (define uri (url->string (request-uri req)))
+  (cond
+    [(or (equal? uri public-base-path)
+         (string-prefix? uri (string-append public-base-path "/"))
+         (string-prefix? uri (string-append public-base-path "?")))
+     uri]
+    [(string-prefix? uri "/")
+     (public-path uri)]
+    [else
+     (public-path (string-append "/" uri))]))
+
 (define (canonical-redirect-location req)
   (define host (request-host req))
   (and host
        (member (string-downcase (host-without-port host)) legacy-hosts)
-       (string-append "https://" canonical-host (url->string (request-uri req)))))
+       (string-append "https://" canonical-host (public-uri-string req))))
 
 (define (canonical-redirect-response location)
   (response/full
    308 #"Permanent Redirect" (current-seconds) #"text/plain; charset=utf-8"
    (list (make-header #"Location" (string->bytes/utf-8 location))
          (make-header #"Cache-Control" #"public, max-age=86400"))
-   (list #"Redirecting to type.mayphus.org")))
+   (list #"Redirecting to mayphus.org/type")))
 
 ;; Precompute keyboard layout data once at startup. Concrete layouts are
 ;; declared by schema modules and materialized into temporary modules for the
@@ -416,12 +428,13 @@
     [_ ""]))
 
 (define (exhibit-location schema req)
-  (string-append "/exhibits/"
-                 (schema-public-ref schema)
-                 (request-query-suffix req)))
+  (public-path
+   (string-append "/exhibits/"
+                  (schema-public-ref schema)
+                  (request-query-suffix req))))
 
 (define (schema-asset-location schema filename)
-  (format "/schemas/~a/~a" (schema-public-ref schema) filename))
+  (public-path (format "/schemas/~a/~a" (schema-public-ref schema) filename)))
 
 ;; ---- Handlers --------------------------------------------------------------
 
@@ -664,7 +677,7 @@
    [("methods") handle-methods-page]
    [("metadata") handle-metadata]
    [("__dev" "reload-token") handle-dev-reload-token]
-   [("desktop") (lambda (req) (redirect-response "/"))]
+   [("desktop") (lambda (req) (redirect-response (public-path "/")))]
    [("exhibits" (string-arg)) handle-exhibit]
    [("app.css") handle-app-css]
    [("support-8f6d2b.svg") handle-support-svg]
@@ -692,11 +705,25 @@
       (handle-schema-skin-preview-svg req schema-id 'dark))]
    [("build") #:method "post" handle-build]))
 
+(define (strip-public-base-path req)
+  (define uri (url->string (request-uri req)))
+  (cond
+    [(equal? uri public-base-path)
+     (struct-copy request req [uri (string->url "/")])]
+    [(string-prefix? uri (string-append public-base-path "?"))
+     (struct-copy request req
+                  [uri (string->url (string-append "/"
+                                                   (substring uri (string-length public-base-path))))])]
+    [(string-prefix? uri (string-append public-base-path "/"))
+     (struct-copy request req
+                  [uri (string->url (substring uri (string-length public-base-path)))])]
+    [else req]))
+
 (define (canonical-dispatch req)
   (define location (canonical-redirect-location req))
   (if location
       (canonical-redirect-response location)
-      (dispatch req)))
+      (dispatch (strip-public-base-path req))))
 
 (define (start)
   (define port      (let ([p (getenv "PORT")])      (if p (string->number p) 5001)))

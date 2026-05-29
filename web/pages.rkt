@@ -13,22 +13,22 @@
   (define selected-schema (request-value req "schema" #f))
   (page-xexpr
    locale
-   "/"
+   (public-path "/")
    `(,(customizer-workbench locale schemas layouts selected-schema)
      (nav ((class "rime-home-links") (aria-label "Reference"))
-          (a ((class "rime-back-link") (href "/methods")) ,(t locale 'browse-methods))))))
+          (a ((class "rime-back-link") (href ,(public-path "/methods"))) ,(t locale 'browse-methods))))))
 
 (define (methods-page req schemas layouts)
   (define locale (request-locale req))
   (page-xexpr
    locale
-   "/methods"
+   (public-path "/methods")
    `((section ((class "rime-reference-section"))
               (div ((class "rime-hero-head"))
                    (div
-                    (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
+                    (a ((class "rime-back-link") (href ,(public-path "/"))) ,(t locale 'back))
                     (h1 ((class "page-title")) ,(t locale 'all-methods)))
-                   ,(language-toggle locale "/methods"))
+                   ,(language-toggle locale (public-path "/methods")))
               (div ((class "rime-schema-categories"))
                    ,@(for/list ([category (in-list (categorized-schemas schemas))])
                        (schema-category-section locale layouts category)))))))
@@ -39,7 +39,7 @@
                                (schema-by-id schemas schema-ref)))
   (define schema requested-schema)
   (define platform (request-value req "platform" #f))
-  (define current-path (format "/exhibits/~a" (if schema (schema-slug schema) schema-ref)))
+  (define current-path (public-path (format "/exhibits/~a" (if schema (schema-slug schema) schema-ref))))
   (page-xexpr
    locale
    current-path
@@ -49,14 +49,14 @@
                     (div ((class "rime-exhibit-copy"))
                          (div ((class "rime-hero-head"))
                               (div
-                               (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
+                               (a ((class "rime-back-link") (href ,(public-path "/"))) ,(t locale 'back))
                                (h1 ((class "page-title")) ,(schema-name locale schema)))
                               ,(language-toggle locale current-path)))
                     ,@(let ([preview (schema-detail-preview locale schema layouts #:platform platform)])
                         (if preview (list preview) '()))
                     ,(schema-definition-panel schema))))
        `((section ((class "rime-hero-card"))
-                  (a ((class "rime-back-link") (href "/")) ,(t locale 'back))
+                  (a ((class "rime-back-link") (href ,(public-path "/"))) ,(t locale 'back))
                   (h1 ((class "page-title")) ,(t locale 'missing)))))))
 
 (define (render-page req schemas layouts #:route [_route 'home])
